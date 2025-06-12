@@ -44,7 +44,7 @@
 #define MODEL_NAME_STRING STR(MODEL_NAME)
 
 // build detection
-#if defined(linux)
+#if defined(linux) || defined(ANDROID)
 #define LINUX     1
 #define OSX       0
 #define WIN       0
@@ -460,6 +460,15 @@ struct wake {
 // logging
 typedef enum { lERROR = 0, lWARN, lINFO, lDEBUG, lSDEBUG } log_level;
 
+#ifdef ANDROID
+#include <android/log.h>
+#define ANDROID_LOG_TAG "SqueezeLite"
+#define LOG_ERROR(...) __android_log_print(ANDROID_LOG_ERROR, ANDROID_LOG_TAG, __VA_ARGS__)
+#define LOG_WARN(...) if (loglevel >= lWARN) __android_log_print(ANDROID_LOG_WARN, ANDROID_LOG_TAG, __VA_ARGS__)
+#define LOG_INFO(...) if (loglevel >= lINFO) __android_log_print(ANDROID_LOG_INFO, ANDROID_LOG_TAG, __VA_ARGS__)
+#define LOG_DEBUG(...) if (loglevel >= lDEBUG) __android_log_print(ANDROID_LOG_DEBUG, ANDROID_LOG_TAG, __VA_ARGS__)
+#define LOG_SDEBUG(...) if (loglevel >= lSDEBUG) __android_log_print(ANDROID_LOG_DEBUG, ANDROID_LOG_TAG, __VA_ARGS__)
+#else
 const char *logtime(void);
 void logprint(const char *fmt, ...);
 
@@ -468,6 +477,7 @@ void logprint(const char *fmt, ...);
 #define LOG_INFO(fmt, ...)  if (loglevel >= lINFO)  logprint("%s %s:%d " fmt "\n", logtime(), __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define LOG_DEBUG(fmt, ...) if (loglevel >= lDEBUG) logprint("%s %s:%d " fmt "\n", logtime(), __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define LOG_SDEBUG(fmt, ...) if (loglevel >= lSDEBUG) logprint("%s %s:%d " fmt "\n", logtime(), __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#endif
 
 // utils.c (non logging)
 typedef enum { EVENT_TIMEOUT = 0, EVENT_READ, EVENT_WAKE } event_type;

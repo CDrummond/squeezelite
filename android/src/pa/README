@@ -1,0 +1,7 @@
+This is a copy of PortAudio code with support for OpenSLES.
+
+Original code was taken from:
+   https://github.com/croissanne/portaudio_opensles
+
+With deadlock fixes from:
+   https://github.com/darksylinc/portaudio_opensles/commits/matias-deadlock

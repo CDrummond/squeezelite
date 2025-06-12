@@ -58,6 +58,7 @@
 
 #include <fcntl.h>
 
+#ifndef ANDROID
 // logging functions
 const char *logtime(void) {
 	static char buf[100];
@@ -81,6 +82,7 @@ void logprint(const char *fmt, ...) {
 	va_end(args);
 	fflush(stderr);
 }
+#endif
 
 // cmdline parsing
 char *next_param(char *src, char c) {
@@ -121,6 +123,7 @@ u32_t gettime_ms(void) {
 }
 
 // mac address
+#ifndef ANDROID
 #if LINUX && !defined(SUN)
 // search first 4 interfaces returned by IFCONF
 void get_mac(u8_t mac[]) {
@@ -275,6 +278,7 @@ void get_mac(u8_t mac[]) {
 		memcpy(mac, AdapterInfo[0].Address, 6);
 	}
 }
+#endif
 #endif
 
 void set_nonblock(sockfd s) {

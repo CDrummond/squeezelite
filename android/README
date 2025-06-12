@@ -1,0 +1,10 @@
+To build SqueezeLite for Android the following depencies are required:
+
+  - Android SDK (sdk platform 34, build tools 34.0.0)
+  - Android NDK r27
+  - Meson 0.56.0
+  - Ninja
+  - Cmake
+  - pkg-config
+  - libtool
+  - python 3.9+

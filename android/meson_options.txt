@@ -1,0 +1,11 @@
+option('android_sdk', type: 'string', description: 'The path where Android SDK is installed')
+option('android_ndk', type: 'string', description: 'The path where Android NDK is installed')
+option('android_abi', type: 'string', value: 'armeabi-v7a', description: 'The Android ABI to be built')
+
+option('android_strip', type: 'string', value: 'strip', description: 'The "strip" tool from the NDK')
+
+option('android_debug_keystore', type: 'string', description: 'The keystore file used to sign debug APK files')
+
+option('android_keystore', type: 'string', description: 'The keystore file used to sign APK files')
+option('android_keyalias', type: 'string', description: 'The key alias used to sign APK files')
+option('android_keypass', type: 'string', description: 'The password of the keystore used to sign APK files')
