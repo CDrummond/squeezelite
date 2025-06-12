@@ -24,6 +24,14 @@ if not os.path.isdir(ndk_path):
 top_path = os.path.dirname(os.path.abspath(__file__))
 sys.path[0] = os.path.join(top_path, 'python')
 
+# Clear some left over files, which causes meson to reconfigure...
+for path in ['build.ninja', 'compile_commands.json', 'meson-info', 'meson-logs', 'meson-private']:
+    if os.path.exists(path):
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        else:
+            os.unlink(path)
+
 # output directories
 from build.dirs import lib_path, tarball_path, src_path
 from build.toolchain import AndroidNdkToolchain
