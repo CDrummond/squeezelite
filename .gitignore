@@ -4,3 +4,4 @@ squeezelite
 squeezelite-pulse
 tools/alsacap
 tools/find_servers
+!squeezelite/
