@@ -10,8 +10,4 @@ To build SqueezeLite for Android the following depencies are required:
   - python 3.9+
 
 Build steps:
-  - mkdir build
-  - cd build
-  - ../build.sh
-  - cd ..
   - ./gradlew assemble

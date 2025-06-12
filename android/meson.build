@@ -134,36 +134,45 @@ more_deps = []
 #subdir('java')
 target_type = 'shared_library'
 target_name = 'squeezelite'
+
+android_abi = get_option('android_abi')
+
+if android_abi == 'armeabi-v7a'
+  android_host_triplet = 'armv7a-linux-androideabi'
+else
+  android_host_triplet = 'aarch64-linux-android'
+endif
+
 link_args += [
   '-Wl,--no-undefined,-shared,-Bsymbolic',
+  '-Llib' / android_host_triplet / 'root/lib/',
   '-llog',
   '-lz',
   '-lm',
   '-lOpenSLES',
-'lib/aarch64-linux-android/root/lib/libavcodec.a',
-'lib/aarch64-linux-android/root/lib/libavformat.a',
-'lib/aarch64-linux-android/root/lib/libavutil.a',
-'lib/aarch64-linux-android/root/lib/libfaad.a',
-'lib/aarch64-linux-android/root/lib/libfaad_drm.a',
-'lib/aarch64-linux-android/root/lib/libFLAC++.a',
-'lib/aarch64-linux-android/root/lib/libFLAC.a',
-'lib/aarch64-linux-android/root/lib/libmpg123.a',
-'lib/aarch64-linux-android/root/lib/libogg.a',
-'lib/aarch64-linux-android/root/lib/libopus.a',
-'lib/aarch64-linux-android/root/lib/libout123.a',
-'lib/aarch64-linux-android/root/lib/libsoxr.a',
-'lib/aarch64-linux-android/root/lib/libsoxr-lsr.a',
-'lib/aarch64-linux-android/root/lib/libsyn123.a',
-'lib/aarch64-linux-android/root/lib/libvorbis.a',
-'lib/aarch64-linux-android/root/lib/libvorbisenc.a',
-'lib/aarch64-linux-android/root/lib/libvorbisfile.a',
+  '-lavcodec',
+  '-lavformat',
+  '-lavutil',
+  '-lfaad',
+  '-lfaad_drm',
+  '-lFLAC++',
+  '-lFLAC',
+  '-lmpg123',
+  '-logg',
+  '-lopus',
+  '-lout123',
+  '-lsoxr',
+  '-lsoxr-lsr',
+  '-lsyn123',
+  '-lvorbis',
+  '-lvorbisenc',
+  '-lvorbisfile',
 ]
 #more_deps += [
 #  declare_dependency(sources: [bridge_header]),
 #  java_dep,
 #]
 
-android_abi = get_option('android_abi')
 install_dir = meson.current_source_dir() / 'app/src/main/jniLibs' / android_abi
 
 squeezelite = build_target(

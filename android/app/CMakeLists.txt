@@ -12,14 +12,12 @@ else()
     set(NDK_HOME ${CMAKE_ANDROID_NDK})
 endif()
 
-message("Now SDK:${SDK_ROOT}: NDK:${NDK_HOME} ROOT:${ROOT}")
-if (NOT EXISTS ${ROOT}/app/src/main/jniLibs/arm64-v8a/libsqueezelite.so)
-    message("BUILD")
-endif()
+file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/../build/)
 
 add_custom_command(
-        OUTPUT ../build/libsqueezelite.so
-        COMMAND python3 ../build.py ${SDK_ROOT} ${NDK_HOME} arm64-v8a --buildtype=release -Db_ndebug=true -Dwrap_mode=forcefallback
+    OUTPUT ${CMAKE_SOURCE_DIR}/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI}/libsqueezelite.so
+    COMMAND python3 ../build.py ${SDK_ROOT} ${NDK_HOME} ${CMAKE_ANDROID_ARCH_ABI} --buildtype=release -Db_ndebug=true -Dwrap_mode=forcefallback
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/../build/
 )
 
-add_custom_target(libsqueezelite.so DEPENDS ../build/libsqueezelite.so)
+add_custom_target(libsqueezelite.so DEPENDS ${CMAKE_SOURCE_DIR}/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI}/libsqueezelite.so)
