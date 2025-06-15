@@ -47,4 +47,14 @@
             app:title="@string/player_name" />
     </PreferenceCategory>
 
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/behaviour_settings">
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="start_service"
+            app:summary="@string/start_service_summary"
+            app:title="@string/start_service" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

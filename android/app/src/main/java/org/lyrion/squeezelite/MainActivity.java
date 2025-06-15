@@ -26,6 +26,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -58,12 +59,15 @@ public class MainActivity extends AppCompatActivity {
         Utils.info("");
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        if (!isPlayerRunning() && null!=Prefs.get(this).getString(Prefs.SERVER_KEY, null) && (null==intent || !intent.getBooleanExtra(FROM_NOTIF, false))) {
-            Utils.debug("Start player from launcher...");
-            startPlayer();
-            finish();
-            return;
+        SharedPreferences prefs = Prefs.get(this);
+        if (prefs.getBoolean(Prefs.START_SERVICE, false)) {
+            Intent intent = getIntent();
+            if (!isPlayerRunning() && prefs.contains(Prefs.SERVER_KEY) && (null == intent || !intent.getBooleanExtra(FROM_NOTIF, false))) {
+                Utils.debug("Start player from launcher...");
+                startPlayer();
+                finish();
+                return;
+            }
         }
 
         setContentView(R.layout.activity_main);

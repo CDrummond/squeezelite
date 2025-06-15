@@ -15,4 +15,7 @@
     <string name="discover">Tap here to discover server</string>
     <string name="discover_summary">Attempt to auto-locate Lyrion server.</string>
     <string name="player_name">Name</string>
+    <string name="behaviour_settings">Behaviour</string>
+    <string name="start_service">Start player when launched</string>
+    <string name="start_service_summary">When starting from Android launcher then just start player, and don\'t show this UI, if a server has been configured.</string>
 </resources>
