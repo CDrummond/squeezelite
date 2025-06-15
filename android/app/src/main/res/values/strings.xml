@@ -1,12 +1,18 @@
 <resources>
-    <string name="app_name">SqueezeLite</string>
-    <string name="lms_server">LMS hostname, or IP address</string>
-    <string name="player_name">Player name</string>
-    <string name="discover">Discover LMS</string>
+    <string name="app_name">Squeezelite</string>
     <string name="start_player">Start player</string>
     <string name="stop_player">Stop player</string>
     <string name="main_notification">Player</string>
-    <string name="discovering_server">Discovering server</string>
     <string name="no_servers">No servers found</string>
+    <string name="server_changed">Server changed</string>
     <string name="server_discovered">Server discovered</string>
+    <string name="no_new_server">No new server found</string>
+    <string name="discovering_server">Discovering server</string>
+    <string name="settings">Settings</string>
+    <string name="server_settings">Server</string>
+    <string name="player_settings">Player</string>
+    <string name="server_address">Host name or IP address</string>
+    <string name="discover">Tap here to discover server</string>
+    <string name="discover_summary">Attempt to auto-locate Lyrion server.</string>
+    <string name="player_name">Name</string>
 </resources>

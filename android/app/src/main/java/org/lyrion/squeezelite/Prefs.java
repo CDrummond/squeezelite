@@ -31,14 +31,15 @@ import java.util.List;
 import java.util.Random;
 
 public class Prefs {
-    public static final String LMS_ADDRESS_KEY = "lms";
+    public static final String SERVER_KEY = "server";
     public static final String PLAYER_MAC_KEY = "mac";
-    public static final String PLAYER_NAME_KEY = "player";
+    public static final String PLAYER_NAME_KEY = "player_name";
 
-    private SharedPreferences sharedPreferences;
+    public static final String DEFAULT_PLAYER_NAME = "Squeezelite";
+    public static final String DEFAULT_PLAYER_MAC = "01:02:03:04:05:06";
 
-    public Prefs(Context context) {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    static public SharedPreferences get(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = null;
 
         if (!sharedPreferences.contains(PLAYER_MAC_KEY)) {
@@ -62,33 +63,6 @@ public class Prefs {
         if (editor!=null) {
             editor.apply();
         }
-    }
-
-    public String getLmsAddress() {
-        return sharedPreferences.getString(LMS_ADDRESS_KEY, "0.0.0.0");
-    }
-
-    public String getPlayerMac() {
-        return sharedPreferences.getString(PLAYER_MAC_KEY, "cd:ef:01:02:03:04");
-    }
-
-    public String getPlayerName() {
-        return sharedPreferences.getString(PLAYER_NAME_KEY, "SqueezeLite");
-    }
-
-    public void setLmsAddress(String val) {
-        setString(LMS_ADDRESS_KEY, val);
-    }
-
-    public void setPlayerName(String val) {
-        setString(PLAYER_NAME_KEY, val);
-    }
-
-    private void setString(String key, String val) {
-        if (val!=null && !val.equals(sharedPreferences.getString(key, null))) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(key, val);
-            editor.apply();
-        }
+        return sharedPreferences;
     }
 }

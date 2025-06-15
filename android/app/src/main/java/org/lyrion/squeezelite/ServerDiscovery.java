@@ -136,7 +136,7 @@ public abstract class ServerDiscovery {
             if (null==name || name.isEmpty()) {
                 return address();
             }
-            return name+" ("+address()+")";
+            return name+" - "+address();
         }
 
         public String address() {

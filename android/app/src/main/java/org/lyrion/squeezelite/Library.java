@@ -21,6 +21,7 @@
 package org.lyrion.squeezelite;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 public class Library {
     private Thread thread;
@@ -44,28 +45,27 @@ public class Library {
         }
     }
 
-    public synchronized boolean startPlayer(Context context) {
+    public synchronized void startPlayer(Context context) {
         if (null!=thread || !loaded) {
-            return false;
+            return;
         }
         Utils.info("");
         thread = new Thread(() -> {
-            Prefs prefs = new Prefs(context);
-            start(prefs.getLmsAddress(), prefs.getPlayerMac(), prefs.getPlayerName());
+            SharedPreferences prefs = Prefs.get(context);
+            ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
+            start(server.address(), prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC), prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME));
         });
         thread.start();
-        return true;
     }
 
-    public synchronized boolean stopPlayer() {
+    public synchronized void stopPlayer() {
         if (null==thread || !loaded) {
-            return false;
+            return;
         }
         Utils.info("");
         stop();
         thread.interrupt();
         thread = null;
-        return true;
     }
 
     private native void start(String lms, String mac, String name);

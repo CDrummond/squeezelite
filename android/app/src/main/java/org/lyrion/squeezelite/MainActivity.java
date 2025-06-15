@@ -30,52 +30,17 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import java.util.List;
-
-import io.github.muddz.styleabletoast.StyleableToast;
-
 public class MainActivity extends AppCompatActivity {
     public static final int PERMISSION_POST_NOTIFICATIONS = 1;
 
-    private TextView serverTitle;
-    private EditText serverText;
-    private TextView playerNameTitle;
-    private EditText playerNameText;
-    private Button discoverButton;
+    private Button settingsButton;
     private Button controlButton;
     PlayerReceiver playerReceiver;
-
-    private class Discovery extends ServerDiscovery {
-        Discovery(Context context) {
-            super(context, false);
-        }
-
-        public void discoveryFinished(List<Server> servers) {
-            Utils.debug("Discovery finished");
-            if (servers.isEmpty()) {
-                Utils.debug("No server found");
-                StyleableToast.makeText(context, getResources().getString(R.string.no_servers), Toast.LENGTH_SHORT, R.style.toast).show();
-            } else {
-                Utils.debug("Discovered server");
-                String current = serverText.getText().toString().trim();
-                for (Server server: servers) {
-                    if (!current.equals(server.address())) {
-                        StyleableToast.makeText(context, getResources().getString(R.string.server_discovered) + "\n\n" + servers.get(0).describe(), Toast.LENGTH_SHORT, R.style.toast).show();
-                        serverText.setText(server.address());
-                        break;
-                    }
-                }
-            }
-        }
-    }
 
     private class PlayerReceiver extends BroadcastReceiver {
         @Override
@@ -86,33 +51,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void discoverServer() {
-        Utils.debug("");
-        runOnUiThread(() -> {
-            StyleableToast.makeText(getBaseContext(), getResources().getString(R.string.discovering_server), Toast.LENGTH_SHORT, R.style.toast).show();
-        });
-        Discovery discovery = new Discovery(getApplicationContext());
-        discovery.discover();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Utils.info("");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Prefs prefs = new Prefs(this);
-        serverTitle = findViewById(R.id.lms_server_title);
-        serverText = findViewById(R.id.lms_server);
-        playerNameTitle = findViewById(R.id.player_name_title);
-        playerNameText = findViewById(R.id.player_name);
-        discoverButton = findViewById(R.id.discover);
+        settingsButton = findViewById(R.id.settings);
         controlButton = findViewById(R.id.control);
-        serverText.setText(prefs.getLmsAddress());
-        playerNameText.setText(prefs.getPlayerName());
         controlWidgets();
 
-        discoverButton.setOnClickListener(view -> {
-            discoverServer();
+        settingsButton.setOnClickListener(view -> {
+            Utils.debug("Navigate to settings");
+            startActivity(new Intent(this, SettingsActivity.class));
         });
 
         controlButton.setOnClickListener(view -> {
@@ -133,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         Utils.info("");
         super.onPause();
-        saveSettings();
         unregisterReceiver(playerReceiver);
     }
 
@@ -147,13 +97,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_POST_NOTIFICATIONS: {
-                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    startPlayer();
-                }
-                return;
+        if (requestCode == PERMISSION_POST_NOTIFICATIONS) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                startPlayer();
             }
+            return;
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
@@ -171,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
     private void startPlayer() {
         Utils.debug("Start player service");
         Intent intent = new Intent(MainActivity.this, PlayerService.class);
-        saveSettings();
         startService(intent);
     }
 
@@ -181,22 +128,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void controlWidgets() {
+        boolean configured = Prefs.get(this).contains(Prefs.SERVER_KEY);
         boolean running = isPlayerRunning();
         float alpha = running ? 0.5f : 1.0f;
         controlButton.setText(running ? R.string.stop_player : R.string.start_player);
-        serverTitle.setAlpha(alpha);
-        serverText.setAlpha(alpha);
-        serverText.setEnabled(!running);
-        discoverButton.setAlpha(alpha);
-        discoverButton.setEnabled(!running);
-        playerNameTitle.setAlpha(alpha);
-        playerNameText.setAlpha(alpha);
-        playerNameText.setEnabled(!running);
-    }
-
-    private void saveSettings() {
-        Prefs prefs = new Prefs(this);
-        prefs.setLmsAddress(serverText.getText().toString().trim());
-        prefs.setPlayerName(playerNameText.getText().toString().trim());
+        controlButton.setAlpha(configured ? 1.0f : 0.5f);
+        controlButton.setEnabled(configured);
+        settingsButton.setAlpha(alpha);
+        settingsButton.setEnabled(!running);
     }
 }

@@ -30,6 +30,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ServiceInfo;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -38,7 +39,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
@@ -123,8 +123,14 @@ public class PlayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        return START_STICKY;
+        if (!Prefs.get(this).contains(Prefs.SERVER_KEY)) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            stopForegroundService();
+            return START_NOT_STICKY;
+        } else {
+            super.onStartCommand(intent, flags, startId);
+            return START_STICKY;
+        }
     }
 
     private void startForegroundService() {
@@ -153,13 +159,6 @@ public class PlayerService extends Service {
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
     }
 
-    @NonNull
-    private PendingIntent getPendingIntent(@NonNull String action) {
-        Intent intent = new Intent(this, PlayerService.class);
-        intent.setAction(action);
-        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
-    }
-
     @SuppressLint("MissingPermission")
     private synchronized Notification updateNotification() {
         Utils.debug("");
@@ -170,14 +169,15 @@ public class PlayerService extends Service {
             Intent intent = new Intent(this, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
-            Prefs prefs = new Prefs(this);
-            String name = prefs.getPlayerName();
+            SharedPreferences prefs = Prefs.get(this);
+            String name = prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME);
+            ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
 
             notificationBuilder
                     .setOngoing(true)
                     .setOnlyAlertOnce(true)
                     .setSmallIcon(R.drawable.ic_mono_icon)
-                    .setContentTitle((null==name || name.isEmpty() ? "SqueezeLite" : name) + " (" + prefs.getLmsAddress() +")")
+                    .setContentTitle(name + " (" + server.describe() +")")
                     .setCategory(Notification.CATEGORY_SERVICE)
                     .setContentIntent(pendingIntent)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
