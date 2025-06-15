@@ -34,7 +34,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 
 public class Utils {
-    public static final String LOG_TAG = "SqueezeLiteUI";
+    public static final String LOG_TAG = "SqueezeliteUI";
 
     public static boolean isNetworkConnected(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

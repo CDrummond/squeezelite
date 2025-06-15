@@ -462,7 +462,7 @@ typedef enum { lERROR = 0, lWARN, lINFO, lDEBUG, lSDEBUG } log_level;
 
 #ifdef ANDROID
 #include <android/log.h>
-#define ANDROID_LOG_TAG "SqueezeLite"
+#define ANDROID_LOG_TAG "Squeezelite"
 #define LOG_ERROR(...) __android_log_print(ANDROID_LOG_ERROR, ANDROID_LOG_TAG, __VA_ARGS__)
 #define LOG_WARN(...) if (loglevel >= lWARN) __android_log_print(ANDROID_LOG_WARN, ANDROID_LOG_TAG, __VA_ARGS__)
 #define LOG_INFO(...) if (loglevel >= lINFO) __android_log_print(ANDROID_LOG_INFO, ANDROID_LOG_TAG, __VA_ARGS__)
