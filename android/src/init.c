@@ -33,6 +33,14 @@ static void sighandler(int signum) {
 	signal(signum, SIG_DFL);
 }
 
+/**
+ Catch SEGV, log, and exit (normally). This is to prevent Android showing errors when stopping.
+ */
+static void segv_handler(int sig) {
+	LOG_ERROR("SEGV!");
+	exit(0);
+}
+
 JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv * env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param) {
 	const char *server = (*env)->GetStringUTFChars( env, lms_param, NULL );
 	const char *mac_str = (*env)->GetStringUTFChars( env, mac_param, NULL );
@@ -80,6 +88,7 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv * env, j
 #if defined(SIGHUP)
 	signal(SIGHUP, sighandler);
 #endif
+	signal(SIGSEGV, segv_handler);
 
 #if USE_SSL && !LINKALL && !NO_SSLSYM
 	ssl_loaded = load_ssl_symbols();
