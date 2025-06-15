@@ -124,7 +124,9 @@ public class PlayerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (!Prefs.get(this).contains(Prefs.SERVER_KEY)) {
-            startActivity(new Intent(this, SettingsActivity.class));
+            Intent actIntent = new Intent(this, SettingsActivity.class);
+            actIntent.putExtra(MainActivity.FROM_PLAYER_SERVICE, true);
+            startActivity(actIntent);
             stopForegroundService();
             return START_NOT_STICKY;
         } else {
@@ -167,7 +169,7 @@ public class PlayerService extends Service {
         }
         try {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(MainActivity.FROM_NOTIF, true);
+            intent.putExtra(MainActivity.FROM_PLAYER_SERVICE, true);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
             SharedPreferences prefs = Prefs.get(this);

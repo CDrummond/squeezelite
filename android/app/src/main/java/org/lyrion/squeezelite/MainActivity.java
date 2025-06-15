@@ -37,7 +37,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String FROM_NOTIF = "from-notif";
+    public static final String FROM_PLAYER_SERVICE = "from-player-service";
     public static final int PERMISSION_POST_NOTIFICATIONS = 1;
 
     private Button settingsButton;
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = Prefs.get(this);
         if (prefs.getBoolean(Prefs.START_SERVICE, false) && canStartPlayer()) {
             Intent intent = getIntent();
-            if (!isPlayerRunning() && prefs.contains(Prefs.SERVER_KEY) && (null==intent || !intent.getBooleanExtra(FROM_NOTIF, false))) {
+            if (!isPlayerRunning() && prefs.contains(Prefs.SERVER_KEY) && (null==intent || !intent.getBooleanExtra(FROM_PLAYER_SERVICE, false))) {
                 Utils.debug("Start player from launcher...");
                 startPlayer();
                 finish();
