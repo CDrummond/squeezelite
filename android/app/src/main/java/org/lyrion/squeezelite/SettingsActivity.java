@@ -70,7 +70,7 @@ public class SettingsActivity extends AppCompatActivity {
                             StyleableToast.makeText(getContext(), getResources().getString(R.string.server_changed)+"\n\n"+serverToUse.describe(), Toast.LENGTH_SHORT, R.style.toast).show();
                         }
 
-                        Preference addressButton = getPreferenceManager().findPreference("server_address");
+                        Preference addressButton = getPreferenceManager().findPreference(Prefs.SERVER_KEY);
                         if (addressButton != null) {
                             addressButton.setSummary(serverToUse.describe());
                         }
