@@ -167,6 +167,7 @@ public class PlayerService extends Service {
         }
         try {
             Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(MainActivity.FROM_NOTIF, true);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
             SharedPreferences prefs = Prefs.get(this);

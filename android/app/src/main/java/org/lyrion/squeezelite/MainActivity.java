@@ -36,6 +36,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String FROM_NOTIF = "from-notif";
     public static final int PERMISSION_POST_NOTIFICATIONS = 1;
 
     private Button settingsButton;
@@ -56,6 +57,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Utils.info("");
         super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        if (!isPlayerRunning() && null!=Prefs.get(this).getString(Prefs.SERVER_KEY, null) && (null==intent || !intent.getBooleanExtra(FROM_NOTIF, false))) {
+            Utils.debug("Start player from launcher...");
+            startPlayer();
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_main);
         settingsButton = findViewById(R.id.settings);
         controlButton = findViewById(R.id.control);
@@ -92,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         Utils.info("");
         super.onResume();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            registerReceiver(playerReceiver, new IntentFilter(PlayerService.STATUS_INTENT), RECEIVER_NOT_EXPORTED);
+            registerReceiver(playerReceiver, new IntentFilter(PlayerService.STATUS_INTENT), RECEIVER_EXPORTED);
         } else {
             registerReceiver(playerReceiver, new IntentFilter(PlayerService.STATUS_INTENT));
         }
