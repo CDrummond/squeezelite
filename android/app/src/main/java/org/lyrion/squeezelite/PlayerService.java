@@ -64,6 +64,7 @@ public class PlayerService extends Service {
     private Handler handler;
     private ConnectionChangeListener connectionChangeListener;
     private PowerManager.WakeLock wakeLock = null;
+    private Library lib = null;
 
     public static class ConnectionChangeListener extends BroadcastReceiver {
         private final PlayerService service;
@@ -229,7 +230,10 @@ public class PlayerService extends Service {
     }
 
     private void startPlayer() {
-        Library.getInstance().startPlayer(this);
+        if (null==lib) {
+            lib = new Library();
+        }
+        lib.startPlayer(this);
         if (Prefs.get(this).getBoolean(Prefs.USE_WAKE_LOCK, Prefs.DEF_USE_WAKE_LOCK)) {
             if (null==wakeLock) {
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -246,13 +250,16 @@ public class PlayerService extends Service {
     }
 
     private void stopPlayer() {
+        if (null==lib) {
+            return;
+        }
         if (null!=wakeLock) {
             wakeLock.release();
             wakeLock = null;
         }
         sendStatus(false);
         stopTerminateTimer();
-        Library.getInstance().stopPlayer();
+        lib.stopPlayer();
         unregisterReceiver(connectionChangeListener);
         connectionChangeListener = null;
     }

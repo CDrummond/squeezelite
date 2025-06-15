@@ -27,15 +27,7 @@ public class Library {
     private Thread thread;
     private boolean loaded;
 
-    private static class LazyHolder {
-        private static final Library instance = new Library();
-    }
-
-    public static Library getInstance() {
-        return LazyHolder.instance;
-    }
-
-    private Library() {
+    public Library() {
         try {
             System.loadLibrary("squeezelite");
             loaded = true;
@@ -50,6 +42,9 @@ public class Library {
             return;
         }
         Utils.info("");
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            Utils.error("Unhandled exception", throwable);
+        });
         thread = new Thread(() -> {
             SharedPreferences prefs = Prefs.get(context);
             ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
