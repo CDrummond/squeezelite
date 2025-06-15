@@ -60,9 +60,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences prefs = Prefs.get(this);
-        if (prefs.getBoolean(Prefs.START_SERVICE, false)) {
+        if (prefs.getBoolean(Prefs.START_SERVICE, false) && canStartPlayer()) {
             Intent intent = getIntent();
-            if (!isPlayerRunning() && prefs.contains(Prefs.SERVER_KEY) && (null == intent || !intent.getBooleanExtra(FROM_NOTIF, false))) {
+            if (!isPlayerRunning() && prefs.contains(Prefs.SERVER_KEY) && (null==intent || !intent.getBooleanExtra(FROM_NOTIF, false))) {
                 Utils.debug("Start player from launcher...");
                 startPlayer();
                 finish();
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             if (isPlayerRunning()) {
                 stopPlayer();
             } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !Utils.notificationAllowed(this, PlayerService.NOTIFICATION_CHANNEL_ID)) {
+                if (!canStartPlayer()) {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, PERMISSION_POST_NOTIFICATIONS);
                 } else {
                     startPlayer();
@@ -154,5 +154,9 @@ public class MainActivity extends AppCompatActivity {
         controlButton.setEnabled(configured);
         settingsButton.setAlpha(alpha);
         settingsButton.setEnabled(!running);
+    }
+
+    private boolean canStartPlayer() {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || Utils.notificationAllowed(this, PlayerService.NOTIFICATION_CHANNEL_ID);
     }
 }
