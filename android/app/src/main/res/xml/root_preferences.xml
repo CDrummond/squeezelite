@@ -55,6 +55,11 @@
             app:key="start_service"
             app:summary="@string/start_service_summary"
             app:title="@string/start_service" />
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="use_wake_lock"
+            app:summary="@string/use_wake_lock_summary"
+            app:title="@string/use_wake_lock" />
     </PreferenceCategory>
 
 </PreferenceScreen>

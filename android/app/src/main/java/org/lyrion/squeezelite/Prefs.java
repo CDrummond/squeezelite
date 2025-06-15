@@ -35,6 +35,7 @@ public class Prefs {
     public static final String PLAYER_MAC_KEY = "mac";
     public static final String PLAYER_NAME_KEY = "player_name";
     public static final String START_SERVICE = "start_service";
+    public static final String USE_WAKE_LOCK = "use_wake_lock";
 
     public static final String DEFAULT_PLAYER_NAME = "Squeezelite";
     public static final String DEFAULT_PLAYER_MAC = "01:02:03:04:05:06";

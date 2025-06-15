@@ -38,6 +38,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.PowerManager;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -62,6 +63,7 @@ public class PlayerService extends Service {
     private NotificationManagerCompat notificationManager;
     private Handler handler;
     private ConnectionChangeListener connectionChangeListener;
+    private PowerManager.WakeLock wakeLock = null;
 
     public static class ConnectionChangeListener extends BroadcastReceiver {
         private final PlayerService service;
@@ -228,6 +230,15 @@ public class PlayerService extends Service {
 
     private void startPlayer() {
         Library.getInstance().startPlayer(this);
+        if (Prefs.get(this).getBoolean(Prefs.USE_WAKE_LOCK, false)) {
+            if (null==wakeLock) {
+                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Squeezelite:player");
+            }
+            if (null!=wakeLock) {
+                wakeLock.acquire();
+            }
+        }
         connectionChangeListener = new ConnectionChangeListener(this);
         IntentFilter filter =  new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(connectionChangeListener, filter);
@@ -235,6 +246,10 @@ public class PlayerService extends Service {
     }
 
     private void stopPlayer() {
+        if (null!=wakeLock) {
+            wakeLock.release();
+            wakeLock = null;
+        }
         sendStatus(false);
         stopTerminateTimer();
         Library.getInstance().stopPlayer();

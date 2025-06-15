@@ -18,4 +18,6 @@
     <string name="behaviour_settings">Behaviour</string>
     <string name="start_service">Start player when launched</string>
     <string name="start_service_summary">When starting from Android launcher then just start player, and don\'t show this UI, if a server has been configured.</string>
+    <string name="use_wake_lock">Keep device awake</string>
+    <string name="use_wake_lock_summary">Keep device awake whilst player is active. NOTE: This will increase battery usage.</string>
 </resources>
