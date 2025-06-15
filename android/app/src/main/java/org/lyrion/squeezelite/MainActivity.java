@@ -91,7 +91,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         Utils.info("");
         super.onResume();
-        registerReceiver(playerReceiver, new IntentFilter(PlayerService.STATUS_INTENT));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(playerReceiver, new IntentFilter(PlayerService.STATUS_INTENT), RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(playerReceiver, new IntentFilter(PlayerService.STATUS_INTENT));
+        }
         controlWidgets();
     }
 
