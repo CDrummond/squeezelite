@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Random;
 
 public class Prefs {
+    public static boolean DEF_START_SERVICE = true;
+    public static boolean DEF_USE_WAKE_LOCK = false;
+
     public static final String SERVER_KEY = "server";
     public static final String PLAYER_MAC_KEY = "mac";
     public static final String PLAYER_NAME_KEY = "player_name";

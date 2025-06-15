@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences prefs = Prefs.get(this);
-        if (prefs.getBoolean(Prefs.START_SERVICE, false) && canStartPlayer()) {
+        if (prefs.getBoolean(Prefs.START_SERVICE, Prefs.DEF_START_SERVICE) && canStartPlayer()) {
             Intent intent = getIntent();
             if (!isPlayerRunning() && prefs.contains(Prefs.SERVER_KEY) && (null==intent || !intent.getBooleanExtra(FROM_PLAYER_SERVICE, false))) {
                 Utils.debug("Start player from launcher...");

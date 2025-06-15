@@ -230,7 +230,7 @@ public class PlayerService extends Service {
 
     private void startPlayer() {
         Library.getInstance().startPlayer(this);
-        if (Prefs.get(this).getBoolean(Prefs.USE_WAKE_LOCK, false)) {
+        if (Prefs.get(this).getBoolean(Prefs.USE_WAKE_LOCK, Prefs.DEF_USE_WAKE_LOCK)) {
             if (null==wakeLock) {
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Squeezelite:player");
