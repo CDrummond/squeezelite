@@ -41,7 +41,7 @@ static void segv_handler(int sig) {
 	exit(0);
 }
 
-JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv * env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint fixed_vol) {
+JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv * env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint fixed_vol, jint logging) {
 	const char *server = (*env)->GetStringUTFChars( env, lms_param, NULL );
 	const char *mac_str = (*env)->GetStringUTFChars( env, mac_param, NULL );
 	char *output_device = "default";
@@ -62,11 +62,10 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv * env, j
 	unsigned dsd_delay = 0;
 	dsd_format dsd_outfmt = PCM;
 #endif
-    log_level llevel = lERROR;
-	log_level log_output = llevel;
-	log_level log_stream = llevel;
-	log_level log_decode = llevel;
-	log_level log_slimproto = llevel;
+	log_level log_output = logging;
+	log_level log_stream = logging;
+	log_level log_decode = logging;
+	log_level log_slimproto = logging;
 
 	int maxSampleRate = 0;
 

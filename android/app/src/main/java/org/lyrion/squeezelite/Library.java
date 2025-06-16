@@ -24,6 +24,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class Library {
+    static final int LOG_ERROR = 0;
+    static final int LOG_WARN = 1;
+    static final int LOG_lINFO = 2;
+    static final int LOG_DEBUG = 3;
+    static final int LOG_SDEBUG= 4;
+
     private Thread thread;
     private boolean loaded;
 
@@ -51,7 +57,8 @@ public class Library {
             start(server.address(),
                   prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC),
                   prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME),
-                  prefs.getBoolean(Prefs.FIXED_VOLUME, Prefs.DEFAULT_FIXED_VOLUME) ? 1 : 0);
+                  prefs.getBoolean(Prefs.FIXED_VOLUME, Prefs.DEFAULT_FIXED_VOLUME) ? 1 : 0,
+                  LOG_ERROR);
         });
         thread.start();
     }
@@ -76,6 +83,6 @@ public class Library {
         thread = null;
     }
 
-    private native void start(String lms, String mac, String name, int fixedVolume);
+    private native void start(String lms, String mac, String name, int fixedVolume, int logging);
     private native void stop();
 }
