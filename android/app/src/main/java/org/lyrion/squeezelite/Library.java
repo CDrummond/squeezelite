@@ -48,7 +48,10 @@ public class Library {
         thread = new Thread(() -> {
             SharedPreferences prefs = Prefs.get(context);
             ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
-            start(server.address(), prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC), prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME));
+            start(server.address(),
+                  prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC),
+                  prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME),
+                  prefs.getBoolean(Prefs.FIXED_VOLUME, Prefs.DEF_FIXED_VOLUME) ? 1 : 0);
         });
         thread.start();
     }
@@ -63,6 +66,6 @@ public class Library {
         thread = null;
     }
 
-    private native void start(String lms, String mac, String name);
+    private native void start(String lms, String mac, String name, int fixedVolume);
     private native void stop();
 }

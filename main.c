@@ -784,7 +784,7 @@ int main(int argc, char **argv) {
 						 output_mixer_unmute, linear_volume);
 #endif
 #if PORTAUDIO
-		output_init_pa(log_output, output_device, output_buf_size, output_params, rates, rate_delay, idle);
+		output_init_pa(log_output, output_device, output_buf_size, output_params, rates, rate_delay, idle, false);
 #endif
 #if PULSEAUDIO
 		output_init_pulse(log_output, output_device, output_buf_size, output_params, rates, rate_delay, idle);

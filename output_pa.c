@@ -68,6 +68,7 @@ static struct {
 static log_level loglevel;
 
 static bool running = true;
+static bool fixed_volume = false;
 
 extern struct outputstate output;
 extern struct buffer *outputbuf;
@@ -108,11 +109,18 @@ void list_devices(void) {
 }
 
 void set_volume(unsigned left, unsigned right) {
-	LOG_DEBUG("setting internal gain left: %u right: %u", left, right);
-	LOCK;
-	output.gainL = left;
-	output.gainR = right;
-	UNLOCK;
+	if (fixed_volume) {
+		LOCK;
+		output.gainL = FIXED_ONE;
+		output.gainR = FIXED_ONE;
+		UNLOCK;
+	} else {
+		LOG_DEBUG("setting internal gain left: %u right: %u", left, right);
+		LOCK;
+		output.gainL = left;
+		output.gainR = right;
+		UNLOCK;
+	}
 }
 
 static int pa_device_id(const char *device) {
@@ -546,7 +554,7 @@ static int pa_callback(void *pa_input, void *pa_output, unsigned long pa_frames_
 }
 
 void output_init_pa(log_level level, const char *device, unsigned output_buf_size, char *params, unsigned rates[], unsigned rate_delay,
-					unsigned idle) {
+					unsigned idle, bool use_fixed_volume) {
 	PaError err;
 #ifndef PA18API
 	unsigned latency = 0;
@@ -570,6 +578,7 @@ void output_init_pa(log_level level, const char *device, unsigned output_buf_siz
 #endif
 
 	loglevel = level;
+	fixed_volume = use_fixed_volume;
 
 	LOG_INFO("init output");
 

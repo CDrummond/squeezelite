@@ -45,6 +45,11 @@
             app:key="player_name"
             app:summary=""
             app:title="@string/player_name" />
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="fixed_volume"
+            app:summary="@string/fixed_volume_summary"
+            app:title="@string/fixed_volume" />
     </PreferenceCategory>
 
     <PreferenceCategory
