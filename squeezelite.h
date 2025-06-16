@@ -733,7 +733,7 @@ void output_close_alsa(void);
 void list_devices(void);
 void set_volume(unsigned left, unsigned right);
 bool test_open(const char *device, unsigned rates[], bool userdef_rates);
-void output_init_pa(log_level level, const char *device, unsigned output_buf_size, char *params, unsigned rates[], unsigned rate_delay, unsigned idle);
+void output_init_pa(log_level level, const char *device, unsigned output_buf_size, char *params, unsigned rates[], unsigned rate_delay, unsigned idle, bool use_fixed_volume);
 void output_close_pa(void);
 void _pa_open(void);
 #endif

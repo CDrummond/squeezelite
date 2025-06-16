@@ -554,7 +554,7 @@ static int pa_callback(void *pa_input, void *pa_output, unsigned long pa_frames_
 }
 
 void output_init_pa(log_level level, const char *device, unsigned output_buf_size, char *params, unsigned rates[], unsigned rate_delay,
-					unsigned idle, bool use_fixed_volume) {
+                    unsigned idle, bool use_fixed_volume) {
 	PaError err;
 #ifndef PA18API
 	unsigned latency = 0;
