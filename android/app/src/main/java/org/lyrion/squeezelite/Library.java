@@ -51,7 +51,7 @@ public class Library {
             start(server.address(),
                   prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC),
                   prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME),
-                  prefs.getBoolean(Prefs.FIXED_VOLUME, Prefs.DEF_FIXED_VOLUME) ? 1 : 0);
+                  prefs.getBoolean(Prefs.FIXED_VOLUME, Prefs.DEFAULT_FIXED_VOLUME) ? 1 : 0);
         });
         thread.start();
     }

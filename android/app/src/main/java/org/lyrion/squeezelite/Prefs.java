@@ -31,20 +31,18 @@ import java.util.List;
 import java.util.Random;
 
 public class Prefs {
-    public static boolean DEF_START_SERVICE = true;
-    public static boolean DEF_USE_WAKE_LOCK = false;
-    public static boolean DEF_FIXED_VOLUME = true;
-
     public static final String SERVER_KEY = "server";
-    public static final String PLAYER_MAC_KEY = "mac";
     public static final String PLAYER_NAME_KEY = "player_name";
+    public static final String PLAYER_MAC_KEY = "mac";
     public static final String START_SERVICE = "start_service";
     public static final String USE_WAKE_LOCK = "use_wake_lock";
     public static final String FIXED_VOLUME = "fixed_volume";
 
     public static final String DEFAULT_PLAYER_NAME = "Squeezelite";
     public static final String DEFAULT_PLAYER_MAC = "01:02:03:04:05:06";
-
+    public static boolean DEFAULT_START_SERVICE = true;
+    public static boolean DEFAULT_USE_WAKE_LOCK = false;
+    public static boolean DEFAULT_FIXED_VOLUME = true;
     static public SharedPreferences get(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = null;
@@ -71,19 +69,19 @@ public class Prefs {
             if (null==editor) {
                 editor = sharedPreferences.edit();
             }
-            editor.putBoolean(START_SERVICE, DEF_START_SERVICE);
+            editor.putBoolean(START_SERVICE, DEFAULT_START_SERVICE);
         }
         if (!sharedPreferences.contains(USE_WAKE_LOCK)) {
             if (null==editor) {
                 editor = sharedPreferences.edit();
             }
-            editor.putBoolean(USE_WAKE_LOCK, DEF_USE_WAKE_LOCK);
+            editor.putBoolean(USE_WAKE_LOCK, DEFAULT_USE_WAKE_LOCK);
         }
         if (!sharedPreferences.contains(FIXED_VOLUME)) {
             if (null==editor) {
                 editor = sharedPreferences.edit();
             }
-            editor.putBoolean(FIXED_VOLUME, DEF_FIXED_VOLUME);
+            editor.putBoolean(FIXED_VOLUME, DEFAULT_FIXED_VOLUME);
         }
         if (editor!=null) {
             editor.apply();
