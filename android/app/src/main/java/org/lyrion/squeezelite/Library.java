@@ -62,7 +62,17 @@ public class Library {
         }
         Utils.info("");
         stop();
-        thread.interrupt();
+        try {
+            // Allow C code a little while to stop...
+            thread.join(500);
+        } catch (InterruptedException e) {
+            Utils.error("InterruptedException joining player thread", e);
+        }
+        try {
+            thread.interrupt();
+        } catch (Exception e) {
+            Utils.error("Exception interrupting player thread", e);
+        }
         thread = null;
     }
 
