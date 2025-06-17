@@ -24,5 +24,4 @@
     <string name="volume_control_separate">Lyrion player and Android device can have separate volume settings.</string>
     <string name="volume_control_device">Lyrion player\'s volume is locked to 100% and volume changes need to be made on Android device.</string>
     <string name="volume_control_synchronized">Volume shown in Lyrion is synchronized with Android device. Changing one volume setting will change the other.</string>
-
 </resources>

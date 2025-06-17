@@ -55,6 +55,7 @@ public class PlayerService extends Service {
     // How long after losing network should we stop player?
     private static final int NETWORK_LOSS_TIMEOUT = 30;
     public static final String STATUS_INTENT = PlayerService.class.getCanonicalName()+".STATUS";
+    private static final String QUIT_INTENT = PlayerService.class.getCanonicalName() + ".QUIT";
     public static final String RUNNING_KEY = "running";
     public static final String NOTIFICATION_CHANNEL_ID = "squeezelite_service";
     private static final int MSG_ID = 1;
@@ -126,16 +127,24 @@ public class PlayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            String action = intent.getAction();
+            if (QUIT_INTENT.equals(action)) {
+                stopPlayer();
+                stopForegroundService();
+            }
+            return START_STICKY;
+        }
+
         if (!Prefs.get(this).contains(Prefs.SERVER_KEY)) {
             Intent actIntent = new Intent(this, SettingsActivity.class);
             actIntent.putExtra(MainActivity.FROM_PLAYER_SERVICE, true);
             startActivity(actIntent);
             stopForegroundService();
             return START_NOT_STICKY;
-        } else {
-            super.onStartCommand(intent, flags, startId);
-            return START_STICKY;
         }
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     private void startForegroundService() {
@@ -178,6 +187,8 @@ public class PlayerService extends Service {
             SharedPreferences prefs = Prefs.get(this);
             String name = prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME);
             ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
+            Intent quitIntent = new Intent(this, PlayerService.class);
+            quitIntent.setAction(QUIT_INTENT);
 
             notificationBuilder
                     .setOngoing(true)
@@ -191,7 +202,8 @@ public class PlayerService extends Service {
                     .setSound(null)
                     .setShowWhen(false)
                     .setChannelId(NOTIFICATION_CHANNEL_ID);
-
+            notificationBuilder.clearActions();
+            notificationBuilder.addAction(new NotificationCompat.Action(R.drawable.ic_action_quit, getString(R.string.stop_player), PendingIntent.getService(this, 0, quitIntent, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE)));
             Notification notification = notificationBuilder.build();
             Utils.debug("Build notification.");
             notificationManager.notify(MSG_ID, notification);
@@ -260,7 +272,10 @@ public class PlayerService extends Service {
         sendStatus(false);
         stopTerminateTimer();
         lib.stopPlayer(this);
-        unregisterReceiver(connectionChangeListener);
+        try {
+            unregisterReceiver(connectionChangeListener);
+        } catch (Exception ignored) {
+        }
         connectionChangeListener = null;
     }
 
