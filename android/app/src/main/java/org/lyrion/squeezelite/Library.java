@@ -29,6 +29,8 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.provider.Settings;
 
+import androidx.annotation.Keep;
+
 public class Library {
     static long MIN_LMS_VOLUME_UPDATE_TIME = 750;
     // received volume values for 0..100
@@ -168,6 +170,7 @@ public class Library {
         return 0.0f;
     }
 
+    @Keep
     public synchronized void volumeChanged(int left, int right) {
         // We send LMS our volume, and that will cause it to send an update - which can cause
         // volume 'wiggles'. Therefore, if we receive an update too soon after sending a change
@@ -202,6 +205,7 @@ public class Library {
         }
     }
 
+    @Keep
     public synchronized void connectionStateChanged(int state) {
         if (0==state) {
             initialLmsVolSeen = false;
