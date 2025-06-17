@@ -445,6 +445,9 @@ static void process_audg(u8_t *pkt, int len) {
 	LOG_DEBUG("audg gainL: %u gainR: %u adjust: %u", audg->gainL, audg->gainR, audg->adjust);
 
 	set_volume(audg->adjust ? audg->gainL : FIXED_ONE, audg->adjust ? audg->gainR : FIXED_ONE);
+#ifdef ANDROID
+	send_volume_to_app(audg->gainL, audg->gainR);
+#endif
 }
 
 static void process_setd(u8_t *pkt, int len) {
@@ -551,6 +554,9 @@ static void slimproto_run() {
 
 	set_readwake_handles(ehandles, sock, wake_e);
 
+#ifdef ANDROID
+	send_connection_state_to_app(true);
+#endif
 	while (running && !new_server) {
 
 		bool wake = false;
@@ -766,6 +772,10 @@ static void slimproto_run() {
 #endif
 		}
 	}
+
+#ifdef ANDROID
+	send_connection_state_to_app(false);
+#endif
 }
 
 // called from other threads to wake state machine above

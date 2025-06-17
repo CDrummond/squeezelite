@@ -45,11 +45,12 @@
             app:key="player_name"
             app:summary=""
             app:title="@string/player_name" />
-        <SwitchPreferenceCompat
-            app:iconSpaceReserved="false"
-            app:key="fixed_volume"
-            app:summary="@string/fixed_volume_summary"
-            app:title="@string/fixed_volume" />
+        <ListPreference
+            android:entries="@array/volume"
+            android:entryValues="@array/volumeAlias"
+            android:key="volume_control"
+            android:title="@string/volume_control"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -22,16 +22,51 @@ package org.lyrion.squeezelite;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
+import android.media.AudioManager;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
+import android.provider.Settings;
 
 public class Library {
+    static long MIN_LMS_VOLUME_UPDATE_TIME = 750;
+    // received volume values for 0..100
+    static int[] LMS_VOLS = new int[]{0,16,18,22,26,31,36,43,51,61,72,85,101,120,142,168,200,237,281,333,395,468,555,658,781,926,980,1037,1098,1162,1230,1302,1378,1458,1543,1634,1729,1830,1937,2050,2048,2304,2304,2560,2816,2816,3072,3328,3328,3584,3840,4096,4352,4608,4864,5120,5376,5632,6144,6400,6656,7168,7680,7936,8448,8960,9472,9984,10752,11264,12032,12544,13312,14080,14848,15872,16640,17664,18688,19968,20992,22272,23552,24832,26368,27904,29696,31232,33024,35072,37120,39424,41728,44032,46592,49408,52224,55296,58624,61952,65536};
+    static final int UNKNOWN_VOL = -1000;
     static final int LOG_ERROR = 0;
     static final int LOG_WARN = 1;
     static final int LOG_lINFO = 2;
     static final int LOG_DEBUG = 3;
     static final int LOG_SDEBUG= 4;
 
+    static final int VOL_SEP = 0;
+    static final int VOL_DEV = 1;
+    static final int VOL_SYNC = 2;
+
     private Thread thread;
     private boolean loaded;
+
+    private boolean initialLmsVolSeen = false;
+    private int androidVolume = UNKNOWN_VOL;
+    private int androidMaxVolume = 100;
+    private int lmsVolume = UNKNOWN_VOL;
+    private long lmsVolumeSendTime;
+    private int volumeControl = VOL_SEP;
+    private VolumeChangeObserver observer;
+    private AudioManager audioManager;
+    private JsonRpc jsonRpc;
+
+    private class VolumeChangeObserver extends ContentObserver {
+        public VolumeChangeObserver() {
+            super(new Handler(Looper.getMainLooper()));
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            volumeChanged();
+        }
+    }
 
     public Library() {
         try {
@@ -47,27 +82,49 @@ public class Library {
         if (null!=thread || !loaded) {
             return;
         }
+        SharedPreferences prefs = Prefs.get(context);
+        ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
+        String mac = prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC);
+        String vc = prefs.getString(Prefs.VOLUME_CONTROL, Prefs.DEFAULT_VOLUME_CONTROL);
+        volumeControl = Prefs.VOLUME_CONTROL_SEPARATE.equals(vc)
+                ? VOL_SEP
+                : Prefs.VOLUME_CONTROL_DEVICE.equals(vc)
+                ? VOL_DEV
+                : VOL_SYNC;
+
+        initialLmsVolSeen = false;
+        if (VOL_SYNC==volumeControl) {
+            if (null==audioManager) {
+                audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                androidMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            }
+            androidVolume = -1000;
+            jsonRpc = new JsonRpc(context, server, mac);
+            observer = new VolumeChangeObserver();
+            context.getApplicationContext().getContentResolver().registerContentObserver(Settings.System.CONTENT_URI, true, observer);
+        }
+
         Utils.info("");
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            Utils.error("Unhandled exception", throwable);
-        });
-        thread = new Thread(() -> {
-            SharedPreferences prefs = Prefs.get(context);
-            ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
-            start(server.address(),
-                  prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC),
-                  prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME),
-                  prefs.getBoolean(Prefs.FIXED_VOLUME, Prefs.DEFAULT_FIXED_VOLUME) ? 1 : 0,
-                  LOG_ERROR);
-        });
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> Utils.error("Unhandled exception", throwable));
+        thread = new Thread(() -> start(server.address(),
+              mac,
+              prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME),
+              VOL_SEP==volumeControl ? 0 : 1,
+              LOG_ERROR));
         thread.start();
     }
 
-    public synchronized void stopPlayer() {
+    public synchronized void stopPlayer(Context context) {
         if (null==thread || !loaded) {
             return;
         }
         Utils.info("");
+        if (null!=observer) {
+            context.getApplicationContext().getContentResolver().unregisterContentObserver(observer);
+            observer = null;
+        }
+        jsonRpc = null;
+
         stop();
         try {
             // Allow C code a little while to stop...
@@ -81,6 +138,69 @@ public class Library {
             Utils.error("Exception interrupting player thread", e);
         }
         thread = null;
+    }
+
+    private synchronized void volumeChanged() {
+        if (!initialLmsVolSeen) {
+            return;
+        }
+        int vol = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        Utils.debug("vol:"+vol+", androidVolume:"+androidVolume+", androidMaxVolume:"+androidMaxVolume);
+        if (vol!=androidVolume) {
+            androidVolume = vol;
+            // Convert to 0..100
+            int vol100 = (int)Math.ceil((vol*100.0f)/androidMaxVolume);
+            if (null!=jsonRpc && lmsVolume!=vol100) {
+                lmsVolume = vol100;
+                lmsVolumeSendTime = SystemClock.elapsedRealtime();
+                jsonRpc.sendMessage( new String[]{"mixer", "volume", ""+vol100});
+            }
+        }
+    }
+
+    private static float mapToPercent(int vol) {
+        for (int i=0; i<LMS_VOLS.length; ++i) {
+            if (LMS_VOLS[i]==vol || (i>0 && LMS_VOLS[i-1]<vol && (i==LMS_VOLS.length-1 || LMS_VOLS[i+1]>vol))) {
+                return i/100.0f;
+            }
+        }
+        return 0.0f;
+    }
+
+    public synchronized void volumeChanged(int left, int right) {
+        // We send LMS our volume, and that will cause it to send an update - which can cause
+        // volume 'wiggles'. Therefore, if we receive an update too soon after sending a change
+        // then ignore it.
+        if (lmsVolumeSendTime>0 && (SystemClock.elapsedRealtime()-lmsVolumeSendTime)<MIN_LMS_VOLUME_UPDATE_TIME) {
+            return;
+        }
+        // Volume FROM LMS...
+        if (VOL_SYNC==volumeControl && null!=audioManager) {
+            int vol = (left + right)/2;
+            Utils.debug("left:"+left+", right:"+right+", initialLmsVolSeen:"+initialLmsVolSeen+", vol:"+vol);
+            if (initialLmsVolSeen) {
+                float pc = mapToPercent(vol);
+                int aVol = (int)Math.ceil(pc*androidMaxVolume);
+                Utils.debug("aVol:"+aVol+", androidVolume:"+androidVolume);
+                if (aVol!=androidVolume) {
+                    androidVolume = aVol;
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, aVol, 0);
+                }
+            } else {
+                // C code has connected to LMS, LMS indicates initial volume, but override with
+                // device's current volume...
+                Utils.debug("First");
+                initialLmsVolSeen = true;
+                androidVolume = UNKNOWN_VOL;
+                volumeChanged();
+            }
+        }
+    }
+
+    public synchronized void connectionStateChanged(int state) {
+        if (0==state) {
+            initialLmsVolSeen = false;
+        }
     }
 
     private native void start(String lms, String mac, String name, int fixedVolume, int logging);

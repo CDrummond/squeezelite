@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -33,7 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
                 .commit();
     }
 
-    public static class SettingsFragment extends PreferenceFragmentCompat {
+    public static class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
         private class Discovery extends ServerDiscovery {
             Discovery(Context context) {
                 super(context, true);
@@ -190,6 +191,38 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                     return true;
                 });
+            }
+            updateListSummary(Prefs.VOLUME_CONTROL);
+            PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            if (getContext()!=null) {
+                PreferenceManager.getDefaultSharedPreferences(getContext()).unregisterOnSharedPreferenceChangeListener(this);
+            }
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (Prefs.VOLUME_CONTROL.equals(key)) {
+                updateListSummary(key);
+            }
+        }
+        private void updateListSummary(String key) {
+            ListPreference pref = getPreferenceManager().findPreference(key);
+            if (pref != null) {
+                String val = pref.getValue();
+                if (Prefs.VOLUME_CONTROL_SEPARATE.equals(val)) {
+                    pref.setSummary(R.string.volume_control_separate);
+                } else if (Prefs.VOLUME_CONTROL_DEVICE.equals(val)) {
+                    pref.setSummary(R.string.volume_control_device);
+                } else if (Prefs.VOLUME_CONTROL_SYNCHRONIZED.equals(val)) {
+                    pref.setSummary(R.string.volume_control_synchronized);
+                } else {
+                    pref.setSummary(pref.getEntry());
+                }
             }
         }
     }

@@ -26,6 +26,10 @@
 #include <jni.h>
 #include <signal.h>
 
+static JavaVM *jvm = NULL;
+static jclass clazz = 0;
+static jobject obj = 0;
+
 static void sighandler(int signum) {
 	slimproto_stop();
 
@@ -41,13 +45,65 @@ static void segv_handler(int sig) {
 	exit(0);
 }
 
-JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv * env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint fixed_vol, jint logging) {
-	const char *server = (*env)->GetStringUTFChars( env, lms_param, NULL );
-	const char *mac_str = (*env)->GetStringUTFChars( env, mac_param, NULL );
+static void init_jvm(JNIEnv * env, jobject jobj) {
+	jvm = NULL;
+	if (JNI_OK!=(*env)->GetJavaVM(env, &jvm)) {
+		LOG_ERROR("Failed to get java VM");
+		return;
+	}
+	obj = (*env)->NewGlobalRef(env, jobj);
+	clazz = (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, obj));
+}
+
+void send_volume_to_app(u32_t left, u32_t right) {
+    if (!jvm || !obj || !clazz) {
+		return;
+	}
+	JNIEnv *env;
+	bool detached = JNI_EDETACHED == (*jvm)->GetEnv(jvm, &env, JNI_VERSION_1_6);
+	if (detached) {
+		if (JNI_OK!=(*jvm)->AttachCurrentThread(jvm, &env, NULL)) {
+			LOG_ERROR("Failed to get attach current thread");
+			return;
+		}
+	}
+	jmethodID method = (*env)->GetMethodID(env, clazz, "volumeChanged", "(II)V");
+	if (method) {
+		(*env)->CallVoidMethod(env, obj, method, left, right);
+	}
+	if (detached) {
+		(*jvm)->DetachCurrentThread(jvm);
+	}
+}
+
+void send_connection_state_to_app(bool connected) {
+	if (!jvm || !obj || !clazz) {
+		return;
+	}
+	JNIEnv *env;
+	bool detached = JNI_EDETACHED == (*jvm)->GetEnv(jvm, &env, JNI_VERSION_1_6);
+	if (detached) {
+		if (JNI_OK!=(*jvm)->AttachCurrentThread(jvm, &env, NULL)) {
+			LOG_ERROR("Failed to get attach current thread");
+			return;
+		}
+	}
+	jmethodID method = (*env)->GetMethodID(env, clazz, "connectionStateChanged", "(I)V");
+	if (method) {
+		(*env)->CallVoidMethod(env, obj, method, connected ? 1 : 0);
+	}
+	if (detached) {
+		(*jvm)->DetachCurrentThread(jvm);
+	}
+}
+
+JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint fixed_vol, jint logging) {
+	const char *server = (*env)->GetStringUTFChars(env, lms_param, NULL);
+	const char *mac_str = (*env)->GetStringUTFChars(env, mac_param, NULL);
 	char *output_device = "default";
 	char *include_codecs = NULL;
 	char *exclude_codecs = "";
-	const char *name = (*env)->GetStringUTFChars( env, name_param, NULL );
+	const char *name = (*env)->GetStringUTFChars(env, name_param, NULL);
 	char *namefile = NULL;
 	const char *modelname = "SqueezeLiteAndroid";
 	u8_t mac[6];
@@ -79,6 +135,7 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv * env, j
 		}
 	}
 
+	init_jvm(env, jobj);
 	signal(SIGINT, sighandler);
 	signal(SIGTERM, sighandler);
 #if defined(SIGQUIT)
@@ -134,9 +191,9 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv * env, j
 	free_ssl_symbols();
 #endif
 
-	(*env)->ReleaseStringUTFChars( env, lms_param, server );
-	(*env)->ReleaseStringUTFChars( env, mac_param, mac_str );
-	(*env)->ReleaseStringUTFChars( env, name_param, name );
+	(*env)->ReleaseStringUTFChars(env, lms_param, server);
+	(*env)->ReleaseStringUTFChars(env, mac_param, mac_str);
+	(*env)->ReleaseStringUTFChars(env, name_param, name);
 }
 
 JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_stop(JNIEnv * env, jobject jobj) {

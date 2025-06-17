@@ -36,13 +36,16 @@ public class Prefs {
     public static final String PLAYER_MAC_KEY = "mac";
     public static final String START_SERVICE = "start_service";
     public static final String USE_WAKE_LOCK = "use_wake_lock";
-    public static final String FIXED_VOLUME = "fixed_volume";
+    public static final String VOLUME_CONTROL = "volume_control";
+    public static final String VOLUME_CONTROL_SEPARATE = "separate";
+    public static final String VOLUME_CONTROL_DEVICE = "device";
+    public static final String VOLUME_CONTROL_SYNCHRONIZED = "synchronized";
 
     public static final String DEFAULT_PLAYER_NAME = "Squeezelite";
     public static final String DEFAULT_PLAYER_MAC = "01:02:03:04:05:06";
     public static boolean DEFAULT_START_SERVICE = true;
     public static boolean DEFAULT_USE_WAKE_LOCK = false;
-    public static boolean DEFAULT_FIXED_VOLUME = true;
+    public static String DEFAULT_VOLUME_CONTROL = VOLUME_CONTROL_SYNCHRONIZED;
     static public SharedPreferences get(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = null;
@@ -77,11 +80,11 @@ public class Prefs {
             }
             editor.putBoolean(USE_WAKE_LOCK, DEFAULT_USE_WAKE_LOCK);
         }
-        if (!sharedPreferences.contains(FIXED_VOLUME)) {
+        if (!sharedPreferences.contains(VOLUME_CONTROL)) {
             if (null==editor) {
                 editor = sharedPreferences.edit();
             }
-            editor.putBoolean(FIXED_VOLUME, DEFAULT_FIXED_VOLUME);
+            editor.putString(VOLUME_CONTROL, DEFAULT_VOLUME_CONTROL);
         }
         if (editor!=null) {
             editor.apply();

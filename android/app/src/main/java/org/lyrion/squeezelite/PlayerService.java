@@ -259,7 +259,7 @@ public class PlayerService extends Service {
         }
         sendStatus(false);
         stopTerminateTimer();
-        lib.stopPlayer();
+        lib.stopPlayer(this);
         unregisterReceiver(connectionChangeListener);
         connectionChangeListener = null;
     }
