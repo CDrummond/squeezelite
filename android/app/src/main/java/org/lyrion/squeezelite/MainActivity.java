@@ -31,10 +31,17 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
+
+import java.util.List;
+
+import io.github.muddz.styleabletoast.StyleableToast;
 
 public class MainActivity extends AppCompatActivity {
     public static final String FROM_PLAYER_SERVICE = "from-player-service";
@@ -53,6 +60,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private class Discovery extends ServerDiscovery {
+        Discovery(Context context) {
+            super(context, true);
+        }
+
+        public void discoveryFinished(List<Server> servers) {
+            Utils.debug("Discovery finished");
+            if (servers.isEmpty()) {
+                StyleableToast.makeText(getApplicationContext(), getResources().getString(R.string.no_servers), Toast.LENGTH_SHORT, R.style.toast).show();
+            } else {
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                Server serverToUse = servers.get(0);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(Prefs.SERVER_KEY, serverToUse.encode());
+                editor.apply();
+                StyleableToast.makeText(getApplicationContext(), getResources().getString(R.string.server_discovered)+"\n\n"+serverToUse.describe(), Toast.LENGTH_SHORT, R.style.toast).show();
+                controlWidgets();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        if (!prefs.contains(Prefs.SERVER_KEY)) {
+            new Discovery(this).discover();
+        }
         setContentView(R.layout.activity_main);
         settingsButton = findViewById(R.id.settings);
         controlButton = findViewById(R.id.control);
