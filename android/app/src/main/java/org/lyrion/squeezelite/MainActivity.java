@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (PlayerService.STATUS_INTENT.equals(intent.getAction())) {
+                StyleableToast.makeText(context, getResources().getString(isPlayerRunning() ? R.string.player_started : R.string.player_stopped), Toast.LENGTH_SHORT, R.style.toast).show();
                 controlWidgets();
             }
         }

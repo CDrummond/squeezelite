@@ -2,6 +2,8 @@
     <string name="app_name">Squeezelite</string>
     <string name="start_player">Start player</string>
     <string name="stop_player">Stop player</string>
+    <string name="player_started">Player started</string>
+    <string name="player_stopped">Player stopped</string>
     <string name="main_notification">Player</string>
     <string name="no_servers">No servers found</string>
     <string name="server_changed">Server changed</string>
