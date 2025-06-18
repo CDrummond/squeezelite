@@ -41,7 +41,7 @@ static void sighandler(int signum) {
  Catch SEGV, log, and exit (normally). This is to prevent Android showing errors when stopping.
  */
 static void segv_handler(int sig) {
-	LOG_ERROR("SEGV!");
+	LOG_ERROR("SEGV/ABRT!");
 	exit(0);
 }
 
@@ -145,6 +145,7 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jo
 	signal(SIGHUP, sighandler);
 #endif
 	signal(SIGSEGV, segv_handler);
+	signal(SIGABRT, segv_handler);
 
 #if USE_SSL && !LINKALL && !NO_SSLSYM
 	ssl_loaded = load_ssl_symbols();
