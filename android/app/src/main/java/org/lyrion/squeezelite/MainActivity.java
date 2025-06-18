@@ -36,7 +36,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 
 import java.util.List;
@@ -136,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         Utils.info("");
         super.onResume();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(playerReceiver, new IntentFilter(PlayerService.STATUS_INTENT), RECEIVER_EXPORTED);
         } else {
             registerReceiver(playerReceiver, new IntentFilter(PlayerService.STATUS_INTENT));

@@ -34,10 +34,10 @@ import org.json.JSONObject;
 
 public class JsonRpc {
     private final RequestQueue requestQueue;
-    private ServerDiscovery.Server server;
-    private String mac;
+    private final ServerDiscovery.Server server;
+    private final String mac;
 
-    private class Request extends JsonObjectRequest {
+    private static class Request extends JsonObjectRequest {
         public Request(String url, @Nullable JSONObject request, Response.Listener<JSONObject> responseListener) {
             super(Request.Method.POST, url, request, responseListener, null);
         }

@@ -62,7 +62,7 @@ public class PlayerService extends Service {
 
     private NotificationCompat.Builder notificationBuilder;
     private NotificationManagerCompat notificationManager;
-    private Handler handler;
+    private final Handler handler;
     private ConnectionChangeListener connectionChangeListener;
     private PowerManager.WakeLock wakeLock = null;
     private Library lib = null;

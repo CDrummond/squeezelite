@@ -66,12 +66,8 @@ public class Utils {
         return true;
     }
 
-    public static boolean isEmpty(String str) {
-        return null==str || str.isEmpty();
-    }
-
     private static String logPrefix() {
-        StackTraceElement st[] = Thread.currentThread().getStackTrace();
+        StackTraceElement[] st = Thread.currentThread().getStackTrace();
         if (null!=st && st.length>4) {
             // Remove org.lyrion.squeezelite.
             return "["+st[4].getClassName().substring(23)+"."+st[4].getMethodName()+"] ";
