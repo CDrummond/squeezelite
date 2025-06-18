@@ -59,6 +59,7 @@ public class Library {
     private VolumeChangeObserver observer;
     private AudioManager audioManager;
     private JsonRpc jsonRpc;
+    private String ipAddress;
 
     private class VolumeChangeObserver extends ContentObserver {
         public VolumeChangeObserver() {
@@ -96,6 +97,7 @@ public class Library {
                 : VOL_SYNC;
 
         initialLmsVolSeen = false;
+        ipAddress = server.address();
         if (VOL_SYNC==volumeControl) {
             if (null==audioManager) {
                 audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -109,7 +111,7 @@ public class Library {
 
         Utils.info("");
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> Utils.error("Unhandled exception", throwable));
-        thread = new Thread(() -> start(server.address(),
+        thread = new Thread(() -> start(ipAddress,
               mac,
               prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME),
               VOL_SEP==volumeControl ? 0 : 1,
@@ -206,12 +208,18 @@ public class Library {
     }
 
     @Keep
-    public synchronized void connectionStateChanged(int state) {
-        if (0==state) {
+    public synchronized void connectionStateChanged(String address) {
+        Utils.debug("address:"+address);
+        if (Utils.isEmpty(address)) {
             initialLmsVolSeen = false;
             lmsVolumeReceived = UNKNOWN_VOL;
             lmsVolumeSent = UNKNOWN_VOL;
             lmsVolumeSendTime = 0;
+        } else if (!address.equals(ipAddress)){
+            if (null!=jsonRpc) {
+                jsonRpc.setAddress(address);
+            }
+            ipAddress = address;
         }
     }
 

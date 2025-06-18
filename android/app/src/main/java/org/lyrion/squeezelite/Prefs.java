@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Prefs {
+    public static final String INITIAL_KEY = "initial";
     public static final String SERVER_KEY = "server";
     public static final String PLAYER_NAME_KEY = "player_name";
     public static final String PLAYER_MAC_KEY = "mac";

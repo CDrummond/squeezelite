@@ -359,6 +359,30 @@ void server_addr(char *server, in_addr_t *ip_ptr, unsigned *port_ptr) {
 	}
 }
 
+#ifdef ANDROID
+char * get_ip_str(const struct sockaddr *sa) {
+	static char ip[INET6_ADDRSTRLEN > INET_ADDRSTRLEN ? INET6_ADDRSTRLEN : INET_ADDRSTRLEN];
+
+	ip[0]='\0';
+
+	switch(sa->sa_family) {
+		case AF_INET: {
+			struct sockaddr_in *addr_in = (struct sockaddr_in *)sa;
+			inet_ntop(AF_INET, &(addr_in->sin_addr), ip, INET_ADDRSTRLEN);
+			break;
+		}
+		case AF_INET6: {
+			struct sockaddr_in6 *addr_in6 = (struct sockaddr_in6 *)sa;
+			inet_ntop(AF_INET6, &(addr_in6->sin6_addr), ip, INET6_ADDRSTRLEN);
+			break;
+		}
+		default:
+			break;
+	}
+	return ip;
+}
+#endif
+
 void set_readwake_handles(event_handle handles[], sockfd s, event_event e) {
 #if WINEVENT
 	handles[0] = WSACreateEvent();

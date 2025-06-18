@@ -76,7 +76,7 @@ void send_volume_to_app(u32_t left, u32_t right) {
 	}
 }
 
-void send_connection_state_to_app(bool connected) {
+void send_connection_state_to_app(const char *address) {
 	if (!jvm || !obj || !clazz) {
 		return;
 	}
@@ -88,9 +88,11 @@ void send_connection_state_to_app(bool connected) {
 			return;
 		}
 	}
-	jmethodID method = (*env)->GetMethodID(env, clazz, "connectionStateChanged", "(I)V");
+	jmethodID method = (*env)->GetMethodID(env, clazz, "connectionStateChanged", "(Ljava/lang/String;)V");
 	if (method) {
-		(*env)->CallVoidMethod(env, obj, method, connected ? 1 : 0);
+		jstring jStr = (*env)->NewStringUTF(env, address);
+		(*env)->CallVoidMethod(env, obj, method, jStr);
+		(*env)->DeleteLocalRef(env, jStr);
 	}
 	if (detached) {
 		(*jvm)->DetachCurrentThread(jvm);
@@ -181,7 +183,7 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jo
 	}
 #endif
 
-	slimproto(log_slimproto, server, mac, name, namefile, modelname, maxSampleRate);
+	slimproto(log_slimproto, !server || strlen(server)==0 ? NULL : server, mac, name, namefile, modelname, maxSampleRate);
 
 	decode_close();
 	stream_close();

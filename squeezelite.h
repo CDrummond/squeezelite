@@ -469,7 +469,8 @@ typedef enum { lERROR = 0, lWARN, lINFO, lDEBUG, lSDEBUG } log_level;
 #define LOG_DEBUG(...) if (loglevel >= lDEBUG) __android_log_print(ANDROID_LOG_DEBUG, ANDROID_LOG_TAG, __VA_ARGS__)
 #define LOG_SDEBUG(...) if (loglevel >= lSDEBUG) __android_log_print(ANDROID_LOG_DEBUG, ANDROID_LOG_TAG, __VA_ARGS__)
 extern void send_volume_to_app(u32_t left, u32_t right);
-extern void send_connection_state_to_app(bool connected);
+extern void send_connection_state_to_app(const char *address);
+extern char * get_ip_str(const struct sockaddr *sa);
 #else
 const char *logtime(void);
 void logprint(const char *fmt, ...);

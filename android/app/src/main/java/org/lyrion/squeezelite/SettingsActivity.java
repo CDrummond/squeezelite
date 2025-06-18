@@ -96,9 +96,16 @@ public class SettingsActivity extends AppCompatActivity {
                 return;
             }
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            if (sharedPreferences.getBoolean(Prefs.INITIAL_KEY, true)) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(Prefs.INITIAL_KEY, false);
+                editor.apply();
+            }
+
             final Preference addressButton = getPreferenceManager().findPreference(Prefs.SERVER_KEY);
             if (addressButton != null) {
-                addressButton.setSummary(new Discovery.Server(sharedPreferences.getString(Prefs.SERVER_KEY,"")).describe());
+                String current = new Discovery.Server(sharedPreferences.getString(Prefs.SERVER_KEY,"")).describe();
+                addressButton.setSummary(Utils.isEmpty(current) ? getResources().getString(R.string.blank_server) : current);
                 addressButton.setOnPreferenceClickListener(arg0 -> {
                     if (getContext()!=null) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -208,8 +215,17 @@ public class SettingsActivity extends AppCompatActivity {
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (Prefs.VOLUME_CONTROL.equals(key)) {
                 updateListSummary(key);
+            } else if (Prefs.SERVER_KEY.equals(key)) {
+                Preference pref = getPreferenceManager().findPreference(key);
+                if (null!=pref) {
+                    String current = new Discovery.Server(sharedPreferences.getString(Prefs.SERVER_KEY, "")).describe();
+                    if (Utils.isEmpty(current)) {
+                        pref.setSummary(R.string.blank_server);
+                    }
+                }
             }
         }
+
         private void updateListSummary(String key) {
             ListPreference pref = getPreferenceManager().findPreference(key);
             if (pref != null) {

@@ -34,7 +34,7 @@ import org.json.JSONObject;
 
 public class JsonRpc {
     private final RequestQueue requestQueue;
-    private final ServerDiscovery.Server server;
+    private ServerDiscovery.Server server;
     private final String mac;
 
     private static class Request extends JsonObjectRequest {
@@ -47,6 +47,10 @@ public class JsonRpc {
         requestQueue = Volley.newRequestQueue(context);
         this.server = server;
         this.mac = mac;
+    }
+
+    public void setAddress(String address) {
+        this.server = new ServerDiscovery.Server(address, ServerDiscovery.Server.DEFAULT_PORT, "");
     }
 
     public void sendMessage(String[] command) {

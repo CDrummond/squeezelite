@@ -36,9 +36,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.preference.PreferenceManager;
-
-import java.util.List;
 
 import io.github.muddz.styleabletoast.StyleableToast;
 
@@ -60,27 +57,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class Discovery extends ServerDiscovery {
-        Discovery(Context context) {
-            super(context, true);
-        }
-
-        public void discoveryFinished(List<Server> servers) {
-            Utils.debug("Discovery finished");
-            if (servers.isEmpty()) {
-                StyleableToast.makeText(getApplicationContext(), getResources().getString(R.string.no_servers), Toast.LENGTH_SHORT, R.style.toast).show();
-            } else {
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                Server serverToUse = servers.get(0);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(Prefs.SERVER_KEY, serverToUse.encode());
-                editor.apply();
-                StyleableToast.makeText(getApplicationContext(), getResources().getString(R.string.server_discovered)+"\n\n"+serverToUse.describe(), Toast.LENGTH_SHORT, R.style.toast).show();
-                controlWidgets();
-            }
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Utils.info("");
@@ -97,9 +73,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (!prefs.contains(Prefs.SERVER_KEY)) {
-            new Discovery(this).discover();
-        }
         setContentView(R.layout.activity_main);
         settingsButton = findViewById(R.id.settings);
         controlButton = findViewById(R.id.control);
@@ -176,7 +149,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void controlWidgets() {
-        boolean configured = Prefs.get(this).contains(Prefs.SERVER_KEY);
+        SharedPreferences prefs = Prefs.get(this);
+        boolean configured = prefs.contains(Prefs.SERVER_KEY) || !prefs.getBoolean(Prefs.INITIAL_KEY, true);
         boolean running = isPlayerRunning();
         float alpha = running ? 0.5f : 1.0f;
         controlButton.setText(running ? R.string.stop_player : R.string.start_player);

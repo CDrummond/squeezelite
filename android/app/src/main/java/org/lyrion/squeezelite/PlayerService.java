@@ -188,12 +188,13 @@ public class PlayerService extends Service {
             ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
             Intent quitIntent = new Intent(this, PlayerService.class);
             quitIntent.setAction(QUIT_INTENT);
+            String serverDetails = server.describe();
 
             notificationBuilder
                     .setOngoing(true)
                     .setOnlyAlertOnce(true)
                     .setSmallIcon(R.drawable.ic_mono_icon)
-                    .setContentTitle(name + " (" + server.describe() +")")
+                    .setContentTitle(name + (Utils.isEmpty(serverDetails) ? "" : (" (" + serverDetails +")")))
                     .setCategory(Notification.CATEGORY_SERVICE)
                     .setContentIntent(pendingIntent)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

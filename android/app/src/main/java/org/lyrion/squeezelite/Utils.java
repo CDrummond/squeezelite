@@ -66,6 +66,10 @@ public class Utils {
         return true;
     }
 
+    public static boolean isEmpty(String str) {
+        return null==str || str.isEmpty();
+    }
+
     private static String logPrefix() {
         StackTraceElement[] st = Thread.currentThread().getStackTrace();
         if (null!=st && st.length>4) {

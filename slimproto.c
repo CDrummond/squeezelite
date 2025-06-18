@@ -554,9 +554,6 @@ static void slimproto_run() {
 
 	set_readwake_handles(ehandles, sock, wake_e);
 
-#ifdef ANDROID
-	send_connection_state_to_app(true);
-#endif
 	while (running && !new_server) {
 
 		bool wake = false;
@@ -772,10 +769,6 @@ static void slimproto_run() {
 #endif
 		}
 	}
-
-#ifdef ANDROID
-	send_connection_state_to_app(false);
-#endif
 }
 
 // called from other threads to wake state machine above
@@ -973,7 +966,13 @@ void slimproto(log_level level, char *server, u8_t mac[6], const char *name, con
 
 			sendHELO(reconnect, fixed_cap, var_cap, mac);
 
+#ifdef ANDROID
+			send_connection_state_to_app(get_ip_str(&our_addr));
+#endif
 			slimproto_run();
+#ifdef ANDROID
+			send_connection_state_to_app("");
+#endif
 
 			if (!reconnect) {
 				reconnect = true;
