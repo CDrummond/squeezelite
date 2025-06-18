@@ -130,7 +130,6 @@ public class PlayerService extends Service {
         if (intent != null) {
             String action = intent.getAction();
             if (QUIT_INTENT.equals(action)) {
-                stopPlayer();
                 stopForegroundService();
             }
             return START_STICKY;
@@ -277,6 +276,7 @@ public class PlayerService extends Service {
         } catch (Exception ignored) {
         }
         connectionChangeListener = null;
+        System.exit(0);
     }
 
     private void sendStatus(boolean running) {
