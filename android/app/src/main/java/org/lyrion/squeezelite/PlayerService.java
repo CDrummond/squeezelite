@@ -50,7 +50,6 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerService extends Service {
     // How long after losing connection to server should we stop player?
-    private static final int SERVER_CONNECTION_LOSS_TIMEOUT = 60;
     public static final String STATUS_INTENT = PlayerService.class.getCanonicalName()+".STATUS";
     private static final String QUIT_INTENT = PlayerService.class.getCanonicalName() + ".QUIT";
     public static final String RUNNING_KEY = "running";
@@ -63,7 +62,9 @@ public class PlayerService extends Service {
     private final Handler handler;
     private PowerManager.WakeLock wakeLock = null;
     private Library lib = null;
-
+    private int terminateTimeout = 0;
+    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    ScheduledFuture<?> terminateHandler;
     public PlayerService() {
         handler = new Handler(Looper.getMainLooper());
     }
@@ -104,13 +105,16 @@ public class PlayerService extends Service {
             return START_STICKY;
         }
 
-        if (!Prefs.get(this).contains(Prefs.SERVER_KEY)) {
+        SharedPreferences prefs = Prefs.get(this);
+
+        if (!prefs.contains(Prefs.SERVER_KEY)) {
             Intent actIntent = new Intent(this, SettingsActivity.class);
             actIntent.putExtra(MainActivity.FROM_PLAYER_SERVICE, true);
             startActivity(actIntent);
             stopForegroundService();
             return START_NOT_STICKY;
         }
+        terminateTimeout = Utils.toInt(Prefs.get(this).getString(Prefs.TERMINATEL_TIMER_KEY, Prefs.DEFAULT_TERMINATE_TIMER_KEY), 60);
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
@@ -257,13 +261,12 @@ public class PlayerService extends Service {
             stopTerminateTimer();
         }
     }
-    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    ScheduledFuture<?> terminateHandler;
+
     private void startTerminateTimer() {
         Utils.debug("");
-        if (null==terminateHandler) {
+        if (null==terminateHandler && terminateTimeout>0) {
             stopTerminateTimer();
-            terminateHandler = executorService.schedule(this::stopForegroundService, SERVER_CONNECTION_LOSS_TIMEOUT, TimeUnit.SECONDS);
+            terminateHandler = executorService.schedule(this::stopForegroundService, terminateTimeout, TimeUnit.SECONDS);
         }
     }
 

@@ -38,12 +38,14 @@ public class Prefs {
     public static final String START_SERVICE_KEY = "start_service";
     public static final String USE_WAKE_LOCK_KEY = "use_wake_lock";
     public static final String VOLUME_CONTROL_KEY = "volume_control";
+    public static final String TERMINATEL_TIMER_KEY = "terminate_timer";
     public static final String VOLUME_CONTROL_SEPARATE = "separate";
     public static final String VOLUME_CONTROL_DEVICE = "device";
     public static final String VOLUME_CONTROL_SYNCHRONIZED = "synchronized";
 
     public static final String DEFAULT_PLAYER_NAME = "Squeezelite";
     public static final String DEFAULT_PLAYER_MAC = "01:02:03:04:05:06";
+    public static final String DEFAULT_TERMINATE_TIMER_KEY = "60";
     public static boolean DEFAULT_START_SERVICE = true;
     public static boolean DEFAULT_USE_WAKE_LOCK = false;
     public static String DEFAULT_VOLUME_CONTROL = VOLUME_CONTROL_SYNCHRONIZED;
@@ -86,6 +88,12 @@ public class Prefs {
                 editor = sharedPreferences.edit();
             }
             editor.putString(VOLUME_CONTROL_KEY, DEFAULT_VOLUME_CONTROL);
+        }
+        if (!sharedPreferences.contains(TERMINATEL_TIMER_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putString(TERMINATEL_TIMER_KEY, DEFAULT_TERMINATE_TIMER_KEY);
         }
         if (editor!=null) {
             editor.apply();

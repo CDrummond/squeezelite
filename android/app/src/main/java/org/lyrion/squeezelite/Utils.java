@@ -70,6 +70,14 @@ public class Utils {
         return null==str || str.isEmpty();
     }
 
+    public static int toInt(String str, int def) {
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException ignored) {
+            return def;
+        }
+    }
+
     private static String logPrefix() {
         StackTraceElement[] st = Thread.currentThread().getStackTrace();
         if (null!=st && st.length>4) {

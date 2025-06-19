@@ -159,6 +159,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
             updateSummary(Prefs.PLAYER_NAME_KEY);
             updateSummary(Prefs.VOLUME_CONTROL_KEY);
+            updateSummary(Prefs.TERMINATEL_TIMER_KEY);
             PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(this);
         }
 
@@ -192,6 +193,8 @@ public class SettingsActivity extends AppCompatActivity {
                         } else {
                             pref.setSummary(lp.getEntry());
                         }
+                    } else {
+                        pref.setSummary(lp.getEntry());
                     }
                 } else if (pref instanceof EditTextPreference) {
                     EditTextPreference ep = (EditTextPreference)pref;

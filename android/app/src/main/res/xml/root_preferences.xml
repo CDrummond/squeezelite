@@ -29,12 +29,14 @@
             app:iconSpaceReserved="false"
             app:key="server"
             app:summary="@string/no_servers"
-            app:title="@string/server_address" />
+            app:title="@string/server_address"
+            app:singleLineTitle="false"/>
         <Preference
             app:iconSpaceReserved="false"
             app:key="discover"
             app:summary="@string/discover_summary"
-            app:title="@string/discover" />
+            app:title="@string/discover"
+            app:singleLineTitle="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -44,13 +46,15 @@
             app:iconSpaceReserved="false"
             app:key="player_name"
             app:summary=""
-            app:title="@string/player_name" />
+            app:title="@string/player_name"
+            app:singleLineTitle="false"/>
         <ListPreference
             android:entries="@array/volume"
             android:entryValues="@array/volumeAlias"
             android:key="volume_control"
             android:title="@string/volume_control"
-            app:iconSpaceReserved="false" />
+            app:iconSpaceReserved="false"
+            app:singleLineTitle="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -60,12 +64,22 @@
             app:iconSpaceReserved="false"
             app:key="start_service"
             app:summary="@string/start_service_summary"
-            app:title="@string/start_service" />
+            app:title="@string/start_service"
+            app:singleLineTitle="false"/>
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
             app:key="use_wake_lock"
             app:summary="@string/use_wake_lock_summary"
-            app:title="@string/use_wake_lock" />
+            app:title="@string/use_wake_lock"
+            app:singleLineTitle="false"/>
+        <ListPreference
+            android:entries="@array/duration"
+            android:entryValues="@array/durationAlias"
+            android:key="terminate_timer"
+            android:title="@string/terminate_timer"
+            app:singleLineTitle="false"
+            android:singleLineTitle="false"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
 </PreferenceScreen>
