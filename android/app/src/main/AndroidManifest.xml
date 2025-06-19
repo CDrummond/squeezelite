@@ -46,14 +46,6 @@
 
         <receiver android:name=".CommandReceiver" android:exported="true"/>
 
-        <receiver
-            android:name=".PlayerService$ConnectionChangeListener"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" tools:ignore="BatteryLife" />
-                <action android:name="android.os.action.DEVICE_IDLE_MODE_CHANGED" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

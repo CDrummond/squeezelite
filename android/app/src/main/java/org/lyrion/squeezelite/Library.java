@@ -21,6 +21,7 @@
 package org.lyrion.squeezelite;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.media.AudioManager;
@@ -56,6 +57,7 @@ public class Library {
     private int lmsVolumeSent = UNKNOWN_VOL;
     private long lmsVolumeSendTime;
     private int volumeControl = VOL_SEP;
+    private PlayerService service;
     private VolumeChangeObserver observer;
     private AudioManager audioManager;
     private JsonRpc jsonRpc;
@@ -82,11 +84,12 @@ public class Library {
         }
     }
 
-    public synchronized void startPlayer(Context context) {
+    public synchronized void startPlayer(PlayerService service) {
         if (null!=thread || !loaded) {
             return;
         }
-        SharedPreferences prefs = Prefs.get(context);
+        this.service = service;
+        SharedPreferences prefs = Prefs.get(service);
         ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
         String mac = prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC);
         String vc = prefs.getString(Prefs.VOLUME_CONTROL, Prefs.DEFAULT_VOLUME_CONTROL);
@@ -100,13 +103,13 @@ public class Library {
         ipAddress = server.address();
         if (VOL_SYNC==volumeControl) {
             if (null==audioManager) {
-                audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                audioManager = (AudioManager) service.getSystemService(Context.AUDIO_SERVICE);
                 androidMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
             }
             androidVolume = -1000;
-            jsonRpc = new JsonRpc(context, server, mac);
+            jsonRpc = new JsonRpc(service, server, mac);
             observer = new VolumeChangeObserver();
-            context.getApplicationContext().getContentResolver().registerContentObserver(Settings.System.CONTENT_URI, true, observer);
+            service.getApplicationContext().getContentResolver().registerContentObserver(Settings.System.CONTENT_URI, true, observer);
         }
 
         Utils.info("");
@@ -123,6 +126,7 @@ public class Library {
         if (null==thread || !loaded) {
             return;
         }
+        service = null;
         Utils.info("");
         if (null!=observer) {
             context.getApplicationContext().getContentResolver().unregisterContentObserver(observer);
@@ -210,6 +214,9 @@ public class Library {
     @Keep
     public synchronized void connectionStateChanged(String address) {
         Utils.debug("address:"+address);
+        if (null!=service) {
+            service.connectionStateChanged(address);
+        }
         if (Utils.isEmpty(address)) {
             initialLmsVolSeen = false;
             lmsVolumeReceived = UNKNOWN_VOL;

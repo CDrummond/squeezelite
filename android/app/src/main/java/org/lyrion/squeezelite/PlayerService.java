@@ -26,14 +26,11 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ServiceInfo;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -52,51 +49,23 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerService extends Service {
-    // How long after losing network should we stop player?
-    private static final int NETWORK_LOSS_TIMEOUT = 30;
+    // How long after losing connection to server should we stop player?
+    private static final int SERVER_CONNECTION_LOSS_TIMEOUT = 60;
     public static final String STATUS_INTENT = PlayerService.class.getCanonicalName()+".STATUS";
     private static final String QUIT_INTENT = PlayerService.class.getCanonicalName() + ".QUIT";
     public static final String RUNNING_KEY = "running";
     public static final String NOTIFICATION_CHANNEL_ID = "squeezelite_service";
     private static final int MSG_ID = 1;
 
+    private String currentServerAddress = null;
     private NotificationCompat.Builder notificationBuilder;
     private NotificationManagerCompat notificationManager;
     private final Handler handler;
-    private ConnectionChangeListener connectionChangeListener;
     private PowerManager.WakeLock wakeLock = null;
     private Library lib = null;
 
-    public static class ConnectionChangeListener extends BroadcastReceiver {
-        private final PlayerService service;
-
-        ConnectionChangeListener(PlayerService service) {
-            this.service = service;
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (null==service) {
-                return;
-            }
-            if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
-                service.handler.post(service::networkConnectivityChanged);
-            }
-        }
-    }
-
     public PlayerService() {
         handler = new Handler(Looper.getMainLooper());
-    }
-
-    private void networkConnectivityChanged() {
-        Utils.debug("");
-        if (Utils.isNetworkConnected(this)) {
-            stopTerminateTimer();
-        } else {
-            startTerminateTimer();
-        }
-        updateNotification();
     }
 
     @Override
@@ -185,16 +154,14 @@ public class PlayerService extends Service {
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
             SharedPreferences prefs = Prefs.get(this);
             String name = prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME);
-            ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
             Intent quitIntent = new Intent(this, PlayerService.class);
             quitIntent.setAction(QUIT_INTENT);
-            String serverDetails = server.describe();
 
             notificationBuilder
                     .setOngoing(true)
                     .setOnlyAlertOnce(true)
                     .setSmallIcon(R.drawable.ic_mono_icon)
-                    .setContentTitle(name + (Utils.isEmpty(serverDetails) ? "" : (" (" + serverDetails +")")))
+                    .setContentTitle(name + (Utils.isEmpty(currentServerAddress) ? "" : (" (" + currentServerAddress +")")))
                     .setCategory(Notification.CATEGORY_SERVICE)
                     .setContentIntent(pendingIntent)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -255,9 +222,6 @@ public class PlayerService extends Service {
                 wakeLock.acquire();
             }
         }
-        connectionChangeListener = new ConnectionChangeListener(this);
-        IntentFilter filter =  new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(connectionChangeListener, filter);
         sendStatus(true);
     }
 
@@ -272,11 +236,6 @@ public class PlayerService extends Service {
         sendStatus(false);
         stopTerminateTimer();
         lib.stopPlayer(this);
-        try {
-            unregisterReceiver(connectionChangeListener);
-        } catch (Exception ignored) {
-        }
-        connectionChangeListener = null;
         System.exit(0);
     }
 
@@ -286,12 +245,26 @@ public class PlayerService extends Service {
         sendBroadcast(intent);
     }
 
+    public void connectionStateChanged(String ip) {
+        boolean changed = (null==currentServerAddress && null!=ip) || (null!=currentServerAddress && null==ip) || (null!=currentServerAddress && !currentServerAddress.equals(ip));
+        currentServerAddress = ip;
+        if (changed) {
+            handler.post(this::updateNotification);
+        }
+        if (Utils.isEmpty(ip)) {
+            startTerminateTimer();
+        } else {
+            stopTerminateTimer();
+        }
+    }
     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     ScheduledFuture<?> terminateHandler;
     private void startTerminateTimer() {
         Utils.debug("");
-        stopTerminateTimer();
-        terminateHandler = executorService.schedule(this::stopForegroundService, NETWORK_LOSS_TIMEOUT, TimeUnit.SECONDS);
+        if (null==terminateHandler) {
+            stopTerminateTimer();
+            terminateHandler = executorService.schedule(this::stopForegroundService, SERVER_CONNECTION_LOSS_TIMEOUT, TimeUnit.SECONDS);
+        }
     }
 
     private void stopTerminateTimer() {
