@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -131,7 +132,8 @@ public class SettingsActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = sharedPreferences11.edit();
                             editor.putString(Prefs.SERVER_KEY, server1.encode());
                             editor.apply();
-                            addressButton.setSummary(server1.describe());
+                            String now = server1.describe();
+                            addressButton.setSummary(Utils.isEmpty(now) ? getResources().getString(R.string.blank_server) : now);
                         });
                         builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
 
@@ -155,51 +157,8 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
                 });
             }
-
-            final Preference playerNameButton = getPreferenceManager().findPreference(Prefs.PLAYER_NAME_KEY);
-            if (playerNameButton != null) {
-                String playerName = sharedPreferences.getString(Prefs.PLAYER_NAME_KEY, null);
-                if (playerName!=null && !playerName.isEmpty()) {
-                    playerNameButton.setSummary(playerName);
-                }
-
-                playerNameButton.setOnPreferenceClickListener(arg0 -> {
-                    if (getContext()!=null) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setTitle(R.string.player_name);
-                        SharedPreferences sharedPreferences12 = PreferenceManager.getDefaultSharedPreferences(getContext());
-                        String value = sharedPreferences12.getString(Prefs.PLAYER_NAME_KEY, null);
-
-                        int padding = getResources().getDimensionPixelOffset(R.dimen.dlg_padding);
-                        final EditText input = new EditText(getContext());
-                        input.setInputType(InputType.TYPE_CLASS_TEXT);
-
-                        if (null != value) {
-                            input.setText(value);
-                        }
-
-                        LinearLayout layout = new LinearLayout(getContext());
-                        layout.setOrientation(LinearLayout.VERTICAL);
-                        layout.setPadding(padding, padding, padding, padding / 2);
-                        layout.addView(input);
-                        builder.setView(layout);
-
-                        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                            String str = input.getText().toString().trim();
-                            SharedPreferences sharedPreferences121 = PreferenceManager.getDefaultSharedPreferences(getContext());
-                            SharedPreferences.Editor editor = sharedPreferences121.edit();
-                            editor.putString(Prefs.PLAYER_NAME_KEY, str);
-                            editor.apply();
-                            playerNameButton.setSummary(str.isEmpty() ? Prefs.DEFAULT_PLAYER_NAME : str);
-                        });
-                        builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
-
-                        builder.show();
-                    }
-                    return true;
-                });
-            }
-            updateListSummary(Prefs.VOLUME_CONTROL);
+            updateSummary(Prefs.PLAYER_NAME_KEY);
+            updateSummary(Prefs.VOLUME_CONTROL_KEY);
             PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(this);
         }
 
@@ -213,31 +172,30 @@ public class SettingsActivity extends AppCompatActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (Prefs.VOLUME_CONTROL.equals(key)) {
-                updateListSummary(key);
-            } else if (Prefs.SERVER_KEY.equals(key)) {
-                Preference pref = getPreferenceManager().findPreference(key);
-                if (null!=pref) {
-                    String current = new Discovery.Server(sharedPreferences.getString(Prefs.SERVER_KEY, "")).describe();
-                    if (Utils.isEmpty(current)) {
-                        pref.setSummary(R.string.blank_server);
-                    }
-                }
-            }
+            updateSummary(key);
         }
 
-        private void updateListSummary(String key) {
-            ListPreference pref = getPreferenceManager().findPreference(key);
+        private void updateSummary(String key) {
+            Utils.debug(key);
+            Preference pref = getPreferenceManager().findPreference(key);
             if (pref != null) {
-                String val = pref.getValue();
-                if (Prefs.VOLUME_CONTROL_SEPARATE.equals(val)) {
-                    pref.setSummary(R.string.volume_control_separate);
-                } else if (Prefs.VOLUME_CONTROL_DEVICE.equals(val)) {
-                    pref.setSummary(R.string.volume_control_device);
-                } else if (Prefs.VOLUME_CONTROL_SYNCHRONIZED.equals(val)) {
-                    pref.setSummary(R.string.volume_control_synchronized);
-                } else {
-                    pref.setSummary(pref.getEntry());
+                if (pref instanceof ListPreference) {
+                    ListPreference lp = (ListPreference)pref;
+                    if (Prefs.VOLUME_CONTROL_KEY.equals(key)) {
+                        String val = lp.getValue();
+                        if (Prefs.VOLUME_CONTROL_SEPARATE.equals(val)) {
+                            pref.setSummary(R.string.volume_control_separate);
+                        } else if (Prefs.VOLUME_CONTROL_DEVICE.equals(val)) {
+                            pref.setSummary(R.string.volume_control_device);
+                        } else if (Prefs.VOLUME_CONTROL_SYNCHRONIZED.equals(val)) {
+                            pref.setSummary(R.string.volume_control_synchronized);
+                        } else {
+                            pref.setSummary(lp.getEntry());
+                        }
+                    }
+                } else if (pref instanceof EditTextPreference) {
+                    EditTextPreference ep = (EditTextPreference)pref;
+                    pref.setSummary(ep.getText());
                 }
             }
         }

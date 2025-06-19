@@ -9,7 +9,7 @@
     <string name="server_changed">Server changed</string>
     <string name="server_discovered">Server discovered</string>
     <string name="no_new_server">No new server found</string>
-    <string name="blank_server">Leave blank to auto-discover when started.</string>
+    <string name="blank_server">Nothing configured, server will be discovered when player starts.</string>
     <string name="discovering_server">Discovering server</string>
     <string name="settings">Settings</string>
     <string name="server_settings">Server</string>

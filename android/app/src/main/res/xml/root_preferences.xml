@@ -40,7 +40,7 @@
     <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="@string/player_settings">
-        <Preference
+        <EditTextPreference
             app:iconSpaceReserved="false"
             app:key="player_name"
             app:summary=""

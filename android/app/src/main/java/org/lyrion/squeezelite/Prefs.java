@@ -35,9 +35,9 @@ public class Prefs {
     public static final String SERVER_KEY = "server";
     public static final String PLAYER_NAME_KEY = "player_name";
     public static final String PLAYER_MAC_KEY = "mac";
-    public static final String START_SERVICE = "start_service";
-    public static final String USE_WAKE_LOCK = "use_wake_lock";
-    public static final String VOLUME_CONTROL = "volume_control";
+    public static final String START_SERVICE_KEY = "start_service";
+    public static final String USE_WAKE_LOCK_KEY = "use_wake_lock";
+    public static final String VOLUME_CONTROL_KEY = "volume_control";
     public static final String VOLUME_CONTROL_SEPARATE = "separate";
     public static final String VOLUME_CONTROL_DEVICE = "device";
     public static final String VOLUME_CONTROL_SYNCHRONIZED = "synchronized";
@@ -69,23 +69,23 @@ public class Prefs {
             }
             editor.putString(PLAYER_NAME_KEY, Settings.Global.getString(context.getContentResolver(), "device_name"));
         }
-        if (!sharedPreferences.contains(START_SERVICE)) {
+        if (!sharedPreferences.contains(START_SERVICE_KEY)) {
             if (null==editor) {
                 editor = sharedPreferences.edit();
             }
-            editor.putBoolean(START_SERVICE, DEFAULT_START_SERVICE);
+            editor.putBoolean(START_SERVICE_KEY, DEFAULT_START_SERVICE);
         }
-        if (!sharedPreferences.contains(USE_WAKE_LOCK)) {
+        if (!sharedPreferences.contains(USE_WAKE_LOCK_KEY)) {
             if (null==editor) {
                 editor = sharedPreferences.edit();
             }
-            editor.putBoolean(USE_WAKE_LOCK, DEFAULT_USE_WAKE_LOCK);
+            editor.putBoolean(USE_WAKE_LOCK_KEY, DEFAULT_USE_WAKE_LOCK);
         }
-        if (!sharedPreferences.contains(VOLUME_CONTROL)) {
+        if (!sharedPreferences.contains(VOLUME_CONTROL_KEY)) {
             if (null==editor) {
                 editor = sharedPreferences.edit();
             }
-            editor.putString(VOLUME_CONTROL, DEFAULT_VOLUME_CONTROL);
+            editor.putString(VOLUME_CONTROL_KEY, DEFAULT_VOLUME_CONTROL);
         }
         if (editor!=null) {
             editor.apply();

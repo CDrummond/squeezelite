@@ -21,7 +21,6 @@
 package org.lyrion.squeezelite;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.media.AudioManager;
@@ -92,7 +91,7 @@ public class Library {
         SharedPreferences prefs = Prefs.get(service);
         ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
         String mac = prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC);
-        String vc = prefs.getString(Prefs.VOLUME_CONTROL, Prefs.DEFAULT_VOLUME_CONTROL);
+        String vc = prefs.getString(Prefs.VOLUME_CONTROL_KEY, Prefs.DEFAULT_VOLUME_CONTROL);
         volumeControl = Prefs.VOLUME_CONTROL_SEPARATE.equals(vc)
                 ? VOL_SEP
                 : Prefs.VOLUME_CONTROL_DEVICE.equals(vc)
