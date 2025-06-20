@@ -21,7 +21,7 @@ libmpg123 = AutotoolsProject(
     'f6d1a69dbf340c8d889b64772e8e0a61',
     'lib/libmpg123.a',
     [
-        '--disable-components' '--enable-libmpg123',
+        '--disable-components', '--enable-libmpg123',
         '--disable-shared', '--enable-static'
     ],
 )
