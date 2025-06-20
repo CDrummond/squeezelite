@@ -967,7 +967,7 @@ void slimproto(log_level level, char *server, u8_t mac[6], const char *name, con
 			sendHELO(reconnect, fixed_cap, var_cap, mac);
 
 #ifdef ANDROID
-			send_connection_state_to_app(get_ip_str(&our_addr));
+			send_connection_state_to_app(get_ip_str(&serv_addr));
 #endif
 			slimproto_run();
 #ifdef ANDROID
