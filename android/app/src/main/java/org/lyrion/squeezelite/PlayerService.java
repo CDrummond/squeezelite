@@ -107,9 +107,10 @@ public class PlayerService extends Service {
 
         SharedPreferences prefs = Prefs.get(this);
 
-        if (!prefs.contains(Prefs.SERVER_KEY)) {
+        if (!prefs.contains(Prefs.SERVER_KEY) && !prefs.getBoolean(Prefs.INITIAL_KEY, true)) {
             Intent actIntent = new Intent(this, SettingsActivity.class);
             actIntent.putExtra(MainActivity.FROM_PLAYER_SERVICE, true);
+            actIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(actIntent);
             stopForegroundService();
             return START_NOT_STICKY;
