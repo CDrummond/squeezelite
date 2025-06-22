@@ -62,9 +62,10 @@ public class PlayerService extends Service {
     private final Handler handler;
     private PowerManager.WakeLock wakeLock = null;
     private Library lib = null;
-    private int terminateTimeout = 0;
+    private int initialConnectionTimeout = 0;
+    private int connectionLostTimeout = 0;
     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    ScheduledFuture<?> terminateHandler;
+    ScheduledFuture<?> terminateOnConnectionLostHandler;
     public PlayerService() {
         handler = new Handler(Looper.getMainLooper());
     }
@@ -101,21 +102,23 @@ public class PlayerService extends Service {
             String action = intent.getAction();
             if (QUIT_INTENT.equals(action)) {
                 stopForegroundService();
+                return START_NOT_STICKY;
             }
-            return START_STICKY;
         }
 
         SharedPreferences prefs = Prefs.get(this);
 
-        if (!prefs.contains(Prefs.SERVER_KEY) && !prefs.getBoolean(Prefs.INITIAL_KEY, true)) {
-            Intent actIntent = new Intent(this, SettingsActivity.class);
+        if (!Prefs.hasBeenConfigured(prefs)) {
+            Intent actIntent = new Intent(this, MainActivity.class);
             actIntent.putExtra(MainActivity.FROM_PLAYER_SERVICE, true);
             actIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(actIntent);
             stopForegroundService();
             return START_NOT_STICKY;
         }
-        terminateTimeout = Utils.toInt(Prefs.get(this).getString(Prefs.TERMINATEL_TIMER_KEY, Prefs.DEFAULT_TERMINATE_TIMER_KEY), 60);
+
+        connectionLostTimeout = Utils.toInt(Prefs.get(this).getString(Prefs.CONNECTION_LOST_TIMEOUT_KEY, Prefs.DEFAULT_CONNECTION_LOST_TIMEOUT), 60);
+        initialConnectionTimeout = Utils.toInt(Prefs.get(this).getString(Prefs.CONNECTION_LOST_TIMEOUT_KEY, Prefs.DEFAULT_CONNECTION_LOST_TIMEOUT), 300);
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
@@ -217,6 +220,7 @@ public class PlayerService extends Service {
         if (null==lib) {
             lib = new Library();
         }
+        startTerminateTimer(initialConnectionTimeout);
         lib.startPlayer(this);
         if (Prefs.get(this).getBoolean(Prefs.USE_WAKE_LOCK_KEY, Prefs.DEFAULT_USE_WAKE_LOCK)) {
             if (null==wakeLock) {
@@ -257,25 +261,25 @@ public class PlayerService extends Service {
             handler.post(this::updateNotification);
         }
         if (Utils.isEmpty(ip)) {
-            startTerminateTimer();
+            startTerminateTimer(connectionLostTimeout);
         } else {
             stopTerminateTimer();
         }
     }
 
-    private void startTerminateTimer() {
+    private void startTerminateTimer(int timeout) {
         Utils.debug("");
-        if (null==terminateHandler && terminateTimeout>0) {
-            stopTerminateTimer();
-            terminateHandler = executorService.schedule(this::stopForegroundService, terminateTimeout, TimeUnit.SECONDS);
+        stopTerminateTimer();
+        if (timeout>0) {
+            terminateOnConnectionLostHandler = executorService.schedule(this::stopForegroundService, timeout, TimeUnit.SECONDS);
         }
     }
 
     private void stopTerminateTimer() {
         Utils.debug("");
-        if (null!=terminateHandler) {
-            terminateHandler.cancel(false);
-            terminateHandler = null;
+        if (null!= terminateOnConnectionLostHandler) {
+            terminateOnConnectionLostHandler.cancel(false);
+            terminateOnConnectionLostHandler = null;
         }
     }
 }

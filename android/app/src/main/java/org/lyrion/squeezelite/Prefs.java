@@ -38,15 +38,17 @@ public class Prefs {
     public static final String START_SERVICE_KEY = "start_service";
     public static final String USE_WAKE_LOCK_KEY = "use_wake_lock";
     public static final String VOLUME_CONTROL_KEY = "volume_control";
-    public static final String TERMINATEL_TIMER_KEY = "terminate_timer";
+    public static final String CONNECTION_LOST_TIMEOUT_KEY = "connection_lost_timeout";
+    public static final String INITIAL_CONNECTION_TIMEOUT_KEY = "initial_connection_timeout";
     public static final String VOLUME_CONTROL_SEPARATE = "separate";
     public static final String VOLUME_CONTROL_DEVICE = "device";
     public static final String VOLUME_CONTROL_SYNCHRONIZED = "synchronized";
 
     public static final String DEFAULT_PLAYER_NAME = "Squeezelite";
     public static final String DEFAULT_PLAYER_MAC = "01:02:03:04:05:06";
-    public static final String DEFAULT_TERMINATE_TIMER_KEY = "60";
-    public static boolean DEFAULT_START_SERVICE = true;
+    public static final String DEFAULT_CONNECTION_LOST_TIMEOUT = "60";
+    public static final String DEFAULT_INITIAL_CONNECTION_TIMEOUT = "0";
+    public static boolean DEFAULT_START_SERVICE = false;
     public static boolean DEFAULT_USE_WAKE_LOCK = false;
     public static String DEFAULT_VOLUME_CONTROL = VOLUME_CONTROL_SYNCHRONIZED;
     static public SharedPreferences get(Context context) {
@@ -89,15 +91,25 @@ public class Prefs {
             }
             editor.putString(VOLUME_CONTROL_KEY, DEFAULT_VOLUME_CONTROL);
         }
-        if (!sharedPreferences.contains(TERMINATEL_TIMER_KEY)) {
+        if (!sharedPreferences.contains(CONNECTION_LOST_TIMEOUT_KEY)) {
             if (null==editor) {
                 editor = sharedPreferences.edit();
             }
-            editor.putString(TERMINATEL_TIMER_KEY, DEFAULT_TERMINATE_TIMER_KEY);
+            editor.putString(CONNECTION_LOST_TIMEOUT_KEY, DEFAULT_CONNECTION_LOST_TIMEOUT);
+        }
+        if (!sharedPreferences.contains(INITIAL_CONNECTION_TIMEOUT_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putString(INITIAL_CONNECTION_TIMEOUT_KEY, DEFAULT_INITIAL_CONNECTION_TIMEOUT);
         }
         if (editor!=null) {
             editor.apply();
         }
         return sharedPreferences;
+    }
+
+    public static boolean hasBeenConfigured(SharedPreferences prefs) {
+        return prefs.contains(Prefs.SERVER_KEY) || !prefs.getBoolean(Prefs.INITIAL_KEY, true);
     }
 }

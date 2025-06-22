@@ -159,7 +159,8 @@ public class SettingsActivity extends AppCompatActivity {
             }
             updateSummary(Prefs.PLAYER_NAME_KEY);
             updateSummary(Prefs.VOLUME_CONTROL_KEY);
-            updateSummary(Prefs.TERMINATEL_TIMER_KEY);
+            updateSummary(Prefs.INITIAL_CONNECTION_TIMEOUT_KEY);
+            updateSummary(Prefs.CONNECTION_LOST_TIMEOUT_KEY);
             PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(this);
         }
 

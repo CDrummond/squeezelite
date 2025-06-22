@@ -75,8 +75,16 @@
         <ListPreference
             android:entries="@array/duration"
             android:entryValues="@array/durationAlias"
-            android:key="terminate_timer"
-            android:title="@string/terminate_timer"
+            android:key="initial_connection_timeout"
+            android:title="@string/initial_connection_timeout"
+            app:singleLineTitle="false"
+            android:singleLineTitle="false"
+            app:iconSpaceReserved="false" />
+        <ListPreference
+            android:entries="@array/duration"
+            android:entryValues="@array/durationAlias"
+            android:key="connection_lost_timeout"
+            android:title="@string/connection_lost_timeout"
             app:singleLineTitle="false"
             android:singleLineTitle="false"
             app:iconSpaceReserved="false" />

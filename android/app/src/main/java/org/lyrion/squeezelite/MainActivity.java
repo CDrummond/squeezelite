@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = Prefs.get(this);
         if (prefs.getBoolean(Prefs.START_SERVICE_KEY, Prefs.DEFAULT_START_SERVICE) && canStartPlayer()) {
             Intent intent = getIntent();
-            if (!isPlayerRunning() && prefs.contains(Prefs.SERVER_KEY) && (null==intent || !intent.getBooleanExtra(FROM_PLAYER_SERVICE, false))) {
+            if (!isPlayerRunning() && Prefs.hasBeenConfigured(prefs) && (null==intent || !intent.getBooleanExtra(FROM_PLAYER_SERVICE, false))) {
                 Utils.debug("Start player from launcher...");
                 startPlayer();
                 finish();
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void controlWidgets() {
         SharedPreferences prefs = Prefs.get(this);
-        boolean configured = prefs.contains(Prefs.SERVER_KEY) || !prefs.getBoolean(Prefs.INITIAL_KEY, true);
+        boolean configured = Prefs.hasBeenConfigured(prefs);
         boolean running = isPlayerRunning();
         float alpha = running ? 0.5f : 1.0f;
         controlButton.setText(running ? R.string.stop_player : R.string.start_player);
