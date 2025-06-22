@@ -113,7 +113,7 @@ sources = [
     '../dsd.c',
     '../dop.c',
     '../dsd2pcm/dsd2pcm.c',
-    'src/init.c',
+    'src/android.c',
     'src/pa/common/pa_trace.c',
     'src/pa/common/pa_allocation.c',
     'src/pa/common/pa_front.c',
