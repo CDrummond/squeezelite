@@ -42,11 +42,10 @@ public class CommandReceiver extends BroadcastReceiver {
         }
         Utils.debug(act);
         if (act.equals(START)) {
-            // TODO: Check if this is the first run? If so start UI, not service
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(new Intent(context, PlayerService.class));
             } else {
-                context.stopService(new Intent(context, PlayerService.class));
+                context.startService(new Intent(context, PlayerService.class));
             }
         } else if (act.equals(STOP)) {
             context.stopService(new Intent(context, PlayerService.class));
