@@ -40,7 +40,8 @@ import androidx.core.app.ActivityCompat;
 import io.github.muddz.styleabletoast.StyleableToast;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String FROM_PLAYER_SERVICE = "from-player-service";
+    public static final String FROM_PLAYER_SERVICE_EXTRA = "from-player-service";
+    public static final String START_PLAYER_EXTRA = "start-player";
     public static final int PERMISSION_POST_NOTIFICATIONS = 1;
 
     private Button settingsButton;
@@ -65,8 +66,22 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = Prefs.get(this);
         if (prefs.getBoolean(Prefs.START_SERVICE_KEY, Prefs.DEFAULT_START_SERVICE) && canStartPlayer()) {
             Intent intent = getIntent();
-            if (!isPlayerRunning() && Prefs.hasBeenConfigured(prefs) && (null==intent || !intent.getBooleanExtra(FROM_PLAYER_SERVICE, false))) {
-                Utils.debug("Start player from launcher...");
+            boolean askedToStartPlayer = null!=intent && intent.getBooleanExtra(START_PLAYER_EXTRA, false);
+            boolean alreadyRunning = isPlayerRunning();
+
+            if (askedToStartPlayer && alreadyRunning) {
+                Utils.debug("Asked to start player, but already running..");
+                finish();
+                return;
+            }
+
+            if (!alreadyRunning &&
+                 (
+                   askedToStartPlayer ||
+                   (Prefs.hasBeenConfigured(prefs) && (null==intent || !intent.getBooleanExtra(FROM_PLAYER_SERVICE_EXTRA, false)))
+                 )
+               ) {
+                Utils.debug("Start player from launcher/app...");
                 startPlayer();
                 finish();
                 return;

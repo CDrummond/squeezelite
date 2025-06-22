@@ -110,7 +110,7 @@ public class PlayerService extends Service {
 
         if (!Prefs.hasBeenConfigured(prefs)) {
             Intent actIntent = new Intent(this, MainActivity.class);
-            actIntent.putExtra(MainActivity.FROM_PLAYER_SERVICE, true);
+            actIntent.putExtra(MainActivity.FROM_PLAYER_SERVICE_EXTRA, true);
             actIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(actIntent);
             stopForegroundService();
@@ -157,7 +157,7 @@ public class PlayerService extends Service {
         }
         try {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(MainActivity.FROM_PLAYER_SERVICE, true);
+            intent.putExtra(MainActivity.FROM_PLAYER_SERVICE_EXTRA, true);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
             SharedPreferences prefs = Prefs.get(this);
