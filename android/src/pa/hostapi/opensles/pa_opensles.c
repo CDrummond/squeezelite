@@ -365,7 +365,9 @@ PaError PaOpenSLES_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiI
         }
 
         /* check samplerates in order of preference */
-        const SLuint32 sampleRates[] = { SL_SAMPLINGRATE_48, SL_SAMPLINGRATE_44_1,
+        const SLuint32 sampleRates[] = { SL_SAMPLINGRATE_192, SL_SAMPLINGRATE_96,
+		                         SL_SAMPLINGRATE_88_2, SL_SAMPLINGRATE_64,
+					 SL_SAMPLINGRATE_48, SL_SAMPLINGRATE_44_1,
                                          SL_SAMPLINGRATE_32, SL_SAMPLINGRATE_24,
                                          SL_SAMPLINGRATE_16};
         const SLuint32 numberOfSampleRates = 5;
