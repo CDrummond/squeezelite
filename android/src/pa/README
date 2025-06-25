@@ -3,4 +3,6 @@ This is a copy of PortAudio code with support for OBOE.
 Original code was taken from the 'Rebase' branch of:
     https://github.com/NetResultsIT/portaudio_oboe
 
-pa_oboe.cpp has been updated to correctly assign to 'result' in 'tryStream()'
+pa_oboe.cpp modifications:
+    - Correctly assign to 'result' in 'tryStream()'
+    - Default output stream to 'Media' in 'OpenStream()'

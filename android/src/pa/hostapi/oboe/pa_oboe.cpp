@@ -1375,7 +1375,7 @@ static PaError OpenStream(struct PaUtilHostApiRepresentation *hostApi,
     PaSampleFormat hostInputSampleFormat, hostOutputSampleFormat;
 
     //Initialization to generic values, in the event that these hostApiSpecificStreamInfo were not set
-    Usage androidOutputUsage = Usage::VoiceCommunication;
+    Usage androidOutputUsage = Usage::Media;
     InputPreset androidInputPreset = InputPreset::Generic;
 
     PaOboeStream* paOboeStream = (PaOboeStream *) PaUtil_AllocateZeroInitializedMemory(sizeof(PaOboeStream));;
