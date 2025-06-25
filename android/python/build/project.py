@@ -1,5 +1,4 @@
-import os, shutil
-import re
+import os, re, shutil, subprocess
 from typing import cast, BinaryIO, Optional, Sequence, Union
 
 from build.download import download_basename, download_and_verify
@@ -37,6 +36,12 @@ class Project:
     def download(self, toolchain: AnyToolchain) -> str:
         return download_and_verify(self.url, self.md5, toolchain.tarball_path)
 
+    def init_submodule(self):
+        subpath = os.path.join('..', 'submodules', os.path.basename(self.url))
+        if not os.path.exists(os.path.join(self.url, ".git")):
+            subprocess.check_call(['git', 'submodule', 'update', '--init', subpath])
+        return self.url
+
     def is_installed(self, toolchain: AnyToolchain) -> bool:
         installed = os.path.join(toolchain.install_prefix, self.installed)
         return os.path.exists(installed)
@@ -49,7 +54,7 @@ class Project:
 
     def unpack(self, toolchain: AnyToolchain, out_of_tree: bool=True) -> str:
         if self.version == 'submodule':
-            return self.url
+            return self.init_submodule()
 
         if out_of_tree:
             parent_path = toolchain.src_path
