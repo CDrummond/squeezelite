@@ -36,7 +36,7 @@ test_global_common_flags = [
 test_common_flags = [
   '-ffast-math',
   '-ftree-vectorize',
-  '-DPORTAUDIO', '-DNO_MAD', '-DDSD', '-DANDROID', '-DLINKALL', '-DPA_USE_OBOE', '-I../src/pa', '-I../src/pa/common', '-I../src/pa/os/unix', '-DPA_LITTLE_ENDIAN'
+  '-DPORTAUDIO', '-DNO_MAD', '-DDSD', '-DANDROID', '-DLINKALL', '-DNDEBUG', '-DPA_USE_OBOE', '-DPA_LITTLE_ENDIAN', '-I../src/pa', '-I../src/pa/common', '-I../src/pa/os/unix', '-I../src/oboe', '-I../src/oboe/common'
 ]
 
 test_global_cxxflags = test_global_common_flags + [
