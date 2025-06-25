@@ -1,7 +1,6 @@
-This is a copy of PortAudio code with support for OpenSLES.
+This is a copy of PortAudio code with support for OBOE.
 
-Original code was taken from:
-   https://github.com/croissanne/portaudio_opensles
+Original code was taken from the 'Rebase' branch of:
+    https://github.com/NetResultsIT/portaudio_oboe
 
-With deadlock fixes from:
-   https://github.com/darksylinc/portaudio_opensles/commits/matias-deadlock
+pa_oboe.cpp has been updated to correctly assign to 'result' in 'tryStream()'

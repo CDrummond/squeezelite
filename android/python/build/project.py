@@ -48,6 +48,9 @@ class Project:
         #    return False
 
     def unpack(self, toolchain: AnyToolchain, out_of_tree: bool=True) -> str:
+        if self.version == 'submodule':
+            return self.url
+
         if out_of_tree:
             parent_path = toolchain.src_path
         else:

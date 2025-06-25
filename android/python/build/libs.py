@@ -99,6 +99,21 @@ libssl = CmakeProject(
     ]
 )
 
+liboboe = CmakeProject(
+    '../../../../../submodules/oboe',
+    None,
+    'lib/liboboe.a',
+    [
+        '-DANDROID_PLATFORM=28',
+        '-DANDROID_STL=c++_shared',
+        '-DBUILD_SHARED_LIBS=OFF',
+        '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
+    ],
+    name='oboe',
+    version='submodule',
+    base='oboe'
+)
+
 ffmpeg = FfmpegProject(
     'http://ffmpeg.org/releases/ffmpeg-7.1.1.tar.xz',
     '733984395e0dbbe5c046abda2dc49a5544e7e0e1e2366bba849222ae9e3a03b1',

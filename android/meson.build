@@ -36,6 +36,7 @@ test_global_common_flags = [
 test_common_flags = [
   '-ffast-math',
   '-ftree-vectorize',
+  '-DPORTAUDIO', '-DNO_MAD', '-DDSD', '-DANDROID', '-DLINKALL', '-DPA_USE_OBOE', '-I../src/pa', '-I../src/pa/common', '-I../src/pa/os/unix', '-DPA_LITTLE_ENDIAN'
 ]
 
 test_global_cxxflags = test_global_common_flags + [
@@ -46,11 +47,10 @@ test_global_cflags = test_global_common_flags + [
 
 test_cxxflags = test_common_flags + [
   '-fno-threadsafe-statics',
-  '-fmerge-all-constants'
+  '-fmerge-all-constants',
 ]
 
 test_cflags = test_common_flags + [
-  '-DPORTAUDIO', '-DNO_MAD', '-DDSD', '-DANDROID', '-DLINKALL', '-DPA_USE_OPENSLES', '-I../src/pa', '-I../src/pa/common', '-I../src/pa/os/unix'
 ]
 
 test_ldflags = [
@@ -114,19 +114,20 @@ sources = [
     '../dop.c',
     '../dsd2pcm/dsd2pcm.c',
     'src/android.c',
-    'src/pa/common/pa_trace.c',
-    'src/pa/common/pa_allocation.c',
-    'src/pa/common/pa_front.c',
-    'src/pa/common/pa_converters.c',
-    'src/pa/common/pa_process.c',
-    'src/pa/common/pa_dither.c',
-    'src/pa/common/pa_debugprint.c',
+    'src/pa/os/unix/pa_unix_hostapis.c',
+    'src/pa/os/unix/pa_pthread_util.c',
+    'src/pa/os/unix/pa_unix_util.c',
+    'src/pa/hostapi/oboe/pa_oboe.cpp',
     'src/pa/common/pa_ringbuffer.c',
     'src/pa/common/pa_stream.c',
+    'src/pa/common/pa_trace.c',
+    'src/pa/common/pa_front.c',
+    'src/pa/common/pa_converters.c',
+    'src/pa/common/pa_debugprint.c',
+    'src/pa/common/pa_process.c',
+    'src/pa/common/pa_dither.c',
     'src/pa/common/pa_cpuload.c',
-    'src/pa/hostapi/opensles/pa_opensles.c',
-    'src/pa/os/unix/pa_unix_hostapis.c',
-    'src/pa/os/unix/pa_unix_util.c'
+    'src/pa/common/pa_allocation.c'
 ]
 
 link_args = []
@@ -149,7 +150,7 @@ link_args += [
   '-llog',
   '-lz',
   '-lm',
-  '-lOpenSLES',
+  '-loboe',
   '-lavcodec',
   '-lavformat',
   '-lavutil',

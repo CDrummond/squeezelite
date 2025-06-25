@@ -46,7 +46,8 @@ thirdparty_libs = [
     libopus,
     libmpg123,
     libsoxr,
-    ffmpeg
+    ffmpeg,
+    liboboe
 ]
 
 # build the third-party libraries

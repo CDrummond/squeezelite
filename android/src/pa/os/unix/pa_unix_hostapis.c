@@ -43,16 +43,19 @@
 #include "pa_hostapi.h"
 
 PaError PaJack_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
+PaError PaPulseAudio_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
 PaError PaAlsa_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
+PaError PaSndio_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
 PaError PaOSS_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
+PaError PaAudioIO_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
 /* Added for IRIX, Pieter, oct 2, 2003: */
 PaError PaSGI_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
 /* Linux AudioScience HPI */
 PaError PaAsiHpi_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
 PaError PaMacCore_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
 PaError PaSkeleton_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
-
-PaError PaOpenSLES_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
+/* Android HostApi */
+PaError PaOboe_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
 
 /** Note that on Linux, ALSA is placed before OSS so that the former is preferred over the latter.
  */
@@ -65,11 +68,19 @@ PaUtilHostApiInitializer *paHostApiInitializers[] =
         PaAlsa_Initialize,
 #endif
 
+#ifdef PA_USE_SNDIO
+        PaSndio_Initialize,
+#endif
+
 #if PA_USE_OSS
         PaOSS_Initialize,
 #endif
 
 #else   /* __linux__ */
+
+#ifdef PA_USE_SNDIO
+        PaSndio_Initialize,
+#endif
 
 #if PA_USE_OSS
         PaOSS_Initialize,
@@ -80,6 +91,10 @@ PaUtilHostApiInitializer *paHostApiInitializers[] =
 #endif
 
 #endif  /* __linux__ */
+
+#if PA_USE_AUDIOIO
+        PaAudioIO_Initialize,
+#endif
 
 #if PA_USE_JACK
         PaJack_Initialize,
@@ -97,12 +112,16 @@ PaUtilHostApiInitializer *paHostApiInitializers[] =
         PaMacCore_Initialize,
 #endif
 
-#if PA_USE_SKELETON
-        PaSkeleton_Initialize,
+#if PA_USE_PULSEAUDIO
+                PaPulseAudio_Initialize,
 #endif
 
-#if PA_USE_OPENSLES
-        PaOpenSLES_Initialize,
+#if PA_USE_OBOE
+                PaOboe_Initialize,
+#endif
+
+#if PA_USE_SKELETON
+        PaSkeleton_Initialize,
 #endif
 
         0   /* NULL terminated array */
