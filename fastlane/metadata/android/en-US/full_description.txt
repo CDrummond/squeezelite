@@ -1,0 +1,1 @@
+'Headless' audio player for Lyrion Music Server (LMS) - Squeezelite ported to Android.
