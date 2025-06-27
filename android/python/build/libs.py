@@ -8,7 +8,7 @@ from build.ffmpeg import FfmpegProject
 
 # libmad fails - checking host system type... Invalid configuration `aarch64-linux-android': machine `aarch64-linux' not recognized
 libmad = AutotoolsProject(
-     'https://deac-riga.dl.sourceforge.net/project/mad/libmad/0.15.1b/libmad-0.15.1b.tar.gz',
+     'https://sourceforge.net/projects/mad/files/libmad/0.15.1b/libmad-0.15.1b.tar.gz',
      '1be543bc30c56fb6bea1d7bf6a64e66c',
      'lib/libmad.a',
      [
