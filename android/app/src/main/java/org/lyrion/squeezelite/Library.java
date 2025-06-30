@@ -135,22 +135,6 @@ public class Library {
             context.getApplicationContext().getContentResolver().unregisterContentObserver(observer);
             observer = null;
         }
-        if (null != jsonRpc) {
-            jsonRpc.sendMessage(new String[]{"client", "forget"}, response -> {
-                Utils.debug("Handle 'forget' resp");
-                doStop();
-            });
-        } else {
-            doStop();
-        }
-    }
-
-    private void doStop() {
-        Utils.debug("");
-        if (null==thread) {
-            return;
-        }
-        jsonRpc = null;
         stop();
         try {
             // Allow C code a little while to stop...
@@ -164,7 +148,15 @@ public class Library {
             Utils.error("Exception interrupting player thread", e);
         }
         thread = null;
-        System.exit(0);
+        if (null != jsonRpc) {
+            jsonRpc.sendMessage(new String[]{"client", "forget"}, response -> {
+                Utils.debug("Handle 'forget' resp");
+                System.exit(0);
+            });
+            jsonRpc = null;
+        } else {
+            System.exit(0);
+        }
     }
 
     private synchronized void volumeChanged() {
