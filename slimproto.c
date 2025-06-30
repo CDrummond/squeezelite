@@ -992,5 +992,9 @@ void slimproto(log_level level, char *server, u8_t mac[6], const char *name, con
 
 void slimproto_stop(void) {
 	LOG_INFO("slimproto stop");
+#ifdef ANDROID
+	static const char *msg = "BYE!";
+	send_packet((u8_t *)msg, 5);
+#endif
 	running = false;
 }

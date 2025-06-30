@@ -245,7 +245,6 @@ public class PlayerService extends Service {
         sendStatus(false);
         stopTerminateTimer();
         lib.stopPlayer(this);
-        System.exit(0);
     }
 
     private void sendStatus(boolean running) {
@@ -255,7 +254,7 @@ public class PlayerService extends Service {
     }
 
     public void poweredOff() {
-        Utis.debug("");
+        Utils.debug("");
         handler.post(this::stopForegroundService);
     }
 

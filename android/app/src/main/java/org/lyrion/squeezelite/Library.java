@@ -31,6 +31,10 @@ import android.provider.Settings;
 
 import androidx.annotation.Keep;
 
+import com.android.volley.Response;
+
+import org.json.JSONObject;
+
 public class Library {
     static long MIN_LMS_VOLUME_UPDATE_TIME = 750;
     // received volume values for 0..100
@@ -122,17 +126,31 @@ public class Library {
     }
 
     public synchronized void stopPlayer(Context context) {
-        if (null==thread || !loaded) {
+        if (null == thread || !loaded) {
             return;
         }
         service = null;
         Utils.info("");
-        if (null!=observer) {
+        if (null != observer) {
             context.getApplicationContext().getContentResolver().unregisterContentObserver(observer);
             observer = null;
         }
-        jsonRpc = null;
+        if (null != jsonRpc) {
+            jsonRpc.sendMessage(new String[]{"client", "forget"}, response -> {
+                Utils.debug("Handle 'forget' resp");
+                doStop();
+            });
+        } else {
+            doStop();
+        }
+    }
 
+    private void doStop() {
+        Utils.debug("");
+        if (null==thread) {
+            return;
+        }
+        jsonRpc = null;
         stop();
         try {
             // Allow C code a little while to stop...
@@ -146,6 +164,7 @@ public class Library {
             Utils.error("Exception interrupting player thread", e);
         }
         thread = null;
+        System.exit(0);
     }
 
     private synchronized void volumeChanged() {
@@ -229,12 +248,21 @@ public class Library {
         }
     }
 
+    boolean isInitialPower = true;
     @Keep
     public synchronized void outputChanged(int spdif, int dac) {
-        Utils.debug("spdif:"+spdif+", dac:"+dac);
-        if (0==spdif && 0==dac) {
-            service.poweredOff();
+        Utils.debug("spdif:"+spdif+", dac:"+dac+", isInitialPower:"+isInitialPower);
+        if (0 == spdif && 0 == dac) {
+            if (isInitialPower) {
+                if (null!=jsonRpc) {
+                    Utils.debug("Power on");
+                    jsonRpc.sendMessage(new String[]{"power", "1"});
+                }
+            } else {
+                service.poweredOff();
+            }
         }
+        isInitialPower = false;
     }
 
     private native void start(String lms, String mac, String name, int fixedVolume, int logging);

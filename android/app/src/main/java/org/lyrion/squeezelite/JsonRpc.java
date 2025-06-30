@@ -24,6 +24,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -54,6 +55,10 @@ public class JsonRpc {
     }
 
     public void sendMessage(String[] command) {
+        sendMessage(command, null);
+    }
+
+    public void sendMessage(String[] command, Response.Listener<JSONObject> responseListener) {
         try {
             JSONObject request = new JSONObject();
             JSONArray params = new JSONArray();
@@ -68,9 +73,16 @@ public class JsonRpc {
             request.put("params", params);
 
             Utils.info("MSG:" + request);
-            requestQueue.add(new Request("http://" + server.ip + ":" + server.port + "/jsonrpc.js", request, null));
+            Request req = new Request("http://" + server.ip + ":" + server.port + "/jsonrpc.js", request, responseListener);
+            if (null!=responseListener) {
+                req.setRetryPolicy(new DefaultRetryPolicy(100, 1, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            }
+            requestQueue.add(req);
         } catch (Exception e) {
             Utils.error("Failed to send control message", e);
+            if (null!=responseListener) {
+                responseListener.onResponse(null);
+            }
         }
     }
 }
