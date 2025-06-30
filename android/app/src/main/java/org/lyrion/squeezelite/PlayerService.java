@@ -254,6 +254,11 @@ public class PlayerService extends Service {
         sendBroadcast(intent);
     }
 
+    public void poweredOff() {
+        Utis.debug("");
+        handler.post(this::stopForegroundService);
+    }
+
     public void connectionStateChanged(String ip) {
         boolean changed = (null==currentServerAddress && null!=ip) || (null!=currentServerAddress && null==ip) || (null!=currentServerAddress && !currentServerAddress.equals(ip));
         currentServerAddress = ip;

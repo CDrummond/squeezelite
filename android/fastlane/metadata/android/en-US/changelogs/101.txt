@@ -1,0 +1,3 @@
+Improved
+
+• Terminate player when powered off via LMS.

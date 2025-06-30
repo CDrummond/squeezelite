@@ -435,6 +435,9 @@ static void process_aude(u8_t *pkt, int len) {
 		output.stop_time = gettime_ms();
 	}
 	UNLOCK_O;
+#ifdef ANDROID
+	send_output_state_to_app(aude->enable_spdif, aude->enable_dac);
+#endif
 }
 
 static void process_audg(u8_t *pkt, int len) {

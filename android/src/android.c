@@ -55,6 +55,27 @@ static void init_jvm(JNIEnv * env, jobject jobj) {
 	clazz = (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, obj));
 }
 
+void send_output_state_to_app(u8_t spdif, u8_t dac) {
+    if (!jvm || !obj || !clazz) {
+		return;
+	}
+	JNIEnv *env;
+	bool detached = JNI_EDETACHED == (*jvm)->GetEnv(jvm, &env, JNI_VERSION_1_6);
+	if (detached) {
+		if (JNI_OK!=(*jvm)->AttachCurrentThread(jvm, &env, NULL)) {
+			LOG_ERROR("Failed to get attach current thread");
+			return;
+		}
+	}
+	jmethodID method = (*env)->GetMethodID(env, clazz, "outputChanged", "(II)V");
+	if (method) {
+		(*env)->CallVoidMethod(env, obj, method, spdif, dac);
+	}
+	if (detached) {
+		(*jvm)->DetachCurrentThread(jvm);
+	}
+}
+
 void send_volume_to_app(u32_t left, u32_t right) {
     if (!jvm || !obj || !clazz) {
 		return;

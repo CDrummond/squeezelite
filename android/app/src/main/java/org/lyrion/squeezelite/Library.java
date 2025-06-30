@@ -229,6 +229,14 @@ public class Library {
         }
     }
 
+    @Keep
+    public synchronized void outputChanged(int spdif, int dac) {
+        Utils.debug("spdif:"+spdif+", dac:"+dac);
+        if (0==spdif && 0==dac) {
+            service.poweredOff();
+        }
+    }
+
     private native void start(String lms, String mac, String name, int fixedVolume, int logging);
     private native void stop();
 }
