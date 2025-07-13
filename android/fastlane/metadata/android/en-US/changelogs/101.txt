@@ -1,3 +1,4 @@
 Improved
 
 • Terminate player when powered off via LMS.
+• Don't close output 2 seconds ofter pause as this then breaks playback.

@@ -120,6 +120,7 @@ public class Library {
         thread = new Thread(() -> start(ipAddress,
               mac,
               prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME),
+              0,
               VOL_SEP==volumeControl ? 0 : 1,
               LOG_ERROR));
         thread.start();
@@ -257,6 +258,6 @@ public class Library {
         isInitialPower = false;
     }
 
-    private native void start(String lms, String mac, String name, int fixedVolume, int logging);
+    private native void start(String lms, String mac, String name, int idleTimeout, int fixedVolume, int logging);
     private native void stop();
 }

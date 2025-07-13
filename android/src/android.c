@@ -120,7 +120,7 @@ void send_connection_state_to_app(const char *address) {
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint fixed_vol, jint logging) {
+JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint idle, jint fixed_vol, jint logging) {
 	const char *server = (*env)->GetStringUTFChars(env, lms_param, NULL);
 	const char *mac_str = (*env)->GetStringUTFChars(env, mac_param, NULL);
 	char *output_device = "default";
@@ -136,7 +136,6 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jo
 	unsigned rate_delay = 0;
 	char *resample = NULL;
 	char *output_params = NULL;
-	unsigned idle = 2000;
 #if DSD
 	unsigned dsd_delay = 0;
 	dsd_format dsd_outfmt = PCM;
@@ -190,7 +189,7 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jo
 
 	stream_init(log_stream, stream_buf_size);
 
-	output_init_pa(log_output, output_device, output_buf_size, output_params, rates, rate_delay, idle, 0!=fixed_vol);
+	output_init_pa(log_output, output_device, output_buf_size, output_params, rates, rate_delay, (unsigned int)idle, 0!=fixed_vol);
 
 #if DSD
 	dsd_init(dsd_outfmt, dsd_delay);
