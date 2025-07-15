@@ -1,0 +1,4 @@
+Improved
+
+• Revert back to OpenSLES.
+• Close output after being idle for 2 seconds.

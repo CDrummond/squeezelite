@@ -120,7 +120,7 @@ public class Library {
         thread = new Thread(() -> start(ipAddress,
               mac,
               prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME),
-              0,
+              2000,
               VOL_SEP==volumeControl ? 0 : 1,
               LOG_ERROR));
         thread.start();

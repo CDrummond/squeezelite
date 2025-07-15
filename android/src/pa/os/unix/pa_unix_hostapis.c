@@ -55,7 +55,12 @@ PaError PaAsiHpi_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiInd
 PaError PaMacCore_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
 PaError PaSkeleton_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
 /* Android HostApi */
+#if PA_USE_OPENSLES
+PaError PaOpenSLES_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
+#endif
+#if PA_USE_OBOE
 PaError PaOboe_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
+#endif
 
 /** Note that on Linux, ALSA is placed before OSS so that the former is preferred over the latter.
  */
@@ -113,11 +118,15 @@ PaUtilHostApiInitializer *paHostApiInitializers[] =
 #endif
 
 #if PA_USE_PULSEAUDIO
-                PaPulseAudio_Initialize,
+        PaPulseAudio_Initialize,
+#endif
+
+#if PA_USE_OPENSLES
+        PaOpenSLES_Initialize,
 #endif
 
 #if PA_USE_OBOE
-                PaOboe_Initialize,
+        PaOboe_Initialize,
 #endif
 
 #if PA_USE_SKELETON

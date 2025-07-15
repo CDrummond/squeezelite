@@ -36,7 +36,7 @@ test_global_common_flags = [
 test_common_flags = [
   '-ffast-math',
   '-ftree-vectorize',
-  '-DPORTAUDIO', '-DNO_MAD', '-DDSD', '-DANDROID', '-DLINKALL', '-DNDEBUG', '-DPA_USE_OBOE', '-DPA_LITTLE_ENDIAN', '-I../src/pa', '-I../src/pa/common', '-I../src/pa/os/unix', '-I../src/oboe', '-I../src/oboe/common'
+  '-DPORTAUDIO', '-DNO_MAD', '-DDSD', '-DANDROID', '-DLINKALL', '-DNDEBUG', '-DPA_USE_OPENSLES', '-DPA_LITTLE_ENDIAN', '-I../src/pa', '-I../src/pa/common', '-I../src/pa/os/unix'
 ]
 
 test_global_cxxflags = test_global_common_flags + [
@@ -117,7 +117,7 @@ sources = [
     'src/pa/os/unix/pa_unix_hostapis.c',
     'src/pa/os/unix/pa_pthread_util.c',
     'src/pa/os/unix/pa_unix_util.c',
-    'src/pa/hostapi/oboe/pa_oboe.cpp',
+    'src/pa/hostapi/opensles/pa_opensles.c',
     'src/pa/common/pa_ringbuffer.c',
     'src/pa/common/pa_stream.c',
     'src/pa/common/pa_trace.c',
@@ -150,7 +150,7 @@ link_args += [
   '-llog',
   '-lz',
   '-lm',
-  '-loboe',
+  '-lOpenSLES',
   '-lavcodec',
   '-lavformat',
   '-lavutil',
@@ -161,8 +161,6 @@ link_args += [
   '-lmpg123',
   '-logg',
   '-lopus',
-  '-lsoxr',
-  '-lsoxr-lsr',
   '-lvorbis',
   '-lvorbisenc',
   '-lvorbisfile',
