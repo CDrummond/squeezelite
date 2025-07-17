@@ -36,7 +36,7 @@ test_global_common_flags = [
 test_common_flags = [
   '-ffast-math',
   '-ftree-vectorize',
-  '-DPORTAUDIO', '-DNO_MAD', '-DDSD', '-DANDROID', '-DLINKALL', '-DNDEBUG', '-DPA_USE_OPENSLES', '-DPA_LITTLE_ENDIAN', '-I../src/pa', '-I../src/pa/common', '-I../src/pa/os/unix'
+  '-DPORTAUDIO', '-DNO_MAD', '-DDSD', '-DANDROID', '-DLINKALL', '-DNDEBUG', '-DPA_USE_OPENSLES', '-DPA_USE_AAUDIO', '-DPA_LITTLE_ENDIAN', '-I../src/pa', '-I../src/pa/common', '-I../src/pa/os/unix'
 ]
 
 test_global_cxxflags = test_global_common_flags + [
@@ -118,6 +118,7 @@ sources = [
     'src/pa/os/unix/pa_pthread_util.c',
     'src/pa/os/unix/pa_unix_util.c',
     'src/pa/hostapi/opensles/pa_opensles.c',
+    'src/pa/hostapi/aaudio/pa_aaudio.c',
     'src/pa/common/pa_ringbuffer.c',
     'src/pa/common/pa_stream.c',
     'src/pa/common/pa_trace.c',
@@ -151,6 +152,7 @@ link_args += [
   '-lz',
   '-lm',
   '-lOpenSLES',
+  '-laaudio',
   '-lavcodec',
   '-lavformat',
   '-lavutil',

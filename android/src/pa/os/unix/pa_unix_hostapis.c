@@ -58,8 +58,8 @@ PaError PaSkeleton_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiI
 #if PA_USE_OPENSLES
 PaError PaOpenSLES_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
 #endif
-#if PA_USE_OBOE
-PaError PaOboe_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
+#if PA_USE_AAUDIO
+PaError PaAAudio_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex index );
 #endif
 
 /** Note that on Linux, ALSA is placed before OSS so that the former is preferred over the latter.
@@ -125,8 +125,8 @@ PaUtilHostApiInitializer *paHostApiInitializers[] =
         PaOpenSLES_Initialize,
 #endif
 
-#if PA_USE_OBOE
-        PaOboe_Initialize,
+#if PA_USE_AAUDIO
+        PaAAudio_Initialize,
 #endif
 
 #if PA_USE_SKELETON

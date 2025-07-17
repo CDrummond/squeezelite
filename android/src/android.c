@@ -30,6 +30,9 @@ static JavaVM *jvm = NULL;
 static jclass clazz = 0;
 static jobject obj = 0;
 
+extern int PaOpenSLES_ENABLED;
+extern int PaAAudio_ENABLED;
+
 static void sighandler(int signum) {
 	slimproto_stop();
 
@@ -120,7 +123,7 @@ void send_connection_state_to_app(const char *address) {
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint idle, jint fixed_vol, jint logging) {
+JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint idle, jint fixed_vol, jint logging, jint use_opensles) {
 	const char *server = (*env)->GetStringUTFChars(env, lms_param, NULL);
 	const char *mac_str = (*env)->GetStringUTFChars(env, mac_param, NULL);
 	char *output_device = "default";
@@ -146,6 +149,9 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jo
 	log_level log_slimproto = logging;
 
 	int maxSampleRate = 0;
+
+	PaOpenSLES_ENABLED = use_opensles;
+	PaAAudio_ENABLED = !use_opensles;
 
 	if (mac_str) {
 		int byte = 0;

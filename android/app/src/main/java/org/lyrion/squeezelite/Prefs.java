@@ -40,17 +40,22 @@ public class Prefs {
     public static final String VOLUME_CONTROL_KEY = "volume_control";
     public static final String CONNECTION_LOST_TIMEOUT_KEY = "connection_lost_timeout";
     public static final String INITIAL_CONNECTION_TIMEOUT_KEY = "initial_connection_timeout";
+    public static final String OUTPUT_LIB_KEY = "output_lib";
+
     public static final String VOLUME_CONTROL_SEPARATE = "separate";
     public static final String VOLUME_CONTROL_DEVICE = "device";
     public static final String VOLUME_CONTROL_SYNCHRONIZED = "synchronized";
-
+    public static final String OUTPUT_LIB_OPENSLES = "opensles";
+    public static final String OUTPUT_LIB_AAUDIO= "aaudio";
     public static final String DEFAULT_PLAYER_NAME = "Squeezelite";
     public static final String DEFAULT_PLAYER_MAC = "01:02:03:04:05:06";
     public static final String DEFAULT_CONNECTION_LOST_TIMEOUT = "60";
     public static final String DEFAULT_INITIAL_CONNECTION_TIMEOUT = "0";
+    public static final String DEFAULT_OUTPUT_LIB = OUTPUT_LIB_OPENSLES;
     public static boolean DEFAULT_START_SERVICE = false;
     public static boolean DEFAULT_USE_WAKE_LOCK = false;
     public static String DEFAULT_VOLUME_CONTROL = VOLUME_CONTROL_SYNCHRONIZED;
+
     static public SharedPreferences get(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = null;
@@ -102,6 +107,12 @@ public class Prefs {
                 editor = sharedPreferences.edit();
             }
             editor.putString(INITIAL_CONNECTION_TIMEOUT_KEY, DEFAULT_INITIAL_CONNECTION_TIMEOUT);
+        }
+        if (!sharedPreferences.contains(OUTPUT_LIB_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putString(OUTPUT_LIB_KEY, DEFAULT_OUTPUT_LIB);
         }
         if (editor!=null) {
             editor.apply();

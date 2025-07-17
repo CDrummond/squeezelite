@@ -70,6 +70,8 @@
 
 #include "pa_opensles.h"
 
+int PaOpenSLES_ENABLED = 0;
+
 #define ENSURE(expr, errorText) \
     do { \
         PaError err; \
@@ -313,6 +315,10 @@ PaError PaOpenSLES_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiI
     (*hostApi)->info.defaultOutputDevice = 0;
     (*hostApi)->info.defaultInputDevice = 0;
     (*hostApi)->info.deviceCount = 0;
+
+    if (!PaOpenSLES_ENABLED) {
+        return paNoError;
+    }
 
     ENSURE( Opensles_InitializeEngine(openslesHostApi), "Initializing engine failed" );
 
