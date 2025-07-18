@@ -141,6 +141,9 @@ static PaError PaSampleFormatToAAudioFormat(PaSampleFormat format, aaudio_format
         case paInt16:
             *aaudioFormat = AAUDIO_FORMAT_PCM_I16;
             return paNoError;
+        case paInt24:
+            *aaudioFormat = AAUDIO_FORMAT_PCM_I24_PACKED;
+            return paNoError;
         case paFloat32:
             *aaudioFormat = AAUDIO_FORMAT_PCM_FLOAT;
             return paNoError;
@@ -427,7 +430,7 @@ static PaError OpenStream(struct PaUtilHostApiRepresentation *hostApi, PaStream 
         if (outputChannelCount > hostApi->deviceInfos[outputParameters->device]->maxOutputChannels) {
             return paInvalidChannelCount;
         }
-        hostOutputSampleFormat = PaUtil_SelectClosestAvailableFormat(paInt16 | paFloat32, outputSampleFormat);
+        hostOutputSampleFormat = PaUtil_SelectClosestAvailableFormat(paInt16 | paFloat32 | (__ANDROID_API__>=31 ? paInt24 : 0), outputSampleFormat);
         ENSURE(PaSampleFormatToAAudioFormat(hostOutputSampleFormat, &outputAaudioFormat), "Unsupported output sample format");
     }
 
@@ -656,7 +659,7 @@ PaError PaAAudio_Initialize(PaUtilHostApiRepresentation **hostApi, PaHostApiInde
             }
         }
         */
-        const int sampleRates[] = { 48000, 44100, 32000, 24000, 16000 };
+        const int sampleRates[] = { 384000, 192000, 96000, 48000, 44100, 32000, 24000, 16000 };
         deviceInfo->defaultSampleRate = 0;
         for (int j = 0; j < 5; ++j) {
             if (IsOutputSampleRateSupported(aaudioHostApi, sampleRates[j]) == paNoError /*&&
