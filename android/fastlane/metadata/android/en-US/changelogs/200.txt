@@ -1,5 +1,6 @@
 Changed
 
 • Add option to use OpenSLES or AAudio for output.
+• Use AAudio by default.
 • Close output after being idle for 2 seconds.
 • Bump minimum Android version to 8.1 (due to linking to AAudio).
