@@ -70,14 +70,13 @@ static unsigned long nativeBufferSize = 0;
 
 #define MODULE_NAME "PaAAudio"
 
-//#ifndef NDEBUG
+#ifndef NDEBUG
 #define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, MODULE_NAME, __VA_ARGS__)
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, MODULE_NAME, __VA_ARGS__)
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, MODULE_NAME, __VA_ARGS__)
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN,MODULE_NAME, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,MODULE_NAME, __VA_ARGS__)
 #define LOGF(...) __android_log_print(ANDROID_LOG_FATAL,MODULE_NAME, __VA_ARGS__)
-/*
 #else
 #define LOGV(...)
 #define LOGD(...)
@@ -86,7 +85,6 @@ static unsigned long nativeBufferSize = 0;
 #define LOGE(...)
 #define LOGF(...)
 #endif
-*/
 
 #define ENSURE(expr, errorText) \
     do { \
@@ -266,8 +264,9 @@ static aaudio_data_callback_result_t AaudioDataCallback(AAudioStream *stream, vo
     if (result != paContinue) {
         aaudioStream->isActive = 0;
         aaudioStream->isStopped = 1;
-        if( aaudioStream->streamRepresentation.streamFinishedCallback != NULL )
-        aaudioStream->streamRepresentation.streamFinishedCallback( aaudioStream->streamRepresentation.userData );
+        if( aaudioStream->streamRepresentation.streamFinishedCallback != NULL ) {
+            aaudioStream->streamRepresentation.streamFinishedCallback( aaudioStream->streamRepresentation.userData );
+        }
         return AAUDIO_CALLBACK_RESULT_STOP;
     }
     return AAUDIO_CALLBACK_RESULT_CONTINUE;
@@ -276,7 +275,7 @@ static aaudio_data_callback_result_t AaudioDataCallback(AAudioStream *stream, vo
 static void AaudioErrorCallback(AAudioStream *stream, void *userData, aaudio_result_t error) {
     (void)stream;
     (void)userData;
-    LOGE("AaudioErrorCallback");
+    LOGE("AaudioErrorCallback: %d", (int)error);
 }
 
 static PaError CloseStream(PaStream *s) {
@@ -369,7 +368,6 @@ static PaError ReadStream(PaStream *s, void *buffer, unsigned long frames) {
 static PaError WriteStream(PaStream *s, const void *buffer, unsigned long frames) {
     PaAAudioStream *aaudioStream = (PaAAudioStream *)s;
     if (!aaudioStream->hasOutput) {
-        LOGD("WriteStream %d NO OUTPUT", frames);
         return paBadStreamPtr;
     }
     int32_t result = AAudioStream_write(
@@ -378,7 +376,6 @@ static PaError WriteStream(PaStream *s, const void *buffer, unsigned long frames
         frames,
         1000000 /* 1 second timeout in ns */
     );
-    LOGD("WriteStream %d RESULT: %d", frames, result);
     return result < 0 ? paUnanticipatedHostError : paNoError;
 }
 
