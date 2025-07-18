@@ -289,7 +289,6 @@ static PaError IsInputChannelCountSupported(PaOpenslesHostApiRepresentation *ope
 PaError PaOpenSLES_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiIndex hostApiIndex )
 {
     PaError result = paNoError;
-    int i, deviceCount;
     PaOpenslesHostApiRepresentation *openslesHostApi;
     PaDeviceInfo *deviceInfoArray;
 
@@ -321,7 +320,7 @@ PaError PaOpenSLES_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiI
 
     ENSURE( Opensles_InitializeEngine(openslesHostApi), "Initializing engine failed" );
 
-    deviceCount = 1;
+    int deviceCount = 1;
     (*hostApi)->deviceInfos = (PaDeviceInfo**)PaUtil_GroupAllocateZeroInitializedMemory(
         openslesHostApi->allocations, sizeof(PaDeviceInfo*) * deviceCount );
 
@@ -340,7 +339,7 @@ PaError PaOpenSLES_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiI
         goto error;
     }
 
-    for( i=0; i < deviceCount; ++i )
+    for( int i = 0; i < deviceCount; ++i )
     {
         PaDeviceInfo *deviceInfo = &deviceInfoArray[i];
         deviceInfo->structVersion = 2;
@@ -352,19 +351,19 @@ PaError PaOpenSLES_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiI
         const SLuint32 channelsToTryLength = 2;
         deviceInfo->maxOutputChannels = 0;
         deviceInfo->maxInputChannels = 0;
-        for( i = 0; i < channelsToTryLength; ++i )
+        for( int j = 0; j < channelsToTryLength; ++j )
         {
-            if( IsOutputChannelCountSupported(openslesHostApi, channelsToTry[i]) == paNoError )
+            if( IsOutputChannelCountSupported(openslesHostApi, channelsToTry[j]) == paNoError )
             {
-                deviceInfo->maxOutputChannels = channelsToTry[i];
+                deviceInfo->maxOutputChannels = channelsToTry[j];
                 break;
             }
         }
-        for( i = 0; i < channelsToTryLength; ++i )
+        for( int j = 0; j < channelsToTryLength; ++j )
         {
-            if( IsInputChannelCountSupported(openslesHostApi, channelsToTry[i]) == paNoError )
+            if( IsInputChannelCountSupported(openslesHostApi, channelsToTry[j]) == paNoError )
             {
-                deviceInfo->maxInputChannels = channelsToTry[i];
+                deviceInfo->maxInputChannels = channelsToTry[j];
                 break;
             }
         }
@@ -375,13 +374,13 @@ PaError PaOpenSLES_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiI
                                          SL_SAMPLINGRATE_16};
         const SLuint32 numberOfSampleRates = 5;
         deviceInfo->defaultSampleRate = 0;
-        for( i = 0; i < numberOfSampleRates; ++i )
+        for( int j = 0; j < numberOfSampleRates; ++j )
         {
-            if( IsOutputSampleRateSupported(openslesHostApi, sampleRates[i]) == paNoError
-                && IsInputSampleRateSupported(openslesHostApi, sampleRates[i]) == paNoError )
+            if( IsOutputSampleRateSupported(openslesHostApi, sampleRates[j]) == paNoError
+                && IsInputSampleRateSupported(openslesHostApi, sampleRates[j]) == paNoError )
             {
                 /* opensl defines sampling rates in milliHertz, so we divide by 1000 */
-                deviceInfo->defaultSampleRate = sampleRates[i] / 1000;
+                deviceInfo->defaultSampleRate = sampleRates[j] / 1000;
                 break;
             }
         }
@@ -408,7 +407,6 @@ PaError PaOpenSLES_Initialize( PaUtilHostApiRepresentation **hostApi, PaHostApiI
 
         (*hostApi)->deviceInfos[i] = deviceInfo;
         ++(*hostApi)->info.deviceCount;
-
     }
 
     (*hostApi)->Terminate = Terminate;

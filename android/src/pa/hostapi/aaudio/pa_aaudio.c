@@ -594,7 +594,6 @@ static void Terminate(struct PaUtilHostApiRepresentation *hostApi) {
 PaError PaAAudio_Initialize(PaUtilHostApiRepresentation **hostApi, PaHostApiIndex hostApiIndex) {
     LOGD("PaAAudio_Initialize");
     PaError result = paNoError;
-    int deviceCount;
     PaAAudioHostApiRepresentation *aaudioHostApi;
     PaDeviceInfo *deviceInfoArray;
 
@@ -622,7 +621,7 @@ PaError PaAAudio_Initialize(PaUtilHostApiRepresentation **hostApi, PaHostApiInde
         return paNoError;
     }
 
-    deviceCount = 1;
+    int deviceCount = 1;
     (*hostApi)->deviceInfos = (PaDeviceInfo**)PaUtil_GroupAllocateZeroInitializedMemory(aaudioHostApi->allocations, sizeof(PaDeviceInfo*) * deviceCount);
     if (!(*hostApi)->deviceInfos) {
         result = paInsufficientMemory;
