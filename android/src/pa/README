@@ -1,8 +1,10 @@
-This is a copy of PortAudio code with support for OBOE.
+This is a copy of PortAudio as of commit hash 19d598752989ed091b8f55ae688c940a8c085d73 taken on 18/07/2025
 
-Original code was taken from the 'Rebase' branch of:
-    https://github.com/NetResultsIT/portaudio_oboe
+Only support for Unix OS has been kept, and OpenSLES and AAudio Host APIs added.
 
-pa_oboe.cpp modifications:
-    - Correctly assign to 'result' in 'tryStream()'
-    - Default output stream to 'Media' in 'OpenStream()'
+pa_opensles.c
+ - taken from: https://github.com/croissanne/portaudio_opensles
+ - with deadlock fixes from: https://github.com/darksylinc/portaudio_opensles/commits/matias-deadlock
+
+pa_aaudio.c
+ - genenatated via copilot from pa_opensles.c
