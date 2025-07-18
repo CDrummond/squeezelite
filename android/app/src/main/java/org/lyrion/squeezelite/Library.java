@@ -36,6 +36,8 @@ import com.android.volley.Response;
 import org.json.JSONObject;
 
 public class Library {
+    // Timeout after which Sueezelite will close audio stream
+    static final int STREAM_IDLE_TIMEOUT = 2000;
     static long MIN_LMS_VOLUME_UPDATE_TIME = 750;
     // received volume values for 0..100
     static int[] LMS_VOLS = new int[]{0,16,18,22,26,31,36,43,51,61,72,85,101,120,142,168,200,237,281,333,395,468,555,658,781,926,980,1037,1098,1162,1230,1302,1378,1458,1543,1634,1729,1830,1937,2050,2048,2304,2304,2560,2816,2816,3072,3328,3328,3584,3840,4096,4352,4608,4864,5120,5376,5632,6144,6400,6656,7168,7680,7936,8448,8960,9472,9984,10752,11264,12032,12544,13312,14080,14848,15872,16640,17664,18688,19968,20992,22272,23552,24832,26368,27904,29696,31232,33024,35072,37120,39424,41728,44032,46592,49408,52224,55296,58624,61952,65536};
@@ -121,7 +123,7 @@ public class Library {
         thread = new Thread(() -> start(ipAddress,
               mac,
               prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME),
-              2000,
+              STREAM_IDLE_TIMEOUT,
               VOL_SEP==volumeControl ? 0 : 1,
               LOG_ERROR,
               openSLES ? 1 : 0));
