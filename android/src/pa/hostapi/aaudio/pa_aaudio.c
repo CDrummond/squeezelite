@@ -490,6 +490,10 @@ static PaError OpenStream(struct PaUtilHostApiRepresentation *hostApi, PaStream 
         AAudioStreamBuilder_setChannelCount(builder, outputChannelCount);
         AAudioStreamBuilder_setSampleRate(builder, (int)sampleRate);
         AAudioStreamBuilder_setFormat(builder, outputAaudioFormat);
+        if (__ANDROID_API__>=28) {
+            AAudioStreamBuilder_setContentType(builder, AAUDIO_CONTENT_TYPE_MUSIC);
+            AAudioStreamBuilder_setUsage(builder, AAUDIO_USAGE_MEDIA);
+        }
         AAudioStreamBuilder_setDataCallback(builder, AaudioDataCallback, aaudioStream);
         AAudioStreamBuilder_setErrorCallback(builder, AaudioErrorCallback, aaudioStream);
 
