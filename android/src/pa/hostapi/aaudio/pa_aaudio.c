@@ -49,20 +49,15 @@
 #include <aaudio/AAudio.h>
 #include <android/log.h>
 #include <android/api-level.h>
-#include <semaphore.h>
-#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include "pa_util.h"
 #include "pa_allocation.h"
 #include "pa_hostapi.h"
-#include "pa_memorybarrier.h"
 #include "pa_stream.h"
 #include "pa_cpuload.h"
 #include "pa_process.h"
 #include "pa_unix_util.h"
-#include "pa_debugprint.h"
 
 int PaAAudio_ENABLED = 0;
 
@@ -105,8 +100,8 @@ typedef struct {
 } PaAAudioHostApiRepresentation;
 
 typedef struct {
+    int use;
     AAudioStream *stream;
-    sem_t sem;
     int bytesPerSample;
     int channelCount;
     aaudio_format_t format;
@@ -117,15 +112,10 @@ typedef struct {
     PaUtilCpuLoadMeasurer cpuLoadMeasurer;
     PaUtilBufferProcessor bufferProcessor;
 
-    int hasOutput;
-    int hasInput;
     volatile int isStopped;
     volatile int isActive;
-    volatile int doStop;
-    volatile int doAbort;
 
     PaStreamCallbackFlags cbFlags;
-    PaUnixThread streamThread;
     unsigned long framesPerHostCallback;
 
     PaAAStream output;
@@ -284,17 +274,11 @@ static void AaudioErrorCallback(AAudioStream *stream, void *userData, aaudio_res
 static PaError CloseStream(PaStream *s) {
     LOGD("CloseStream");
     PaAAudioStream *aaudioStream = (PaAAudioStream *)s;
-    if (aaudioStream->hasOutput) {
-        sem_destroy(&aaudioStream->output.sem);
-        if (aaudioStream->output.stream) {
-            AAudioStream_close(aaudioStream->output.stream);
-        }
+    if (aaudioStream->output.use && aaudioStream->output.stream) {
+        AAudioStream_close(aaudioStream->output.stream);
     }
-    if (aaudioStream->hasInput) {
-        sem_destroy(&aaudioStream->input.sem);
-        if (aaudioStream->input.stream) {
-            AAudioStream_close(aaudioStream->input.stream);
-        }
+    if (aaudioStream->input.use && aaudioStream->input.stream) {
+        AAudioStream_close(aaudioStream->input.stream);
     }
     PaUtil_TerminateBufferProcessor(&aaudioStream->bufferProcessor);
     PaUtil_TerminateStreamRepresentation(&aaudioStream->streamRepresentation);
@@ -308,12 +292,10 @@ static PaError StartStream(PaStream *s) {
     PaUtil_ResetBufferProcessor(&aaudioStream->bufferProcessor);
     aaudioStream->isStopped = 0;
     aaudioStream->isActive = 1;
-    aaudioStream->doStop = 0;
-    aaudioStream->doAbort = 0;
-    if (aaudioStream->hasOutput && aaudioStream->output.stream && AAudioStream_requestStart(aaudioStream->output.stream) != AAUDIO_OK) {
+    if (aaudioStream->output.use && aaudioStream->output.stream && AAudioStream_requestStart(aaudioStream->output.stream) != AAUDIO_OK) {
         return paUnanticipatedHostError;
     }
-    if (aaudioStream->hasInput && aaudioStream->input.stream && AAudioStream_requestStart(aaudioStream->input.stream) != AAUDIO_OK) {
+    if (aaudioStream->input.use && aaudioStream->input.stream && AAudioStream_requestStart(aaudioStream->input.stream) != AAUDIO_OK) {
         return paUnanticipatedHostError;
     }
     return paNoError;
@@ -324,10 +306,10 @@ static PaError StopStream(PaStream *s) {
     PaAAudioStream *aaudioStream = (PaAAudioStream *)s;
     aaudioStream->isActive = 0;
     aaudioStream->isStopped = 1;
-    if (aaudioStream->hasOutput && aaudioStream->output.stream && AAudioStream_requestStop(aaudioStream->output.stream) != AAUDIO_OK) {
+    if (aaudioStream->output.use && aaudioStream->output.stream && AAudioStream_requestStop(aaudioStream->output.stream) != AAUDIO_OK) {
         return paUnanticipatedHostError;
     }
-    if (aaudioStream->hasInput && aaudioStream->input.stream && AAudioStream_requestStop(aaudioStream->input.stream) != AAUDIO_OK) {
+    if (aaudioStream->input.use && aaudioStream->input.stream && AAudioStream_requestStop(aaudioStream->input.stream) != AAUDIO_OK) {
         return paUnanticipatedHostError;
     }
     return paNoError;
@@ -356,7 +338,7 @@ static double GetStreamCpuLoad(PaStream *s) {
 
 static PaError ReadStream(PaStream *s, void *buffer, unsigned long frames) {
     PaAAudioStream *aaudioStream = (PaAAudioStream *)s;
-    if (!aaudioStream->hasInput){
+    if (!aaudioStream->input.use){
         return paBadStreamPtr;
     }
     int32_t result = AAudioStream_read(
@@ -370,7 +352,7 @@ static PaError ReadStream(PaStream *s, void *buffer, unsigned long frames) {
 
 static PaError WriteStream(PaStream *s, const void *buffer, unsigned long frames) {
     PaAAudioStream *aaudioStream = (PaAAudioStream *)s;
-    if (!aaudioStream->hasOutput) {
+    if (!aaudioStream->output.use) {
         return paBadStreamPtr;
     }
     int32_t result = AAudioStream_write(
@@ -473,16 +455,15 @@ static PaError OpenStream(struct PaUtilHostApiRepresentation *hostApi, PaStream 
     aaudioStream->cbFlags = 0;
     aaudioStream->isStopped = 1;
     aaudioStream->isActive = 0;
-    aaudioStream->hasInput = (inputChannelCount > 0);
-    aaudioStream->hasOutput = (outputChannelCount > 0);
+    aaudioStream->input.use = (inputChannelCount > 0);
+    aaudioStream->output.use = (outputChannelCount > 0);
 
     // Output stream setup
-    if (aaudioStream->hasOutput) {
+    if (aaudioStream->output.use) {
         AAudioStreamBuilder *builder = NULL;
         aaudioStream->output.bytesPerSample = Pa_GetSampleSize(hostOutputSampleFormat);
         aaudioStream->output.channelCount = outputChannelCount;
         aaudioStream->output.format = outputAaudioFormat;
-        sem_init(&aaudioStream->output.sem, 0, 0);
 
         if (AAudio_createStreamBuilder(&builder) != AAUDIO_OK) {
             result = paUnanticipatedHostError;
@@ -509,12 +490,11 @@ static PaError OpenStream(struct PaUtilHostApiRepresentation *hostApi, PaStream 
     }
 
     // Input stream setup
-    if (aaudioStream->hasInput) {
+    if (aaudioStream->input.use) {
         AAudioStreamBuilder *builder = NULL;
         aaudioStream->input.bytesPerSample = Pa_GetSampleSize(hostInputSampleFormat);
         aaudioStream->input.channelCount = inputChannelCount;
         aaudioStream->input.format = inputAaudioFormat;
-        sem_init(&aaudioStream->input.sem, 0, 0);
 
         if (AAudio_createStreamBuilder(&builder) != AAUDIO_OK) { 
             result = paUnanticipatedHostError;
