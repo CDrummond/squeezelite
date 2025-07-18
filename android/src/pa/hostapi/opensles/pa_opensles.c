@@ -56,7 +56,6 @@
 
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
-#include <android/log.h>
 
 #include "pa_util.h"
 #include "pa_allocation.h"
