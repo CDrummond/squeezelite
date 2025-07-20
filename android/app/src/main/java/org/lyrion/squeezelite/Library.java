@@ -93,6 +93,8 @@ public class Library {
         if (null!=thread || !loaded) {
             return;
         }
+        Utils.info("");
+
         this.service = service;
         SharedPreferences prefs = Prefs.get(service);
         ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
@@ -107,18 +109,22 @@ public class Library {
 
         initialLmsVolSeen = false;
         ipAddress = server.address();
+        if (null==audioManager) {
+            audioManager = (AudioManager) service.getSystemService(Context.AUDIO_SERVICE);
+            androidMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        }
         if (VOL_SYNC==volumeControl) {
-            if (null==audioManager) {
-                audioManager = (AudioManager) service.getSystemService(Context.AUDIO_SERVICE);
-                androidMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            }
-            androidVolume = -1000;
+            androidVolume = UNKNOWN_VOL;
             jsonRpc = new JsonRpc(service, server, mac);
             observer = new VolumeChangeObserver();
             service.getApplicationContext().getContentResolver().registerContentObserver(Settings.System.CONTENT_URI, true, observer);
         }
+        int volumeToRestore = prefs.getBoolean(Prefs.RESTORE_VOLUME_KEY, Prefs.DEFAULT_RESTORE_VOLUME) ? (int)prefs.getLong(Prefs.VOLUME_KEY, -1) : -1;
+        if (volumeToRestore>=0) {
+            Utils.info("Restore volume:" + volumeToRestore);
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeToRestore, 0);
+        }
 
-        Utils.info("");
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> Utils.error("Unhandled exception", throwable));
         thread = new Thread(() -> start(ipAddress,
               mac,
@@ -136,6 +142,16 @@ public class Library {
         }
         service = null;
         Utils.info("");
+
+        SharedPreferences prefs = Prefs.get(context);
+        androidVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        if (androidVolume>=0) {
+            Utils.info("Store volume:" + androidVolume);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putLong(Prefs.VOLUME_KEY, androidVolume);
+            editor.apply();
+        }
+
         if (null != observer) {
             context.getApplicationContext().getContentResolver().unregisterContentObserver(observer);
             observer = null;

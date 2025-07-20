@@ -1,3 +1,4 @@
 Changed
 
 • Use exclusive mode for AAudio.
+• Add option to restore device's 'Music' volume when starting player.

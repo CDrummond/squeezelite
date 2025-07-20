@@ -68,6 +68,12 @@
             app:singleLineTitle="false"/>
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
+            app:key="restore_volume"
+            app:summary="@string/restore_volume_summary"
+            app:title="@string/restore_volume"
+            app:singleLineTitle="false"/>
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
             app:key="use_wake_lock"
             app:summary="@string/use_wake_lock_summary"
             app:title="@string/use_wake_lock"

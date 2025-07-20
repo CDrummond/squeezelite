@@ -41,6 +41,9 @@ public class Prefs {
     public static final String CONNECTION_LOST_TIMEOUT_KEY = "connection_lost_timeout";
     public static final String INITIAL_CONNECTION_TIMEOUT_KEY = "initial_connection_timeout";
     public static final String OUTPUT_LIB_KEY = "output_lib";
+    public static final String VOLUME_KEY = "volume";
+    public static final String RESTORE_VOLUME_KEY = "restore_volume";
+
 
     public static final String VOLUME_CONTROL_SEPARATE = "separate";
     public static final String VOLUME_CONTROL_DEVICE = "device";
@@ -55,6 +58,8 @@ public class Prefs {
     public static boolean DEFAULT_START_SERVICE = false;
     public static boolean DEFAULT_USE_WAKE_LOCK = false;
     public static String DEFAULT_VOLUME_CONTROL = VOLUME_CONTROL_SYNCHRONIZED;
+    public static boolean DEFAULT_RESTORE_VOLUME = true;
+
 
     static public SharedPreferences get(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -113,6 +118,12 @@ public class Prefs {
                 editor = sharedPreferences.edit();
             }
             editor.putString(OUTPUT_LIB_KEY, DEFAULT_OUTPUT_LIB);
+        }
+        if (!sharedPreferences.contains(RESTORE_VOLUME_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putBoolean(RESTORE_VOLUME_KEY, DEFAULT_RESTORE_VOLUME);
         }
         if (editor!=null) {
             editor.apply();
