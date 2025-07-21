@@ -55,6 +55,13 @@
             android:title="@string/volume_control"
             app:iconSpaceReserved="false"
             app:singleLineTitle="false"/>
+        <ListPreference
+            android:entries="@array/bitrate"
+            android:entryValues="@array/bitrateAlias"
+            android:key="max_bitrate"
+            android:title="@string/max_bitrate"
+            app:iconSpaceReserved="false"
+            app:singleLineTitle="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory

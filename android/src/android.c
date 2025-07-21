@@ -123,11 +123,11 @@ void send_connection_state_to_app(const char *address) {
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint idle, jint fixed_vol, jint logging, jint use_opensles) {
+JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint idle, jint fixed_vol, jint logging, jint use_opensles, jint low_data) {
 	const char *server = (*env)->GetStringUTFChars(env, lms_param, NULL);
 	const char *mac_str = (*env)->GetStringUTFChars(env, mac_param, NULL);
 	char *output_device = "default";
-	char *include_codecs = NULL;
+	char *include_codecs = low_data ? "mp3" : NULL;
 	char *exclude_codecs = "";
 	const char *name = (*env)->GetStringUTFChars(env, name_param, NULL);
 	char *namefile = NULL;
@@ -148,7 +148,7 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jo
 	log_level log_decode = logging;
 	log_level log_slimproto = logging;
 
-	int maxSampleRate = 0;
+	int maxSampleRate = low_data ? 48000 : 0;
 
 	PaOpenSLES_ENABLED = use_opensles;
 	PaAAudio_ENABLED = !use_opensles;

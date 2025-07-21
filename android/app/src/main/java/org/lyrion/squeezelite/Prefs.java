@@ -43,6 +43,7 @@ public class Prefs {
     public static final String OUTPUT_LIB_KEY = "output_lib";
     public static final String VOLUME_KEY = "volume";
     public static final String RESTORE_VOLUME_KEY = "restore_volume";
+    public static final String MAX_BITRATE_KEY = "max_bitrate";
 
 
     public static final String VOLUME_CONTROL_SEPARATE = "separate";
@@ -59,6 +60,7 @@ public class Prefs {
     public static boolean DEFAULT_USE_WAKE_LOCK = false;
     public static String DEFAULT_VOLUME_CONTROL = VOLUME_CONTROL_SYNCHRONIZED;
     public static boolean DEFAULT_RESTORE_VOLUME = true;
+    public static String DEFAULT_MAX_BITRATE = "-1";
 
 
     static public SharedPreferences get(Context context) {
@@ -124,6 +126,12 @@ public class Prefs {
                 editor = sharedPreferences.edit();
             }
             editor.putBoolean(RESTORE_VOLUME_KEY, DEFAULT_RESTORE_VOLUME);
+        }
+        if (!sharedPreferences.contains(MAX_BITRATE_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putString(MAX_BITRATE_KEY, DEFAULT_MAX_BITRATE);
         }
         if (editor!=null) {
             editor.apply();

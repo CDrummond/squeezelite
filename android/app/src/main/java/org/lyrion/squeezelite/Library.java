@@ -31,8 +31,6 @@ import android.provider.Settings;
 
 import androidx.annotation.Keep;
 
-import com.android.volley.Response;
-
 import org.json.JSONObject;
 
 public class Library {
@@ -62,6 +60,7 @@ public class Library {
     private int lmsVolumeSent = UNKNOWN_VOL;
     private long lmsVolumeSendTime;
     private int volumeControl = VOL_SEP;
+    private int maxBitrate = 0;
     private PlayerService service;
     private VolumeChangeObserver observer;
     private AudioManager audioManager;
@@ -106,6 +105,7 @@ public class Library {
                 : Prefs.VOLUME_CONTROL_DEVICE.equals(vc)
                 ? VOL_DEV
                 : VOL_SYNC;
+        maxBitrate = Integer.parseInt(prefs.getString(Prefs.MAX_BITRATE_KEY, Prefs.DEFAULT_MAX_BITRATE));
 
         initialLmsVolSeen = false;
         ipAddress = server.address();
@@ -132,7 +132,8 @@ public class Library {
               STREAM_IDLE_TIMEOUT,
               VOL_SEP==volumeControl ? 0 : 1,
               LOG_ERROR,
-              openSLES ? 1 : 0));
+              openSLES ? 1 : 0,
+              maxBitrate > 0 ? 1 : 0));
         thread.start();
     }
 
@@ -258,6 +259,26 @@ public class Library {
                 jsonRpc.setAddress(address);
             }
             ipAddress = address;
+
+            if (maxBitrate >= 0) {
+                // Check to see what max bitrate has been set...
+                jsonRpc.sendMessage(new String[]{"playerpref", "maxBitrate", "?"}, response -> {
+                    int maxBitrateOnServer = 0;
+                    try {
+                        Utils.debug("RESP" + response.toString(4));
+                        JSONObject result = response.getJSONObject("result");
+                        if (result.has("_p2")) {
+                            maxBitrateOnServer = Integer.parseInt(result.getString("_p2"));
+                        }
+                    } catch (Exception e) {
+                        Utils.error("Failed to parse response", e);
+                    }
+                    if (maxBitrateOnServer != maxBitrate) {
+                        Utils.debug("Setting max bit rate to: " + maxBitrate);
+                        jsonRpc.sendMessage(new String[]{"playerpref", "maxBitrate", String.valueOf(maxBitrate)});
+                    }
+                });
+            }
         }
     }
 
@@ -278,6 +299,6 @@ public class Library {
         isInitialPower = false;
     }
 
-    private native void start(String lms, String mac, String name, int idleTimeout, int fixedVolume, int logging, int useOpenSLES);
+    private native void start(String lms, String mac, String name, int idleTimeout, int fixedVolume, int logging, int useOpenSLES, int lowData);
     private native void stop();
 }

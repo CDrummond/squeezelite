@@ -33,4 +33,28 @@
         <item>aaudio</item>
         <item>opensles</item>
     </string-array>
+    <string-array name="bitrate">
+        <item>Use server setting</item>
+        <item>No limit</item>
+        <item>64 kbps</item>
+        <item>96 kbps</item>
+        <item>128 kbps</item>
+        <item>160 kbps</item>
+        <item>192 kbps</item>
+        <item>224 kbps</item>
+        <item>256 kbps</item>
+        <item>320 kbps</item>
+    </string-array>
+    <string-array name="bitrateAlias" translatable="false">
+        <item>-1</item>
+        <item>0</item>
+        <item>64</item>
+        <item>96</item>
+        <item>128</item>
+        <item>160</item>
+        <item>192</item>
+        <item>224</item>
+        <item>256</item>
+        <item>320</item>
+    </string-array>
 </resources>
