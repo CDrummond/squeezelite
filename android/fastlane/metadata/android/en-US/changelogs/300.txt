@@ -1,3 +1,4 @@
 Changed
 
 • Add option to set bitrate limit. If set, then max sample rate also set to 48khz.
+• Re-open stream on disconnect.

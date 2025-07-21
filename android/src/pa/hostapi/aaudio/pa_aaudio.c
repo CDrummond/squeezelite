@@ -266,9 +266,16 @@ static aaudio_data_callback_result_t AaudioDataCallback(AAudioStream *stream, vo
 }
 
 static void AaudioErrorCallback(AAudioStream *stream, void *userData, aaudio_result_t error) {
-    (void)stream;
-    (void)userData;
     LOGE("AaudioErrorCallback: %d", (int)error);
+    if (AAUDIO_ERROR_DISCONNECTED==error || (AAUDIO_ERROR_TIMEOUT==error && __ANDROID_API__==__ANDROID_API_R__)) {
+        LOGD("Reopen");
+        PaAAudioStream *aaudioStream = (PaAAudioStream *)userData;
+        aaudioStream->isActive = 0;
+        aaudioStream->isStopped = 1;
+        if( aaudioStream->streamRepresentation.streamFinishedCallback != NULL ) {
+            aaudioStream->streamRepresentation.streamFinishedCallback( aaudioStream->streamRepresentation.userData );
+        }
+    }
 }
 
 static PaError CloseStream(PaStream *s) {
