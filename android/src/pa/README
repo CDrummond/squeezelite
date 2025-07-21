@@ -7,4 +7,4 @@ pa_opensles.c
  - with deadlock fixes from: https://github.com/darksylinc/portaudio_opensles/commits/matias-deadlock
 
 pa_aaudio.c
- - genenatated via copilot from pa_opensles.c
+ - generated via copilot from pa_opensles.c
