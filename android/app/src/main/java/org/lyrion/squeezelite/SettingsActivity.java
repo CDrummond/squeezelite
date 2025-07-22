@@ -163,6 +163,7 @@ public class SettingsActivity extends AppCompatActivity {
             updateSummary(Prefs.CONNECTION_LOST_TIMEOUT_KEY);
             updateSummary(Prefs.OUTPUT_LIB_KEY);
             updateSummary(Prefs.MAX_BITRATE_KEY);
+            updateSummary(Prefs.STREAM_BUFFER_KEY);
             PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(this);
         }
 

@@ -123,7 +123,7 @@ void send_connection_state_to_app(const char *address) {
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint idle, jint fixed_vol, jint logging, jint use_opensles, jint low_data) {
+JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint idle, jint fixed_vol, jint logging, jint use_opensles, jint low_data, jint buffer_size) {
 	const char *server = (*env)->GetStringUTFChars(env, lms_param, NULL);
 	const char *mac_str = (*env)->GetStringUTFChars(env, mac_param, NULL);
 	char *output_device = "default";
@@ -133,7 +133,7 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jo
 	char *namefile = NULL;
 	const char *modelname = "SqueezeLiteAndroid";
 	u8_t mac[6];
-	unsigned stream_buf_size = STREAMBUF_SIZE;
+	unsigned stream_buf_size = buffer_size>0 ? buffer_size*1024*1024 : STREAMBUF_SIZE;
 	unsigned output_buf_size = 0; // set later
 	unsigned rates[MAX_SUPPORTED_SAMPLERATES] = { 0 };
 	unsigned rate_delay = 0;

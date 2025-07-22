@@ -57,4 +57,18 @@
         <item>256</item>
         <item>320</item>
     </string-array>
+    <string-array name="buffer">
+        <item>Default</item>
+        <item>4 Mb</item>
+        <item>8 Mb</item>
+        <item>16 Mb</item>
+        <item>32 Mb</item>
+    </string-array>
+    <string-array name="bufferAlias" translatable="false">
+        <item>0</item>
+        <item>4</item>
+        <item>8</item>
+        <item>16</item>
+        <item>32</item>
+    </string-array>
 </resources>
