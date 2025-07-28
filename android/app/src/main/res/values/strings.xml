@@ -34,4 +34,6 @@
     <string name="stream_buffer">Buffer size</string>
     <string name="initial_connection_timeout">Initial connection timeout</string>
     <string name="connection_lost_timeout">Player stop timeout when server connection lost</string>
+    <string name="start_on_boot">Start on boot</string>
+    <string name="start_on_boot_summary">Automatically start player when device is restarted</string>
 </resources>

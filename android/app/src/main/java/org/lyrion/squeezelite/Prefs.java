@@ -45,6 +45,7 @@ public class Prefs {
     public static final String RESTORE_VOLUME_KEY = "restore_volume";
     public static final String MAX_BITRATE_KEY = "max_bitrate";
     public static final String STREAM_BUFFER_KEY = "stream_buffer";
+    public static final String START_ON_BOOT_KEY = "start_on_boot";
 
     public static final String VOLUME_CONTROL_SEPARATE = "separate";
     public static final String VOLUME_CONTROL_DEVICE = "device";
@@ -62,6 +63,8 @@ public class Prefs {
     public static boolean DEFAULT_RESTORE_VOLUME = true;
     public static String DEFAULT_MAX_BITRATE = "-1";
     public static String DEFAULT_STREAM_BUFFER = "0";
+    public static boolean DEFAULT_START_ON_BOOT = false;
+
 
     static public SharedPreferences get(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -138,6 +141,12 @@ public class Prefs {
                 editor = sharedPreferences.edit();
             }
             editor.putString(STREAM_BUFFER_KEY, DEFAULT_STREAM_BUFFER);
+        }
+        if (!sharedPreferences.contains(START_ON_BOOT_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putBoolean(START_ON_BOOT_KEY, DEFAULT_START_ON_BOOT);
         }
         if (editor!=null) {
             editor.apply();

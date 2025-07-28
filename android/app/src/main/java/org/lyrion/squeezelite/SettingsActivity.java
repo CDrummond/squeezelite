@@ -1,41 +1,53 @@
 package org.lyrion.squeezelite;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreferenceCompat;
 
 import java.util.List;
 
 import io.github.muddz.styleabletoast.StyleableToast;
 
 public class SettingsActivity extends AppCompatActivity {
+    private static final int PERMISSION_RECEIVE_BOOT_COMPLETED = 1;
+
+    private SettingsActivity activity;
+    private SettingsFragment fragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTheme(R.style.AppTheme);
 
         setContentView(R.layout.settings_activity);
+        activity = this;
 
-        SettingsFragment fragment = new SettingsFragment();
+        fragment = new SettingsFragment();
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.settings, fragment)
                 .commit();
     }
 
-    public static class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
         private class Discovery extends ServerDiscovery {
             Discovery(Context context) {
                 super(context, true);
@@ -177,7 +189,13 @@ public class SettingsActivity extends AppCompatActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            updateSummary(key);
+            if (Prefs.START_ON_BOOT_KEY.equals(key)) {
+                if (sharedPreferences.getBoolean(key, Prefs.DEFAULT_START_ON_BOOT)) {
+                    activity.checkStartOnBootPermission();
+                }
+            } else {
+                updateSummary(key);
+            }
         }
 
         private void updateSummary(String key) {
@@ -206,5 +224,38 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             }
         }
+
+        private void unCheckStartOnBoot() {
+            if (getContext()==null) {
+                return;
+            }
+            SwitchPreferenceCompat pref = getPreferenceManager().findPreference(Prefs.START_ON_BOOT_KEY);
+            if (pref==null || pref.isChecked()) {
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(Prefs.START_ON_BOOT_KEY,false);
+                editor.apply();
+                if (pref != null) {
+                    pref.setChecked(false);
+                }
+            }
+        }
+    }
+
+    private void checkStartOnBootPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_BOOT_COMPLETED) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECEIVE_BOOT_COMPLETED}, PERMISSION_RECEIVE_BOOT_COMPLETED);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_RECEIVE_BOOT_COMPLETED) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                fragment.unCheckStartOnBoot();
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

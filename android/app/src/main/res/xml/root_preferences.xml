@@ -92,6 +92,12 @@
             app:summary="@string/use_wake_lock_summary"
             app:title="@string/use_wake_lock"
             app:singleLineTitle="false"/>
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="start_on_boot"
+            app:summary="@string/start_on_boot_summary"
+            app:title="@string/start_on_boot"
+            app:singleLineTitle="false"/>
         <ListPreference
             android:entries="@array/duration"
             android:entryValues="@array/durationAlias"
