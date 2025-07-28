@@ -71,4 +71,16 @@
         <item>16</item>
         <item>32</item>
     </string-array>
+    <string-array name="rateLimitWhen">
+        <item>Always</item>
+        <item>When on cellular network</item>
+        <item>When on metered network</item>
+        <item>When on cellular or metered network</item>
+    </string-array>
+    <string-array name="rateLimitWhenAlias" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 </resources>

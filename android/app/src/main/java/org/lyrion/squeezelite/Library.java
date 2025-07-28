@@ -110,10 +110,15 @@ public class Library {
         int streamBuffer = Integer.parseInt(prefs.getString(Prefs.STREAM_BUFFER_KEY, Prefs.DEFAULT_STREAM_BUFFER));
 
         maxBitrate = Integer.parseInt(prefs.getString(Prefs.MAX_BITRATE_KEY, Prefs.DEFAULT_MAX_BITRATE));
-        if (maxBitrate>0 && prefs.getBoolean(Prefs.LIMIT_BITRATE_CELLULAR_OR_METERED_KEY, Prefs.DEFAULT_LIMIT_BITRATE_CELLULAR_OR_METERED)) {
+        int maxBitrateWhen = Integer.parseInt(prefs.getString(Prefs.MAX_BITRATE_WHEN_KEY, Prefs.DEFAULT_MAX_BITRATE));
+        if (maxBitrate>0 && maxBitrateWhen!=Prefs.MAX_BITRATE_ALWAYS) {
             ConnectivityManager connMgr = (ConnectivityManager) service.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();
-            if (!connMgr.isActiveNetworkMetered() && (activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_MOBILE)) {
+            boolean metered = connMgr.isActiveNetworkMetered();
+            boolean cellular = activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE;
+            if ( (maxBitrateWhen==Prefs.MAX_BITRATE_WHEN_CELLULAR && !cellular) ||
+                 (maxBitrateWhen==Prefs.MAX_BITRATE_WHEN_METERED && !metered) ||
+                 (maxBitrateWhen==Prefs.MAX_BITRATE_WHEN_EITHER && !metered && !cellular)) {
                 maxBitrate = 0;
             }
         }

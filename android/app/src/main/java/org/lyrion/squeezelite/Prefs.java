@@ -44,10 +44,13 @@ public class Prefs {
     public static final String VOLUME_KEY = "volume";
     public static final String RESTORE_VOLUME_KEY = "restore_volume";
     public static final String MAX_BITRATE_KEY = "max_bitrate";
-    public static final String LIMIT_BITRATE_CELLULAR_OR_METERED_KEY = "limit_br_cell_metered";
+    public static final String MAX_BITRATE_WHEN_KEY = "max_bitrate_when";
     public static final String STREAM_BUFFER_KEY = "stream_buffer";
     public static final String START_ON_BOOT_KEY = "start_on_boot";
-
+    public static int MAX_BITRATE_ALWAYS = 0;
+    public static int MAX_BITRATE_WHEN_CELLULAR = 1;
+    public static int MAX_BITRATE_WHEN_METERED = 2;
+    public static int MAX_BITRATE_WHEN_EITHER = 3;
     public static final String VOLUME_CONTROL_SEPARATE = "separate";
     public static final String VOLUME_CONTROL_DEVICE = "device";
     public static final String VOLUME_CONTROL_SYNCHRONIZED = "synchronized";
@@ -63,10 +66,9 @@ public class Prefs {
     public static String DEFAULT_VOLUME_CONTROL = VOLUME_CONTROL_SYNCHRONIZED;
     public static boolean DEFAULT_RESTORE_VOLUME = true;
     public static String DEFAULT_MAX_BITRATE = "-1";
-    public static boolean DEFAULT_LIMIT_BITRATE_CELLULAR_OR_METERED = true;
+    public static String DEFAULT_MAX_BITRATE_WHEN = String.valueOf(MAX_BITRATE_WHEN_EITHER);
     public static String DEFAULT_STREAM_BUFFER = "0";
     public static boolean DEFAULT_START_ON_BOOT = false;
-
 
     static public SharedPreferences get(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -138,11 +140,11 @@ public class Prefs {
             }
             editor.putString(MAX_BITRATE_KEY, DEFAULT_MAX_BITRATE);
         }
-        if (!sharedPreferences.contains(LIMIT_BITRATE_CELLULAR_OR_METERED_KEY)) {
+        if (!sharedPreferences.contains(MAX_BITRATE_WHEN_KEY)) {
             if (null==editor) {
                 editor = sharedPreferences.edit();
             }
-            editor.putBoolean(LIMIT_BITRATE_CELLULAR_OR_METERED_KEY, DEFAULT_LIMIT_BITRATE_CELLULAR_OR_METERED);
+            editor.putString(MAX_BITRATE_WHEN_KEY, DEFAULT_MAX_BITRATE_WHEN);
         }
         if (!sharedPreferences.contains(STREAM_BUFFER_KEY)) {
             if (null==editor) {
