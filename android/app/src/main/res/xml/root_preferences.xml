@@ -62,6 +62,12 @@
             android:title="@string/max_bitrate"
             app:iconSpaceReserved="false"
             app:singleLineTitle="false"/>
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="limit_br_cell_metered"
+            app:summary="@string/limit_br_cell_metered_summary"
+            app:title="@string/limit_br_cell_metered"
+            app:singleLineTitle="false"/>
         <ListPreference
             android:entries="@array/buffer"
             android:entryValues="@array/bufferAlias"

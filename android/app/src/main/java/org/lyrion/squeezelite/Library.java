@@ -24,6 +24,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -105,8 +107,16 @@ public class Library {
                 : Prefs.VOLUME_CONTROL_DEVICE.equals(vc)
                 ? VOL_DEV
                 : VOL_SYNC;
-        maxBitrate = Integer.parseInt(prefs.getString(Prefs.MAX_BITRATE_KEY, Prefs.DEFAULT_MAX_BITRATE));
         int streamBuffer = Integer.parseInt(prefs.getString(Prefs.STREAM_BUFFER_KEY, Prefs.DEFAULT_STREAM_BUFFER));
+
+        maxBitrate = Integer.parseInt(prefs.getString(Prefs.MAX_BITRATE_KEY, Prefs.DEFAULT_MAX_BITRATE));
+        if (maxBitrate>0 && prefs.getBoolean(Prefs.LIMIT_BITRATE_CELLULAR_OR_METERED_KEY, Prefs.DEFAULT_LIMIT_BITRATE_CELLULAR_OR_METERED)) {
+            ConnectivityManager connMgr = (ConnectivityManager) service.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();
+            if (!connMgr.isActiveNetworkMetered() && (activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_MOBILE)) {
+                maxBitrate = 0;
+            }
+        }
 
         initialLmsVolSeen = false;
         ipAddress = server.address();

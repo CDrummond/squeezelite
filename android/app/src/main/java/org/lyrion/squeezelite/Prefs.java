@@ -44,6 +44,7 @@ public class Prefs {
     public static final String VOLUME_KEY = "volume";
     public static final String RESTORE_VOLUME_KEY = "restore_volume";
     public static final String MAX_BITRATE_KEY = "max_bitrate";
+    public static final String LIMIT_BITRATE_CELLULAR_OR_METERED_KEY = "limit_br_cell_metered";
     public static final String STREAM_BUFFER_KEY = "stream_buffer";
     public static final String START_ON_BOOT_KEY = "start_on_boot";
 
@@ -62,6 +63,7 @@ public class Prefs {
     public static String DEFAULT_VOLUME_CONTROL = VOLUME_CONTROL_SYNCHRONIZED;
     public static boolean DEFAULT_RESTORE_VOLUME = true;
     public static String DEFAULT_MAX_BITRATE = "-1";
+    public static boolean DEFAULT_LIMIT_BITRATE_CELLULAR_OR_METERED = true;
     public static String DEFAULT_STREAM_BUFFER = "0";
     public static boolean DEFAULT_START_ON_BOOT = false;
 
@@ -135,6 +137,12 @@ public class Prefs {
                 editor = sharedPreferences.edit();
             }
             editor.putString(MAX_BITRATE_KEY, DEFAULT_MAX_BITRATE);
+        }
+        if (!sharedPreferences.contains(LIMIT_BITRATE_CELLULAR_OR_METERED_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putBoolean(LIMIT_BITRATE_CELLULAR_OR_METERED_KEY, DEFAULT_LIMIT_BITRATE_CELLULAR_OR_METERED);
         }
         if (!sharedPreferences.contains(STREAM_BUFFER_KEY)) {
             if (null==editor) {
