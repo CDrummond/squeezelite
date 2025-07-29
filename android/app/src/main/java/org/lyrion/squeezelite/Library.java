@@ -277,7 +277,7 @@ public class Library {
             }
             ipAddress = address;
 
-            if (maxBitrate >= 0) {
+            if (maxBitrate >= 0 && null!=jsonRpc) {
                 // Check to see what max bitrate has been set...
                 jsonRpc.sendMessage(new String[]{"playerpref", "maxBitrate", "?"}, response -> {
                     int maxBitrateOnServer = 0;

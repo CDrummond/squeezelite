@@ -25,8 +25,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.Log;
 import androidx.core.app.ActivityCompat;
@@ -35,12 +33,6 @@ import androidx.core.app.NotificationManagerCompat;
 
 public class Utils {
     public static final String LOG_TAG = "SqueezeliteUI";
-
-    public static boolean isNetworkConnected(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-        return null!=info && info.isConnected();
-    }
 
     static public boolean notificationAllowed(Context context, String channelId) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -54,7 +46,7 @@ public class Utils {
             debug("Notifs are disabled");
             return false;
         }
-        if (channelId!=null && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (channelId != null) {
             NotificationManager mgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationChannel channel = mgr.getNotificationChannel(channelId);
             if (null!=channel) {
@@ -80,7 +72,7 @@ public class Utils {
 
     private static String logPrefix() {
         StackTraceElement[] st = Thread.currentThread().getStackTrace();
-        if (null!=st && st.length>4) {
+        if (st.length>4) {
             // Remove org.lyrion.squeezelite.
             return "["+st[4].getClassName().substring(23)+"."+st[4].getMethodName()+"] ";
         }

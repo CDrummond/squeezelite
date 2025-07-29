@@ -43,11 +43,7 @@ public class CommandReceiver extends BroadcastReceiver {
         Utils.debug(act);
         if (act.equals(START) ||
                 (act.equals(Intent.ACTION_BOOT_COMPLETED) && Prefs.get(context).getBoolean(Prefs.START_ON_BOOT_KEY, Prefs.DEFAULT_START_ON_BOOT))) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(new Intent(context, PlayerService.class));
-            } else {
-                context.startService(new Intent(context, PlayerService.class));
-            }
+            context.startForegroundService(new Intent(context, PlayerService.class));
         } else if (act.equals(STOP)) {
             context.stopService(new Intent(context, PlayerService.class));
         }
