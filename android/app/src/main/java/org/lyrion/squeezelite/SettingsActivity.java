@@ -29,7 +29,6 @@ import io.github.muddz.styleabletoast.StyleableToast;
 public class SettingsActivity extends AppCompatActivity {
     private static final int PERMISSION_RECEIVE_BOOT_COMPLETED = 1;
 
-    private SettingsActivity activity;
     private SettingsFragment fragment;
 
     @Override
@@ -38,16 +37,16 @@ public class SettingsActivity extends AppCompatActivity {
         setTheme(R.style.AppTheme);
 
         setContentView(R.layout.settings_activity);
-        activity = this;
 
         fragment = new SettingsFragment();
+        fragment.setActivity(this);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.settings, fragment)
                 .commit();
     }
 
-    public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public static class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
         private class Discovery extends ServerDiscovery {
             Discovery(Context context) {
                 super(context, true);
@@ -98,7 +97,12 @@ public class SettingsActivity extends AppCompatActivity {
             }
         }
 
+        private SettingsActivity activity = null;
         private Discovery discovery = null;
+
+        public void setActivity(SettingsActivity activity) {
+            this.activity = activity;
+        }
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
