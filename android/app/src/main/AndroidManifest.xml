@@ -38,9 +38,9 @@
         </activity>
 
         <service
-            android:exported="true"
             android:name=".PlayerService"
             android:enabled="true"
+            android:exported="true"
             android:foregroundServiceType="mediaPlayback"
             android:process=":squeezelitePlayer">
         </service>
