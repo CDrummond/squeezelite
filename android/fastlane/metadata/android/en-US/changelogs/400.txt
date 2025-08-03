@@ -1,2 +1,2 @@
-• Add option to istart on boot.
+• Add option to start on boot.
 • Add option to only use max bit rate setting for cellular or metered connections.
