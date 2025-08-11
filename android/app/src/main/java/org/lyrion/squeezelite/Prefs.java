@@ -47,6 +47,8 @@ public class Prefs {
     public static final String MAX_BITRATE_WHEN_KEY = "max_bitrate_when";
     public static final String STREAM_BUFFER_KEY = "stream_buffer";
     public static final String START_ON_BOOT_KEY = "start_on_boot";
+    public static final String AUTOSTART_BT_KEY = "autostart_bt";
+    public static final String BT_MAC_ADDRESSES_KEY = "bt_mac_addresses";
     public static int MAX_BITRATE_ALWAYS = 0;
     public static int MAX_BITRATE_WHEN_CELLULAR = 1;
     public static int MAX_BITRATE_WHEN_METERED = 2;
@@ -157,6 +159,12 @@ public class Prefs {
                 editor = sharedPreferences.edit();
             }
             editor.putBoolean(START_ON_BOOT_KEY, DEFAULT_START_ON_BOOT);
+        }
+        if (!sharedPreferences.contains(AUTOSTART_BT_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putBoolean(AUTOSTART_BT_KEY, false);
         }
         if (editor!=null) {
             editor.apply();

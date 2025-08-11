@@ -129,6 +129,18 @@
             app:iconSpaceReserved="false"
             app:singleLineTitle="false"
             android:singleLineTitle="false"/>
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="autostart_bt"
+            app:summary="@string/autostart_bt_summary"
+            app:title="@string/autostart_bt"
+            app:singleLineTitle="false"/>
+        <MultiSelectListPreference
+            android:key="bt_mac_addresses"
+            android:title="@string/bt_mac_addresses"
+            app:iconSpaceReserved="false"
+            app:singleLineTitle="false"
+            android:singleLineTitle="false"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

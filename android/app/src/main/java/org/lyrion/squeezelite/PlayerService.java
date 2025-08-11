@@ -50,9 +50,12 @@ import java.util.concurrent.TimeUnit;
 public class PlayerService extends Service {
     // How long after losing connection to server should we stop player?
     public static final String STATUS_INTENT = PlayerService.class.getCanonicalName()+".STATUS";
+    public static final String START_INTENT = PlayerService.class.getCanonicalName() + ".START";
     private static final String QUIT_INTENT = PlayerService.class.getCanonicalName() + ".QUIT";
     public static final String RUNNING_KEY = "running";
     public static final String NOTIFICATION_CHANNEL_ID = "squeezelite_service";
+    public static final String EXTRA_MAC = "mac";
+    public static final String EXTRA_NAME = "name";
     private static final int MSG_ID = 1;
 
     private String currentServerAddress = null;
@@ -63,10 +66,20 @@ public class PlayerService extends Service {
     private Library lib = null;
     private int initialConnectionTimeout = 0;
     private int connectionLostTimeout = 0;
-    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    ScheduledFuture<?> terminateOnConnectionLostHandler;
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture<?> terminateOnConnectionLostHandler;
+    private String playerMac;
+    private String playerName;
     public PlayerService() {
         handler = new Handler(Looper.getMainLooper());
+    }
+
+    public String getMac() {
+        return playerMac;
+    }
+
+    public String getName() {
+        return playerName;
     }
 
     @Override
@@ -79,7 +92,6 @@ public class PlayerService extends Service {
     public void onCreate() {
         super.onCreate();
         Utils.debug("");
-        startForegroundService();
     }
 
     @Override
@@ -97,11 +109,18 @@ public class PlayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Utils.debug("");
         if (intent != null) {
             String action = intent.getAction();
             if (QUIT_INTENT.equals(action)) {
                 stopForegroundService();
                 return START_NOT_STICKY;
+            }
+            if (START_INTENT.equals(action)) {
+                playerMac = intent.getStringExtra(EXTRA_MAC);
+                playerName = intent.getStringExtra(EXTRA_NAME);
+                Utils.debug("mac:" + playerMac+", name:"+playerName);
+                startForegroundService();
             }
         }
 

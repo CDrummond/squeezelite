@@ -20,10 +20,18 @@
 
 package org.lyrion.squeezelite;
 
+import android.Manifest;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.content.pm.PackageManager;
+
+import androidx.core.content.ContextCompat;
+
+import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Start/stop service via:
@@ -43,9 +51,47 @@ public class CommandReceiver extends BroadcastReceiver {
         Utils.debug(act);
         if (act.equals(START) ||
                 (act.equals(Intent.ACTION_BOOT_COMPLETED) && Prefs.get(context).getBoolean(Prefs.START_ON_BOOT_KEY, Prefs.DEFAULT_START_ON_BOOT))) {
-            context.startForegroundService(new Intent(context, PlayerService.class));
+            Intent startIntent = new Intent(context, PlayerService.class);
+            intent.setAction(PlayerService.START_INTENT);
+            context.startForegroundService(startIntent);
         } else if (act.equals(STOP)) {
             context.stopService(new Intent(context, PlayerService.class));
+        } else if (act.equals(BluetoothDevice.ACTION_ACL_CONNECTED) || act.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
+            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+            if (device != null) {
+                String macAddress = device.getAddress();
+                Utils.debug("BT MAC address: " + macAddress);
+
+                if (!Prefs.get(context).getBoolean(Prefs.AUTOSTART_BT_KEY, false)) {
+                    Utils.debug("Not configured for BT auto-start");
+                    return;
+                }
+
+                Set<String> macs = Prefs.get(context).getStringSet(Prefs.BT_MAC_ADDRESSES_KEY, null);
+                if (null==macs || macs.isEmpty()) {
+                    Utils.debug("No BT MACs configured");
+                    return;
+                }
+
+                if (!macs.contains(macAddress)) {
+                    Utils.debug("Not a configured BT MAC");
+                    return;
+                }
+
+                if (Utils.isPlayerRunning(context)) {
+                    context.stopService(new Intent(context, PlayerService.class));
+                }
+
+                if (act.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
+                    Intent startIntent = new Intent(context, PlayerService.class);
+                    startIntent.setAction(PlayerService.START_INTENT);
+                    startIntent.putExtra(PlayerService.EXTRA_MAC, macAddress);
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                        startIntent.putExtra(PlayerService.EXTRA_NAME, device.getName());
+                    }
+                    context.startForegroundService(startIntent);
+                }
+            }
         }
     }
 }

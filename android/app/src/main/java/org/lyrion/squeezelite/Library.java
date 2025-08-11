@@ -99,7 +99,8 @@ public class Library {
         this.service = service;
         SharedPreferences prefs = Prefs.get(service);
         ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
-        String mac = prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC);
+        String mac = Utils.isEmpty(service.getMac()) ? prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC) : service.getMac();
+        String name = Utils.isEmpty(service.getName()) ? prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME) : service.getName();
         String vc = prefs.getString(Prefs.VOLUME_CONTROL_KEY, Prefs.DEFAULT_VOLUME_CONTROL);
         boolean openSLES = Prefs.OUTPUT_LIB_OPENSLES.equals(prefs.getString(Prefs.OUTPUT_LIB_KEY, Prefs.DEFAULT_OUTPUT_LIB));
         volumeControl = Prefs.VOLUME_CONTROL_SEPARATE.equals(vc)
@@ -142,9 +143,10 @@ public class Library {
         }
 
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> Utils.error("Unhandled exception", throwable));
+        Utils.debug("Start mac:" + mac + ", name: " + name);
         thread = new Thread(() -> start(ipAddress,
               mac,
-              prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME),
+              name,
               STREAM_IDLE_TIMEOUT,
               VOL_SEP==volumeControl ? 0 : 1,
               LOG_ERROR,

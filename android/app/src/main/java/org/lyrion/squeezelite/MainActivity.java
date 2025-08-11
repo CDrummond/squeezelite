@@ -21,7 +21,6 @@
 package org.lyrion.squeezelite;
 
 import android.Manifest;
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (PlayerService.STATUS_INTENT.equals(intent.getAction())) {
-                StyleableToast.makeText(context, getResources().getString(isPlayerRunning() ? R.string.player_started : R.string.player_stopped), Toast.LENGTH_SHORT, R.style.toast).show();
+                StyleableToast.makeText(context, getResources().getString(Utils.isPlayerRunning(context) ? R.string.player_started : R.string.player_stopped), Toast.LENGTH_SHORT, R.style.toast).show();
                 controlWidgets();
             }
         }
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         if (prefs.getBoolean(Prefs.START_SERVICE_KEY, Prefs.DEFAULT_START_SERVICE) && canStartPlayer()) {
             Intent intent = getIntent();
             boolean askedToStartPlayer = null!=intent && intent.getBooleanExtra(START_PLAYER_EXTRA, false);
-            boolean alreadyRunning = isPlayerRunning();
+            boolean alreadyRunning = Utils.isPlayerRunning(this);
 
             if (askedToStartPlayer && alreadyRunning) {
                 Utils.debug("Asked to start player, but already running..");
@@ -99,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         controlButton.setOnClickListener(view -> {
-            if (isPlayerRunning()) {
+            if (Utils.isPlayerRunning(this)) {
                 stopPlayer();
             } else {
                 if (!canStartPlayer()) {
@@ -142,19 +141,10 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    private boolean isPlayerRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (service.service.getClassName().equals(PlayerService.class.getCanonicalName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void startPlayer() {
         Utils.debug("Start player service");
         Intent intent = new Intent(MainActivity.this, PlayerService.class);
+        intent.setAction(PlayerService.START_INTENT);
         startService(intent);
     }
 
@@ -166,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
     private void controlWidgets() {
         SharedPreferences prefs = Prefs.get(this);
         boolean configured = Prefs.hasBeenConfigured(prefs);
-        boolean running = isPlayerRunning();
+        boolean running = Utils.isPlayerRunning(this);
         float alpha = running ? 0.5f : 1.0f;
         controlButton.setText(running ? R.string.stop_player : R.string.start_player);
         controlButton.setAlpha(configured ? 1.0f : 0.5f);

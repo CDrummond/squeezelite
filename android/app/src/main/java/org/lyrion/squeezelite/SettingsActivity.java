@@ -1,33 +1,42 @@
 package org.lyrion.squeezelite;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
+import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import io.github.muddz.styleabletoast.StyleableToast;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final int PERMISSION_RECEIVE_BOOT_COMPLETED = 1;
+    private static final int PERMISSION_BLUETOOTH_CONNECT_COMPLETED = 2;
 
     private SettingsFragment fragment;
 
@@ -173,6 +182,15 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
                 });
             }
+            final Preference btMacAddresses = getPreferenceManager().findPreference(Prefs.BT_MAC_ADDRESSES_KEY);
+            if (null!=btMacAddresses) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    btMacAddresses.setEnabled(false);
+                } else {
+                    fillBtMacAddressList((MultiSelectListPreference)btMacAddresses, getContext());
+                }
+            }
+
             updateSummary(Prefs.PLAYER_NAME_KEY);
             updateSummary(Prefs.VOLUME_CONTROL_KEY);
             updateSummary(Prefs.INITIAL_CONNECTION_TIMEOUT_KEY);
@@ -194,11 +212,16 @@ public class SettingsActivity extends AppCompatActivity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            Utils.debug(key);
             if (Prefs.START_ON_BOOT_KEY.equals(key)) {
                 if (sharedPreferences.getBoolean(key, Prefs.DEFAULT_START_ON_BOOT)) {
                     activity.checkStartOnBootPermission();
                 }
-            } else {
+            } else if (Prefs.AUTOSTART_BT_KEY.equals(key)) {
+                if (sharedPreferences.getBoolean(Prefs.AUTOSTART_BT_KEY, false)) {
+                    activity.checkBtPermission();
+                }
+            }else {
                 updateSummary(key);
             }
         }
@@ -238,12 +261,56 @@ public class SettingsActivity extends AppCompatActivity {
             if (pref==null || pref.isChecked()) {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(Prefs.START_ON_BOOT_KEY,false);
+                editor.putBoolean(Prefs.START_ON_BOOT_KEY, false);
                 editor.apply();
                 if (pref != null) {
                     pref.setChecked(false);
                 }
             }
+        }
+
+        private void unAutoStartBt() {
+            if (getContext()==null) {
+                return;
+            }
+            SwitchPreferenceCompat pref = getPreferenceManager().findPreference(Prefs.AUTOSTART_BT_KEY);
+            if (pref==null || pref.isChecked()) {
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(Prefs.AUTOSTART_BT_KEY, false);
+                editor.apply();
+                if (pref != null) {
+                    pref.setChecked(false);
+                }
+            }
+        }
+    }
+
+    private static void fillBtMacAddressList(MultiSelectListPreference btMacAddresses, Context context) {
+        Utils.debug("");
+        CharSequence[] names = null;
+        CharSequence[] macs = null;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+            Set<BluetoothDevice> pairedDevices = adapter.getBondedDevices();
+
+            if (!pairedDevices.isEmpty()) {
+                names = new CharSequence[pairedDevices.size()];
+                macs = new CharSequence[pairedDevices.size()];
+                int idx = 0;
+                for (BluetoothDevice bt : pairedDevices) {
+                    names[idx]=bt.getName();
+                    macs[idx]=bt.getAddress();
+                    idx+=1;
+                }
+            }
+        }
+        if (null==names) {
+            btMacAddresses.setEnabled(false);
+        } else {
+            btMacAddresses.setEnabled(true);
+            btMacAddresses.setEntries(names);
+            btMacAddresses.setEntryValues(macs);
         }
     }
 
@@ -253,11 +320,29 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    private void checkBtPermission() {
+        Utils.debug("SDK:"+Build.VERSION.SDK_INT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Utils.debug("Req perm");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, PERMISSION_BLUETOOTH_CONNECT_COMPLETED);
+        } else {
+            fillBtMacAddressList(fragment.getPreferenceManager().findPreference(Prefs.BT_MAC_ADDRESSES_KEY), this);
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == PERMISSION_RECEIVE_BOOT_COMPLETED) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 fragment.unCheckStartOnBoot();
+            }
+            return;
+        }
+        if (requestCode == PERMISSION_BLUETOOTH_CONNECT_COMPLETED) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fillBtMacAddressList((MultiSelectListPreference)fragment.getPreferenceManager().findPreference(Prefs.BT_MAC_ADDRESSES_KEY), this);
+            } else {
+                fragment.unAutoStartBt();
             }
             return;
         }

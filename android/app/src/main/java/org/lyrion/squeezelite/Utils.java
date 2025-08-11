@@ -21,6 +21,7 @@
 package org.lyrion.squeezelite;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -56,6 +57,16 @@ public class Utils {
         }
         debug("Notifs are allowed");
         return true;
+    }
+
+    public static boolean isPlayerRunning(Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (service.service.getClassName().equals(PlayerService.class.getCanonicalName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isEmpty(String str) {
