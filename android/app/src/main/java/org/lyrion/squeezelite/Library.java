@@ -99,8 +99,6 @@ public class Library {
         this.service = service;
         SharedPreferences prefs = Prefs.get(service);
         ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
-        String mac = Utils.isEmpty(service.getMac()) ? prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC) : service.getMac();
-        String name = Utils.isEmpty(service.getName()) ? prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME) : service.getName();
         String vc = prefs.getString(Prefs.VOLUME_CONTROL_KEY, Prefs.DEFAULT_VOLUME_CONTROL);
         boolean openSLES = Prefs.OUTPUT_LIB_OPENSLES.equals(prefs.getString(Prefs.OUTPUT_LIB_KEY, Prefs.DEFAULT_OUTPUT_LIB));
         volumeControl = Prefs.VOLUME_CONTROL_SEPARATE.equals(vc)
@@ -124,6 +122,19 @@ public class Library {
             }
         }
 
+        String mac = prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC);
+        String name = prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME);
+        // Use mac+name of connected BT device, if configured to do so
+        if (prefs.getBoolean(Prefs.USE_BT_ID_KEY, false)) {
+            Utils.BtDevice bt = Utils.getConnectedDevice(service);
+            Utils.debug("Connected BT device name:" + (null==bt ? "<>" : bt.name)+", mac:" + (null==bt ? "<>" : bt.mac));
+            if (null!=bt) {
+                name = bt.name;
+                mac = bt.mac;
+                Utils.debug("BT mac:" + mac + ", name:" + name);
+            }
+        }
+
         initialLmsVolSeen = false;
         ipAddress = server.address();
         if (null==audioManager) {
@@ -144,9 +155,12 @@ public class Library {
 
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> Utils.error("Unhandled exception", throwable));
         Utils.debug("Start mac:" + mac + ", name: " + name);
+
+        final String macToUse = mac;
+        final String nameToUse = name;
         thread = new Thread(() -> start(ipAddress,
-              mac,
-              name,
+              macToUse,
+              nameToUse,
               STREAM_IDLE_TIMEOUT,
               VOL_SEP==volumeControl ? 0 : 1,
               LOG_ERROR,

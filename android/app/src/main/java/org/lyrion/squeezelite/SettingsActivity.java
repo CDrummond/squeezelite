@@ -29,7 +29,11 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import io.github.muddz.styleabletoast.StyleableToast;
@@ -199,6 +203,7 @@ public class SettingsActivity extends AppCompatActivity {
             updateSummary(Prefs.MAX_BITRATE_KEY);
             updateSummary(Prefs.MAX_BITRATE_WHEN_KEY);
             updateSummary(Prefs.STREAM_BUFFER_KEY);
+            updateSummary(Prefs.BT_MAC_ADDRESSES_KEY);
             PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(this);
         }
 
@@ -217,11 +222,15 @@ public class SettingsActivity extends AppCompatActivity {
                 if (sharedPreferences.getBoolean(key, Prefs.DEFAULT_START_ON_BOOT)) {
                     activity.checkStartOnBootPermission();
                 }
+            } else if (Prefs.USE_BT_ID_KEY.equals(key)) {
+                if (sharedPreferences.getBoolean(Prefs.USE_BT_ID_KEY, false)) {
+                    activity.checkBtPermission();
+                }
             } else if (Prefs.AUTOSTART_BT_KEY.equals(key)) {
                 if (sharedPreferences.getBoolean(Prefs.AUTOSTART_BT_KEY, false)) {
                     activity.checkBtPermission();
                 }
-            }else {
+            } else {
                 updateSummary(key);
             }
         }
@@ -249,7 +258,26 @@ public class SettingsActivity extends AppCompatActivity {
                 } else if (pref instanceof EditTextPreference) {
                     EditTextPreference ep = (EditTextPreference)pref;
                     pref.setSummary(ep.getText());
+                } else if (Prefs.BT_MAC_ADDRESSES_KEY.equals(key)) {
+                    updateBtDevListSummary(pref);
                 }
+            }
+        }
+
+        private void updateBtDevListSummary(Preference pref) {
+            Set<String> macs = Prefs.get(activity).getStringSet(Prefs.BT_MAC_ADDRESSES_KEY, null);
+            List<String> names = new LinkedList<>();
+            if (null!=macs) {
+                for (String mac : macs) {
+                    String name = btMacToName.get(mac);
+                    names.add(Utils.isEmpty(name) ? mac : name);
+                }
+                Collections.sort(names);
+            }
+            if (names.isEmpty()) {
+                pref.setSummary(R.string.none);
+            } else {
+                pref.setSummary(String.join(", ",  names));
             }
         }
 
@@ -269,27 +297,36 @@ public class SettingsActivity extends AppCompatActivity {
             }
         }
 
-        private void unAutoStartBt() {
+        private void disableBt() {
             if (getContext()==null) {
                 return;
             }
-            SwitchPreferenceCompat pref = getPreferenceManager().findPreference(Prefs.AUTOSTART_BT_KEY);
-            if (pref==null || pref.isChecked()) {
+
+            SwitchPreferenceCompat useIdPref = getPreferenceManager().findPreference(Prefs.USE_BT_ID_KEY);
+            SwitchPreferenceCompat autoStartPref = getPreferenceManager().findPreference(Prefs.AUTOSTART_BT_KEY);
+
+            if (useIdPref==null || useIdPref.isChecked() || autoStartPref==null || autoStartPref.isChecked()) {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
                 SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(Prefs.USE_BT_ID_KEY, false);
                 editor.putBoolean(Prefs.AUTOSTART_BT_KEY, false);
                 editor.apply();
-                if (pref != null) {
-                    pref.setChecked(false);
+                if (useIdPref != null && useIdPref.isChecked()) {
+                    useIdPref.setChecked(false);
+                }
+                if (autoStartPref != null && autoStartPref.isChecked()) {
+                    autoStartPref.setChecked(false);
                 }
             }
         }
     }
 
+    private static Map<String, String> btMacToName = new HashMap<>();
     private static void fillBtMacAddressList(MultiSelectListPreference btMacAddresses, Context context) {
         Utils.debug("");
         CharSequence[] names = null;
         CharSequence[] macs = null;
+        btMacToName = new HashMap<>();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
             Set<BluetoothDevice> pairedDevices = adapter.getBondedDevices();
@@ -302,6 +339,7 @@ public class SettingsActivity extends AppCompatActivity {
                     names[idx]=bt.getName();
                     macs[idx]=bt.getAddress();
                     idx+=1;
+                    btMacToName.put(bt.getAddress(), bt.getName());
                 }
             }
         }
@@ -342,7 +380,7 @@ public class SettingsActivity extends AppCompatActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 fillBtMacAddressList((MultiSelectListPreference)fragment.getPreferenceManager().findPreference(Prefs.BT_MAC_ADDRESSES_KEY), this);
             } else {
-                fragment.unAutoStartBt();
+                fragment.disableBt();
             }
             return;
         }

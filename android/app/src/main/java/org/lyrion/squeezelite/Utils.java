@@ -24,12 +24,18 @@ import android.Manifest;
 import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Set;
 
 
 public class Utils {
@@ -79,6 +85,39 @@ public class Utils {
         } catch (NumberFormatException ignored) {
             return def;
         }
+    }
+
+    public static class BtDevice {
+        public BtDevice(String name, String mac) {
+            this.name = name;
+            this.mac = mac;
+        }
+        public String name;
+        public String mac;
+    }
+
+    public static BtDevice getConnectedDevice(Context context) {
+        BluetoothManager btManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+            Method isConnectedMethod;
+            try {
+                isConnectedMethod = BluetoothDevice.class.getDeclaredMethod("isConnected", (Class[]) null);
+                isConnectedMethod.setAccessible(true);
+            } catch (Exception e) {
+                Utils.error("Failed to get BluetoothDevice.isConnected method", e);
+                return null;
+            }
+            Set<BluetoothDevice> bonded = btManager.getAdapter().getBondedDevices();
+            for (BluetoothDevice dev: bonded) {
+                try {
+                    if ((boolean) isConnectedMethod.invoke(dev, (Object[]) null)) {
+                        return new BtDevice(dev.getName(), dev.getAddress());
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        return null;
     }
 
     private static String logPrefix() {

@@ -37,7 +37,11 @@
     <string name="start_on_boot">Start on boot</string>
     <string name="start_on_boot_summary">Automatically start player when device is restarted.</string>
     <string name="max_bitrate_when">Apply bit rate limit</string>
-    <string name="autostart_bt">Start player on BT device connect</string>
+    <string name="bt">Bluetooth</string>
+    <string name="autostart_bt">Start player on connect</string>
     <string name="autostart_bt_summary">When one of the configured BT devices connects then start player using its ID and name</string>
-    <string name="bt_mac_addresses">Auto start on BT device list</string>
+    <string name="bt_mac_addresses">Auto start on device list</string>
+    <string name="use_bt_id">Use ID and name</string>
+    <string name="use_bt_id_summary">Use name and ID of connected device as name and ID on Lyrion server.</string>
+    <string name="none">None</string>
 </resources>

@@ -129,6 +129,17 @@
             app:iconSpaceReserved="false"
             app:singleLineTitle="false"
             android:singleLineTitle="false"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/bt">
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="use_bt_id"
+            app:summary="@string/use_bt_id_summary"
+            app:title="@string/use_bt_id"
+            app:singleLineTitle="false"/>
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
             app:key="autostart_bt"
