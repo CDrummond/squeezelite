@@ -327,7 +327,7 @@ public class SettingsActivity extends AppCompatActivity {
         CharSequence[] names = null;
         CharSequence[] macs = null;
         btMacToName = new HashMap<>();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
             BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
             Set<BluetoothDevice> pairedDevices = adapter.getBondedDevices();
 
