@@ -66,6 +66,7 @@ public class PlayerService extends Service {
     private int connectionLostTimeout = 0;
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> terminateOnConnectionLostHandler;
+    private String playerName;
     public PlayerService() {
         handler = new Handler(Looper.getMainLooper());
     }
@@ -159,7 +160,7 @@ public class PlayerService extends Service {
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : PendingIntent.FLAG_UPDATE_CURRENT);
             SharedPreferences prefs = Prefs.get(this);
-            String name = prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME);
+            String name = Utils.isEmpty(playerName) ? prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME) : playerName;
             Intent quitIntent = new Intent(this, PlayerService.class);
             quitIntent.setAction(QUIT_INTENT);
 
@@ -215,7 +216,7 @@ public class PlayerService extends Service {
             lib = new Library();
         }
         startTerminateTimer(initialConnectionTimeout);
-        lib.startPlayer(this);
+        playerName = lib.startPlayer(this);
         if (Prefs.get(this).getBoolean(Prefs.USE_WAKE_LOCK_KEY, Prefs.DEFAULT_USE_WAKE_LOCK)) {
             if (null==wakeLock) {
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -226,6 +227,9 @@ public class PlayerService extends Service {
             }
         }
         sendStatus(true);
+        if (!Utils.isEmpty(playerName)) {
+            updateNotification();
+        }
     }
 
     private void stopPlayer() {

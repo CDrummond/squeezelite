@@ -90,9 +90,9 @@ public class Library {
         }
     }
 
-    public synchronized void startPlayer(PlayerService service) {
+    public synchronized String startPlayer(PlayerService service) {
         if (null!=thread || !loaded) {
-            return;
+            return null;
         }
         Utils.info("");
 
@@ -124,6 +124,7 @@ public class Library {
 
         String mac = prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC);
         String name = prefs.getString(Prefs.PLAYER_NAME_KEY, Prefs.DEFAULT_PLAYER_NAME);
+        boolean usingBtName = false;
         // Use mac+name of connected BT device, if configured to do so
         if (prefs.getBoolean(Prefs.USE_BT_ID_KEY, false)) {
             Utils.BtDevice bt = Utils.getConnectedDevice(service);
@@ -131,6 +132,7 @@ public class Library {
             if (null!=bt) {
                 name = bt.name;
                 mac = bt.mac;
+                usingBtName = true;
                 Utils.debug("BT mac:" + mac + ", name:" + name);
             }
         }
@@ -168,6 +170,7 @@ public class Library {
               maxBitrate > 0 ? 1 : 0,
               streamBuffer));
         thread.start();
+        return usingBtName ? name : null;
     }
 
     public synchronized void stopPlayer(Context context) {
