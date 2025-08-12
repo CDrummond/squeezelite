@@ -336,7 +336,7 @@ public class SettingsActivity extends AppCompatActivity {
                 macs = new CharSequence[pairedDevices.size()];
                 int idx = 0;
                 for (BluetoothDevice bt : pairedDevices) {
-                    names[idx]=bt.getName();
+                    names[idx]=Utils.getName(bt);
                     macs[idx]=bt.getAddress();
                     idx+=1;
                     btMacToName.put(bt.getAddress(), bt.getName());

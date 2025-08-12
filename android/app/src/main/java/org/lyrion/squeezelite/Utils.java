@@ -30,6 +30,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresPermission;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -96,6 +98,17 @@ public class Utils {
         public String mac;
     }
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+    public static String getName(BluetoothDevice dev) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            String alias = dev.getAlias();
+            if (!isEmpty(alias)) {
+                return alias;
+            }
+        }
+        return dev.getName();
+    }
+
     public static BtDevice getConnectedDevice(Context context) {
         BluetoothManager btManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
@@ -111,7 +124,7 @@ public class Utils {
             for (BluetoothDevice dev: bonded) {
                 try {
                     if ((boolean) isConnectedMethod.invoke(dev, (Object[]) null)) {
-                        return new BtDevice(dev.getName(), dev.getAddress());
+                        return new BtDevice(getName(dev), dev.getAddress());
                     }
                 } catch (Exception ignored) {
                 }
