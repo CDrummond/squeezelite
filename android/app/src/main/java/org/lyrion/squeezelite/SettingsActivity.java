@@ -334,12 +334,17 @@ public class SettingsActivity extends AppCompatActivity {
             if (!pairedDevices.isEmpty()) {
                 names = new CharSequence[pairedDevices.size()];
                 macs = new CharSequence[pairedDevices.size()];
-                int idx = 0;
+                List<Utils.BtDevice> devs = new LinkedList<Utils.BtDevice>();
                 for (BluetoothDevice bt : pairedDevices) {
-                    names[idx]=Utils.getName(bt);
-                    macs[idx]=bt.getAddress();
-                    idx+=1;
-                    btMacToName.put(bt.getAddress(), bt.getName());
+                    devs.add(new Utils.BtDevice(Utils.getName(bt), bt.getAddress()));
+                }
+                Collections.sort(devs);
+                int idx = 0;
+                for (Utils.BtDevice dev: devs) {
+                    names[idx] = dev.name;
+                    macs[idx] = dev.mac;
+                    idx++;
+                    btMacToName.put(dev.mac, dev.name);
                 }
             }
         }

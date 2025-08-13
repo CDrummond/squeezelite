@@ -89,13 +89,18 @@ public class Utils {
         }
     }
 
-    public static class BtDevice {
+    public static class BtDevice implements Comparable {
         public BtDevice(String name, String mac) {
             this.name = name;
             this.mac = mac;
         }
         public String name;
         public String mac;
+
+        @Override
+        public int compareTo(Object o) {
+            return name.compareTo(((BtDevice)o).name);
+        }
     }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
