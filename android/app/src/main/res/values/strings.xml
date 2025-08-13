@@ -39,8 +39,8 @@
     <string name="max_bitrate_when">Apply bit rate limit</string>
     <string name="bt">Bluetooth</string>
     <string name="autostart_bt">Start player on connect</string>
-    <string name="autostart_bt_summary">When one of the configured BT devices connects then start player using its ID and name</string>
-    <string name="bt_mac_addresses">Auto start on device list</string>
+    <string name="autostart_bt_summary">When one of the configured BT devices connects then start player using its ID and name.</string>
+    <string name="bt_mac_addresses">Auto start when device connects</string>
     <string name="use_bt_id">Use ID and name</string>
     <string name="use_bt_id_summary">Use name and ID of connected device as name and ID on Lyrion server.</string>
     <string name="none">None</string>
