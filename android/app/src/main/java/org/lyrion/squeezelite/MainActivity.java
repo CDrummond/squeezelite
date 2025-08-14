@@ -143,9 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startPlayer() {
         Utils.debug("Start player service");
-        Intent intent = new Intent(MainActivity.this, PlayerService.class);
-        intent.setAction(PlayerService.START_INTENT);
-        startService(intent);
+        startService(new Intent(MainActivity.this, PlayerService.class));
     }
 
     private void stopPlayer() {

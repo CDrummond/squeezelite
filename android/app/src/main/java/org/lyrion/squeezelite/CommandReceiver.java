@@ -52,7 +52,7 @@ public class CommandReceiver extends BroadcastReceiver {
         Utils.debug(act);
         if (act.equals(START) ||
                 (act.equals(Intent.ACTION_BOOT_COMPLETED) && Prefs.get(context).getBoolean(Prefs.START_ON_BOOT_KEY, Prefs.DEFAULT_START_ON_BOOT))) {
-            startService(context);
+            context.startForegroundService(new Intent(context, PlayerService.class));
         } else if (act.equals(STOP)) {
             context.stopService(new Intent(context, PlayerService.class));
         } else if (act.equals(BluetoothDevice.ACTION_ACL_CONNECTED) || act.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
@@ -87,14 +87,9 @@ public class CommandReceiver extends BroadcastReceiver {
             }
 
             if (act.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
-                startService(context);
+                context.startForegroundService(new Intent(context, PlayerService.class));
+
             }
         }
-    }
-
-    private void startService(Context context) {
-        Intent startIntent = new Intent(context, PlayerService.class);
-        startIntent.setAction(PlayerService.START_INTENT);
-        context.startForegroundService(startIntent);
     }
 }

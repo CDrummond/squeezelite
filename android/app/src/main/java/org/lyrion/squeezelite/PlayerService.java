@@ -50,7 +50,6 @@ import java.util.concurrent.TimeUnit;
 public class PlayerService extends Service {
     // How long after losing connection to server should we stop player?
     public static final String STATUS_INTENT = PlayerService.class.getCanonicalName()+".STATUS";
-    public static final String START_INTENT = PlayerService.class.getCanonicalName() + ".START";
     private static final String QUIT_INTENT = PlayerService.class.getCanonicalName() + ".QUIT";
     public static final String RUNNING_KEY = "running";
     public static final String NOTIFICATION_CHANNEL_ID = "squeezelite_service";
@@ -81,6 +80,7 @@ public class PlayerService extends Service {
     public void onCreate() {
         super.onCreate();
         Utils.debug("");
+        startForegroundService();
     }
 
     @Override
@@ -104,9 +104,6 @@ public class PlayerService extends Service {
             if (QUIT_INTENT.equals(action)) {
                 stopForegroundService();
                 return START_NOT_STICKY;
-            }
-            if (START_INTENT.equals(action)) {
-                startForegroundService();
             }
         }
 
