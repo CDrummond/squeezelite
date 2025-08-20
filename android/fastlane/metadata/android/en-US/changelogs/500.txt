@@ -1,1 +1,2 @@
-• Add option to auto-start player when BT device connected.
+• Add option to auto-start when certain BT devices connect.
+• Add option to use BT device MAC and name when connecting to LMS.
