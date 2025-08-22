@@ -46,11 +46,11 @@
  @brief AAudio implementation of support for a host API.
 */
 
-#include <aaudio/AAudio.h>
 #include <android/log.h>
 #include <android/api-level.h>
 #include <stdlib.h>
 #include <string.h>
+#include "libaaudio.h"
 #include "pa_util.h"
 #include "pa_allocation.h"
 #include "pa_hostapi.h"
@@ -146,19 +146,19 @@ static PaError IsOutputSampleRateSupported(PaAAudioHostApiRepresentation *hostAp
     (void)hostApi;
     AAudioStreamBuilder *builder = NULL;
     AAudioStream *stream = NULL;
-    if (AAudio_createStreamBuilder(&builder) != AAUDIO_OK) {
-        LOGE("IsOutputSampleRateSupported %f - AAudio_createStreamBuilder failed", sampleRate);
+    if (LibAAudio_createStreamBuilder(&builder) != AAUDIO_OK) {
+        LOGE("IsOutputSampleRateSupported %f - LibAAudio_createStreamBuilder failed", sampleRate);
         return paUnanticipatedHostError;
     }
-    AAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_OUTPUT);
-    AAudioStreamBuilder_setSampleRate(builder, (int)sampleRate);
-    if (AAudioStreamBuilder_openStream(builder, &stream) != AAUDIO_OK || !stream) {
-        AAudioStreamBuilder_delete(builder);
-        LOGE("IsOutputSampleRateSupported %f - AAudioStreamBuilder_openStream failed", sampleRate);
+    LibAAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_OUTPUT);
+    LibAAudioStreamBuilder_setSampleRate(builder, (int)sampleRate);
+    if (LibAAudioStreamBuilder_openStream(builder, &stream) != AAUDIO_OK || !stream) {
+        LibAAudioStreamBuilder_delete(builder);
+        LOGE("IsOutputSampleRateSupported %f - LibAAudioStreamBuilder_openStream failed", sampleRate);
         return paInvalidSampleRate;
     }
-    AAudioStream_close(stream);
-    AAudioStreamBuilder_delete(builder);
+    LibAAudioStream_close(stream);
+    LibAAudioStreamBuilder_delete(builder);
     LOGD("IsOutputSampleRateSupported %f SUCCESS", sampleRate);
     return paNoError;
 }
@@ -167,19 +167,19 @@ static PaError IsInputSampleRateSupported(PaAAudioHostApiRepresentation *hostApi
     (void)hostApi;
     AAudioStreamBuilder *builder = NULL;
     AAudioStream *stream = NULL;
-    if (AAudio_createStreamBuilder(&builder) != AAUDIO_OK) {
-        LOGE("IsInputSampleRateSupported %f - AAudio_createStreamBuilder failed", sampleRate);
+    if (LibAAudio_createStreamBuilder(&builder) != AAUDIO_OK) {
+        LOGE("IsInputSampleRateSupported %f - LibAAudio_createStreamBuilder failed", sampleRate);
         return paUnanticipatedHostError;
     }
-    AAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_INPUT);
-    AAudioStreamBuilder_setSampleRate(builder, (int)sampleRate);
-    if (AAudioStreamBuilder_openStream(builder, &stream) != AAUDIO_OK || !stream) {
-        AAudioStreamBuilder_delete(builder);
-        LOGE("IsInputSampleRateSupported %f - AAudioStreamBuilder_openStream failed", sampleRate);
+    LibAAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_INPUT);
+    LibAAudioStreamBuilder_setSampleRate(builder, (int)sampleRate);
+    if (LibAAudioStreamBuilder_openStream(builder, &stream) != AAUDIO_OK || !stream) {
+        LibAAudioStreamBuilder_delete(builder);
+        LOGE("IsInputSampleRateSupported %f - LibAAudioStreamBuilder_openStream failed", sampleRate);
         return paInvalidSampleRate;
     }
-    AAudioStream_close(stream);
-    AAudioStreamBuilder_delete(builder);
+    LibAAudioStream_close(stream);
+    LibAAudioStreamBuilder_delete(builder);
     LOGD("IsInputSampleRateSupported %f SUCCESS", sampleRate);
     return paNoError;
 }
@@ -192,19 +192,19 @@ static PaError IsOutputChannelCountSupported(PaAAudioHostApiRepresentation *host
     }
     AAudioStreamBuilder *builder = NULL;
     AAudioStream *stream = NULL;
-    if (AAudio_createStreamBuilder(&builder) != AAUDIO_OK) {
-        LOGE("IsOutputChannelCountSupported %d - AAudio_createStreamBuilder failed", numOfChannels);
+    if (LibAAudio_createStreamBuilder(&builder) != AAUDIO_OK) {
+        LOGE("IsOutputChannelCountSupported %d - LibAAudio_createStreamBuilder failed", numOfChannels);
         return paUnanticipatedHostError;
     }
-    AAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_OUTPUT);
-    AAudioStreamBuilder_setChannelCount(builder, numOfChannels);
-    if (AAudioStreamBuilder_openStream(builder, &stream) != AAUDIO_OK || !stream) {
-        AAudioStreamBuilder_delete(builder);
-        LOGE("IsOutputChannelCountSupported %d - AAudioStreamBuilder_openStream failed", numOfChannels);
+    LibAAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_OUTPUT);
+    LibAAudioStreamBuilder_setChannelCount(builder, numOfChannels);
+    if (LibAAudioStreamBuilder_openStream(builder, &stream) != AAUDIO_OK || !stream) {
+        LibAAudioStreamBuilder_delete(builder);
+        LOGE("IsOutputChannelCountSupported %d - LibAAudioStreamBuilder_openStream failed", numOfChannels);
         return paInvalidChannelCount;
     }
-    AAudioStream_close(stream);
-    AAudioStreamBuilder_delete(builder);
+    LibAAudioStream_close(stream);
+    LibAAudioStreamBuilder_delete(builder);
     LOGD("IsOutputChannelCountSupported %d SUCCESS", numOfChannels);
     return paNoError;
 }
@@ -217,19 +217,19 @@ static PaError IsInputChannelCountSupported(PaAAudioHostApiRepresentation *hostA
     }
     AAudioStreamBuilder *builder = NULL;
     AAudioStream *stream = NULL;
-    if (AAudio_createStreamBuilder(&builder) != AAUDIO_OK) {
-        LOGE("IsInputChannelCountSupported %d - AAudio_createStreamBuilder failed", numOfChannels);
+    if (LibAAudio_createStreamBuilder(&builder) != AAUDIO_OK) {
+        LOGE("IsInputChannelCountSupported %d - LibAAudio_createStreamBuilder failed", numOfChannels);
         return paUnanticipatedHostError;
     }
-    AAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_INPUT);
-    AAudioStreamBuilder_setChannelCount(builder, numOfChannels);
-    if (AAudioStreamBuilder_openStream(builder, &stream) != AAUDIO_OK || !stream) {
-        AAudioStreamBuilder_delete(builder);
-        LOGE("IsInputChannelCountSupported %d - AAudioStreamBuilder_openStream failed", numOfChannels);
+    LibAAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_INPUT);
+    LibAAudioStreamBuilder_setChannelCount(builder, numOfChannels);
+    if (LibAAudioStreamBuilder_openStream(builder, &stream) != AAUDIO_OK || !stream) {
+        LibAAudioStreamBuilder_delete(builder);
+        LOGE("IsInputChannelCountSupported %d - LibAAudioStreamBuilder_openStream failed", numOfChannels);
         return paInvalidChannelCount;
     }
-    AAudioStream_close(stream);
-    AAudioStreamBuilder_delete(builder);
+    LibAAudioStream_close(stream);
+    LibAAudioStreamBuilder_delete(builder);
     LOGD("IsInputChannelCountSupported %d SUCCESS", numOfChannels);
     return paNoError;
 }
@@ -282,10 +282,10 @@ static PaError CloseStream(PaStream *s) {
     LOGD("CloseStream");
     PaAAudioStream *aaudioStream = (PaAAudioStream *)s;
     if (aaudioStream->output.use && aaudioStream->output.stream) {
-        AAudioStream_close(aaudioStream->output.stream);
+        LibAAudioStream_close(aaudioStream->output.stream);
     }
     if (aaudioStream->input.use && aaudioStream->input.stream) {
-        AAudioStream_close(aaudioStream->input.stream);
+        LibAAudioStream_close(aaudioStream->input.stream);
     }
     PaUtil_TerminateBufferProcessor(&aaudioStream->bufferProcessor);
     PaUtil_TerminateStreamRepresentation(&aaudioStream->streamRepresentation);
@@ -299,10 +299,10 @@ static PaError StartStream(PaStream *s) {
     PaUtil_ResetBufferProcessor(&aaudioStream->bufferProcessor);
     aaudioStream->isStopped = 0;
     aaudioStream->isActive = 1;
-    if (aaudioStream->output.use && aaudioStream->output.stream && AAudioStream_requestStart(aaudioStream->output.stream) != AAUDIO_OK) {
+    if (aaudioStream->output.use && aaudioStream->output.stream && LibAAudioStream_requestStart(aaudioStream->output.stream) != AAUDIO_OK) {
         return paUnanticipatedHostError;
     }
-    if (aaudioStream->input.use && aaudioStream->input.stream && AAudioStream_requestStart(aaudioStream->input.stream) != AAUDIO_OK) {
+    if (aaudioStream->input.use && aaudioStream->input.stream && LibAAudioStream_requestStart(aaudioStream->input.stream) != AAUDIO_OK) {
         return paUnanticipatedHostError;
     }
     return paNoError;
@@ -313,10 +313,10 @@ static PaError StopStream(PaStream *s) {
     PaAAudioStream *aaudioStream = (PaAAudioStream *)s;
     aaudioStream->isActive = 0;
     aaudioStream->isStopped = 1;
-    if (aaudioStream->output.use && aaudioStream->output.stream && AAudioStream_requestStop(aaudioStream->output.stream) != AAUDIO_OK) {
+    if (aaudioStream->output.use && aaudioStream->output.stream && LibAAudioStream_requestStop(aaudioStream->output.stream) != AAUDIO_OK) {
         return paUnanticipatedHostError;
     }
-    if (aaudioStream->input.use && aaudioStream->input.stream && AAudioStream_requestStop(aaudioStream->input.stream) != AAUDIO_OK) {
+    if (aaudioStream->input.use && aaudioStream->input.stream && LibAAudioStream_requestStop(aaudioStream->input.stream) != AAUDIO_OK) {
         return paUnanticipatedHostError;
     }
     return paNoError;
@@ -348,7 +348,7 @@ static PaError ReadStream(PaStream *s, void *buffer, unsigned long frames) {
     if (!aaudioStream->input.use){
         return paBadStreamPtr;
     }
-    int32_t result = AAudioStream_read(
+    int32_t result = LibAAudioStream_read(
         aaudioStream->input.stream,
         buffer,
         frames,
@@ -362,7 +362,7 @@ static PaError WriteStream(PaStream *s, const void *buffer, unsigned long frames
     if (!aaudioStream->output.use) {
         return paBadStreamPtr;
     }
-    int32_t result = AAudioStream_write(
+    int32_t result = LibAAudioStream_write(
         aaudioStream->output.stream,
         buffer,
         frames,
@@ -472,31 +472,31 @@ static PaError OpenStream(struct PaUtilHostApiRepresentation *hostApi, PaStream 
         aaudioStream->output.channelCount = outputChannelCount;
         aaudioStream->output.format = outputAaudioFormat;
 
-        if (AAudio_createStreamBuilder(&builder) != AAUDIO_OK) {
+        if (LibAAudio_createStreamBuilder(&builder) != AAUDIO_OK) {
             result = paUnanticipatedHostError;
-            LOGE("OpenStream/output - AAudio_createStreamBuilder failed");
+            LOGE("OpenStream/output - LibAAudio_createStreamBuilder failed");
             goto error;
         }
-        AAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_OUTPUT);
-        AAudioStreamBuilder_setChannelCount(builder, outputChannelCount);
-        AAudioStreamBuilder_setSampleRate(builder, (int)sampleRate);
-        AAudioStreamBuilder_setFormat(builder, outputAaudioFormat);
+        LibAAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_OUTPUT);
+        LibAAudioStreamBuilder_setChannelCount(builder, outputChannelCount);
+        LibAAudioStreamBuilder_setSampleRate(builder, (int)sampleRate);
+        LibAAudioStreamBuilder_setFormat(builder, outputAaudioFormat);
         if (__ANDROID_API__>=26) {
-            AAudioStreamBuilder_setSharingMode(builder, AAUDIO_SHARING_MODE_EXCLUSIVE);
+            LibAAudioStreamBuilder_setSharingMode(builder, AAUDIO_SHARING_MODE_EXCLUSIVE);
         }
         if (__ANDROID_API__>=28) {
-            AAudioStreamBuilder_setContentType(builder, AAUDIO_CONTENT_TYPE_MUSIC);
-            AAudioStreamBuilder_setUsage(builder, AAUDIO_USAGE_MEDIA);
+            LibAAudioStreamBuilder_setContentType(builder, AAUDIO_CONTENT_TYPE_MUSIC);
+            LibAAudioStreamBuilder_setUsage(builder, AAUDIO_USAGE_MEDIA);
         }
-        AAudioStreamBuilder_setDataCallback(builder, AaudioDataCallback, aaudioStream);
-        AAudioStreamBuilder_setErrorCallback(builder, AaudioErrorCallback, aaudioStream);
+        LibAAudioStreamBuilder_setDataCallback(builder, AaudioDataCallback, aaudioStream);
+        LibAAudioStreamBuilder_setErrorCallback(builder, AaudioErrorCallback, aaudioStream);
 
-        if (AAudioStreamBuilder_openStream(builder, &aaudioStream->output.stream) != AAUDIO_OK || !aaudioStream->output.stream) {
-            AAudioStreamBuilder_delete(builder);
+        if (LibAAudioStreamBuilder_openStream(builder, &aaudioStream->output.stream) != AAUDIO_OK || !aaudioStream->output.stream) {
+            LibAAudioStreamBuilder_delete(builder);
             result = paUnanticipatedHostError;
             goto error;
         }
-        AAudioStreamBuilder_delete(builder);
+        LibAAudioStreamBuilder_delete(builder);
     }
 
     // Input stream setup
@@ -506,23 +506,23 @@ static PaError OpenStream(struct PaUtilHostApiRepresentation *hostApi, PaStream 
         aaudioStream->input.channelCount = inputChannelCount;
         aaudioStream->input.format = inputAaudioFormat;
 
-        if (AAudio_createStreamBuilder(&builder) != AAUDIO_OK) { 
+        if (LibAAudio_createStreamBuilder(&builder) != AAUDIO_OK) {
             result = paUnanticipatedHostError;
-            LOGE("OpenStream/input - AAudio_createStreamBuilder failed");
+            LOGE("OpenStream/input - LibAAudio_createStreamBuilder failed");
             goto error;
         }
-        AAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_INPUT);
-        AAudioStreamBuilder_setChannelCount(builder, inputChannelCount);
-        AAudioStreamBuilder_setSampleRate(builder, (int)sampleRate);
-        AAudioStreamBuilder_setFormat(builder, inputAaudioFormat);
+        LibAAudioStreamBuilder_setDirection(builder, AAUDIO_DIRECTION_INPUT);
+        LibAAudioStreamBuilder_setChannelCount(builder, inputChannelCount);
+        LibAAudioStreamBuilder_setSampleRate(builder, (int)sampleRate);
+        LibAAudioStreamBuilder_setFormat(builder, inputAaudioFormat);
 
         // TODO: Set input callback if needed for full duplex
 
-        if (AAudioStreamBuilder_openStream(builder, &aaudioStream->input.stream) != AAUDIO_OK || !aaudioStream->input.stream) {
-            AAudioStreamBuilder_delete(builder);
+        if (LibAAudioStreamBuilder_openStream(builder, &aaudioStream->input.stream) != AAUDIO_OK || !aaudioStream->input.stream) {
+            LibAAudioStreamBuilder_delete(builder);
             result = paUnanticipatedHostError; goto error;
         }
-        AAudioStreamBuilder_delete(builder);
+        LibAAudioStreamBuilder_delete(builder);
     }
 
     *s = (PaStream *)aaudioStream;
