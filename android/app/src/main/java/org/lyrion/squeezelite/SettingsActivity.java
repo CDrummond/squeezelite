@@ -9,13 +9,11 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -28,7 +26,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -205,6 +202,12 @@ public class SettingsActivity extends AppCompatActivity {
             updateSummary(Prefs.STREAM_BUFFER_KEY);
             updateSummary(Prefs.BT_MAC_ADDRESSES_KEY);
             PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(this);
+            if (Build.VERSION.SDK_INT<Build.VERSION_CODES.O_MR1) {
+                Preference outputLib = getPreferenceManager().findPreference(Prefs.OUTPUT_LIB_KEY);
+                if (null!=outputLib) {
+                    outputLib.setVisible(false);
+                }
+            }
         }
 
         @Override

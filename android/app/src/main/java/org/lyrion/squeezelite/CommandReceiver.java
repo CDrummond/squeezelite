@@ -20,19 +20,13 @@
 
 package org.lyrion.squeezelite;
 
-import android.Manifest;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
 
-import androidx.core.content.ContextCompat;
-
-import java.util.Arrays;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Start/stop service via:
@@ -52,7 +46,11 @@ public class CommandReceiver extends BroadcastReceiver {
         Utils.debug(act);
         if (act.equals(START) ||
                 (act.equals(Intent.ACTION_BOOT_COMPLETED) && Prefs.get(context).getBoolean(Prefs.START_ON_BOOT_KEY, Prefs.DEFAULT_START_ON_BOOT))) {
-            context.startForegroundService(new Intent(context, PlayerService.class));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(new Intent(context, PlayerService.class));
+            } else {
+                context.startService(new Intent(context, PlayerService.class));
+            }
         } else if (act.equals(STOP)) {
             context.stopService(new Intent(context, PlayerService.class));
         } else if (act.equals(BluetoothDevice.ACTION_ACL_CONNECTED) || act.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
@@ -87,8 +85,11 @@ public class CommandReceiver extends BroadcastReceiver {
             }
 
             if (act.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
-                context.startForegroundService(new Intent(context, PlayerService.class));
-
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(new Intent(context, PlayerService.class));
+                } else {
+                    context.startService(new Intent(context, PlayerService.class));
+                }
             }
         }
     }
