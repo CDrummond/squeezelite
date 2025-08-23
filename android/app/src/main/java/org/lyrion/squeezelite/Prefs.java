@@ -41,7 +41,6 @@ public class Prefs {
     public static final String VOLUME_CONTROL_KEY = "volume_control";
     public static final String CONNECTION_LOST_TIMEOUT_KEY = "connection_lost_timeout";
     public static final String INITIAL_CONNECTION_TIMEOUT_KEY = "initial_connection_timeout";
-    public static final String OUTPUT_LIB_KEY = "output_lib";
     public static final String VOLUME_KEY = "volume";
     public static final String RESTORE_VOLUME_KEY = "restore_volume";
     public static final String MAX_BITRATE_KEY = "max_bitrate";
@@ -58,8 +57,6 @@ public class Prefs {
     public static final String VOLUME_CONTROL_SEPARATE = "separate";
     public static final String VOLUME_CONTROL_DEVICE = "device";
     public static final String VOLUME_CONTROL_SYNCHRONIZED = "synchronized";
-    public static final String OUTPUT_LIB_OPENSLES = "opensles";
-    public static final String OUTPUT_LIB_AAUDIO = "aaudio";
     public static final String DEFAULT_PLAYER_NAME = "Squeezelite";
     public static final String DEFAULT_PLAYER_MAC = "01:02:03:04:05:06";
     public static final String DEFAULT_CONNECTION_LOST_TIMEOUT = "60";
@@ -125,17 +122,6 @@ public class Prefs {
             }
             editor.putString(INITIAL_CONNECTION_TIMEOUT_KEY, DEFAULT_INITIAL_CONNECTION_TIMEOUT);
         }
-        if (Build.VERSION.SDK_INT<Build.VERSION_CODES.O_MR1 && OUTPUT_LIB_AAUDIO.equals(sharedPreferences.getString(OUTPUT_LIB_KEY, null))) {
-            if (null==editor) {
-                editor = sharedPreferences.edit();
-            }
-            editor.putString(OUTPUT_LIB_KEY, OUTPUT_LIB_OPENSLES);
-        } else if (!sharedPreferences.contains(OUTPUT_LIB_KEY)) {
-            if (null==editor) {
-                editor = sharedPreferences.edit();
-            }
-            editor.putString(OUTPUT_LIB_KEY, defaultOutputLib());
-        }
         if (!sharedPreferences.contains(RESTORE_VOLUME_KEY)) {
             if (null==editor) {
                 editor = sharedPreferences.edit();
@@ -178,9 +164,6 @@ public class Prefs {
         return sharedPreferences;
     }
 
-    public static String defaultOutputLib() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? OUTPUT_LIB_AAUDIO : OUTPUT_LIB_OPENSLES;
-    }
     public static boolean hasBeenConfigured(SharedPreferences prefs) {
         return prefs.contains(Prefs.SERVER_KEY) || !prefs.getBoolean(Prefs.INITIAL_KEY, true);
     }

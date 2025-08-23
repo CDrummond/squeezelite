@@ -124,7 +124,7 @@ void send_connection_state_to_app(const char *address) {
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint idle, jint fixed_vol, jint logging, jint use_opensles, jint low_data, jint buffer_size) {
+JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jobject jobj, jstring lms_param, jstring mac_param, jstring name_param, jint idle, jint fixed_vol, jint loglevel, jint low_data, jint buffer_size) {
 	const char *server = (*env)->GetStringUTFChars(env, lms_param, NULL);
 	const char *mac_str = (*env)->GetStringUTFChars(env, mac_param, NULL);
 	char *output_device = "default";
@@ -144,20 +144,22 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jo
 	unsigned dsd_delay = 0;
 	dsd_format dsd_outfmt = PCM;
 #endif
-	log_level log_output = logging;
-	log_level log_stream = logging;
-	log_level log_decode = logging;
-	log_level log_slimproto = logging;
+	log_level log_output = loglevel;
+	log_level log_stream = loglevel;
+	log_level log_decode = loglevel;
+	log_level log_slimproto = loglevel;
 
 	int maxSampleRate = low_data ? 48000 : 0;
 
-	if (!use_opensles && !LibAAudio_init()) {
-		LOG_ERROR("Failed to init AAudio, reverting to OpenSL ES");
-		use_opensles = 1;
+	if (LibAAudio_init()) {
+		PaOpenSLES_ENABLED = 0;
+		PaAAudio_ENABLED = 1;
+		LOG_DEBUG("Using AAudio");
+	} else {
+		PaOpenSLES_ENABLED = 1;
+		PaAAudio_ENABLED = 0;
+		LOG_DEBUG("Using OpenSL ES");
 	}
-
-	PaOpenSLES_ENABLED = use_opensles;
-	PaAAudio_ENABLED = !use_opensles;
 
 	if (mac_str) {
 		int byte = 0;

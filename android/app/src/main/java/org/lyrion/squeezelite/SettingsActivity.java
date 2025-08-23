@@ -196,18 +196,11 @@ public class SettingsActivity extends AppCompatActivity {
             updateSummary(Prefs.VOLUME_CONTROL_KEY);
             updateSummary(Prefs.INITIAL_CONNECTION_TIMEOUT_KEY);
             updateSummary(Prefs.CONNECTION_LOST_TIMEOUT_KEY);
-            updateSummary(Prefs.OUTPUT_LIB_KEY);
             updateSummary(Prefs.MAX_BITRATE_KEY);
             updateSummary(Prefs.MAX_BITRATE_WHEN_KEY);
             updateSummary(Prefs.STREAM_BUFFER_KEY);
             updateSummary(Prefs.BT_MAC_ADDRESSES_KEY);
             PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(this);
-            if (Build.VERSION.SDK_INT<Build.VERSION_CODES.O_MR1) {
-                Preference outputLib = getPreferenceManager().findPreference(Prefs.OUTPUT_LIB_KEY);
-                if (null!=outputLib) {
-                    outputLib.setVisible(false);
-                }
-            }
         }
 
         @Override
