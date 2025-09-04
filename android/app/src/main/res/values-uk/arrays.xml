@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="volume">
+        <item>Роздільний</item>
+        <item>Тільки пристрій</item>
+        <item>Синхронізований</item>
+    </string-array>
+    <string-array name="volumeAlias" translatable="false">
+        <item>separate</item>
+        <item>device</item>
+        <item>synchronized</item>
+    </string-array>
+    <string-array name="duration">
+        <item>Ні</item>
+        <item>30 секунд</item>
+        <item>1 хвилина</item>
+        <item>5 хвилин</item>
+        <item>10 хвилин</item>
+        <item>30 хвилин</item>
+    </string-array>
+    <string-array name="durationAlias" translatable="false">
+        <item>0</item>
+        <item>30</item>
+        <item>60</item>
+        <item>300</item>
+        <item>1800</item>
+    </string-array>
+    <string-array name="output" translatable="false">
+        <item>AAudio</item>
+        <item>OpenSL ES</item>
+    </string-array>
+    <string-array name="outputAlias" translatable="false">
+        <item>aaudio</item>
+        <item>opensles</item>
+    </string-array>
+    <string-array name="bitrate">
+        <item>Налаштування сервера</item>
+        <item>Без обмежень</item>
+        <item>64 кбіт/с</item>
+        <item>96 кбіт/с</item>
+        <item>128 кбіт/с</item>
+        <item>160 кбіт/с</item>
+        <item>192 кбіт/с</item>
+        <item>224 кбіт/с</item>
+        <item>256 кбіт/с</item>
+        <item>320 кбіт/с</item>
+    </string-array>
+    <string-array name="bitrateAlias" translatable="false">
+        <item>-1</item>
+        <item>0</item>
+        <item>64</item>
+        <item>96</item>
+        <item>128</item>
+        <item>160</item>
+        <item>192</item>
+        <item>224</item>
+        <item>256</item>
+        <item>320</item>
+    </string-array>
+    <string-array name="buffer">
+        <item>За замовчуванням</item>
+        <item>4 Мб</item>
+        <item>8 Мб</item>
+        <item>16 Мб</item>
+        <item>32 Мб</item>
+    </string-array>
+    <string-array name="bufferAlias" translatable="false">
+        <item>0</item>
+        <item>4</item>
+        <item>8</item>
+        <item>16</item>
+        <item>32</item>
+    </string-array>
+    <string-array name="rateLimitWhen">
+        <item>Завжди</item>
+        <item>У стільниковій мережі</item>
+        <item>У тарифікованій мережі</item>
+        <item>У будь-якій мережі</item>
+    </string-array>
+    <string-array name="rateLimitWhenAlias" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+</resources>
