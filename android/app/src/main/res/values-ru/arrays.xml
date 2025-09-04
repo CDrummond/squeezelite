@@ -5,11 +5,6 @@
         <item>Только устройство</item>
         <item>Синхронизированный</item>
     </string-array>
-    <string-array name="volumeAlias" translatable="false">
-        <item>separate</item>
-        <item>device</item>
-        <item>synchronized</item>
-    </string-array>
     <string-array name="duration">
         <item>Нет</item>
         <item>30 секунд</item>
@@ -17,21 +12,6 @@
         <item>5 минут</item>
         <item>10 минут</item>
         <item>30 минут</item>
-    </string-array>
-    <string-array name="durationAlias" translatable="false">
-        <item>0</item>
-        <item>30</item>
-        <item>60</item>
-        <item>300</item>
-        <item>1800</item>
-    </string-array>
-    <string-array name="output" translatable="false">
-        <item>AAudio</item>
-        <item>OpenSL ES</item>
-    </string-array>
-    <string-array name="outputAlias" translatable="false">
-        <item>aaudio</item>
-        <item>opensles</item>
     </string-array>
     <string-array name="bitrate">
         <item>Настройки сервера</item>
@@ -45,18 +25,6 @@
         <item>256 кбит/с</item>
         <item>320 кбит/с</item>
     </string-array>
-    <string-array name="bitrateAlias" translatable="false">
-        <item>-1</item>
-        <item>0</item>
-        <item>64</item>
-        <item>96</item>
-        <item>128</item>
-        <item>160</item>
-        <item>192</item>
-        <item>224</item>
-        <item>256</item>
-        <item>320</item>
-    </string-array>
     <string-array name="buffer">
         <item>По умолчанию</item>
         <item>4 Мб</item>
@@ -64,23 +32,10 @@
         <item>16 Мб</item>
         <item>32 Мб</item>
     </string-array>
-    <string-array name="bufferAlias" translatable="false">
-        <item>0</item>
-        <item>4</item>
-        <item>8</item>
-        <item>16</item>
-        <item>32</item>
-    </string-array>
     <string-array name="rateLimitWhen">
         <item>Всегда</item>
         <item>В сотовой сети</item>
         <item>В тарифицируемой сети</item>
         <item>В любой сети</item>
-    </string-array>
-    <string-array name="rateLimitWhenAlias" translatable="false">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
     </string-array>
 </resources>
