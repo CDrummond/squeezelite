@@ -109,7 +109,7 @@ public class Library {
         int streamBuffer = Integer.parseInt(prefs.getString(Prefs.STREAM_BUFFER_KEY, Prefs.DEFAULT_STREAM_BUFFER));
 
         maxBitrate = Integer.parseInt(prefs.getString(Prefs.MAX_BITRATE_KEY, Prefs.DEFAULT_MAX_BITRATE));
-        int maxBitrateWhen = Integer.parseInt(prefs.getString(Prefs.MAX_BITRATE_WHEN_KEY, Prefs.DEFAULT_MAX_BITRATE));
+        int maxBitrateWhen = Integer.parseInt(prefs.getString(Prefs.MAX_BITRATE_WHEN_KEY, Prefs.DEFAULT_MAX_BITRATE_WHEN));
         if (maxBitrate>0 && maxBitrateWhen!=Prefs.MAX_BITRATE_ALWAYS) {
             ConnectivityManager connMgr = (ConnectivityManager) service.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();

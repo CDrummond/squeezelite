@@ -1,0 +1,1 @@
+• Fix default 'max bit rate when' setting.
