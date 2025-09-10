@@ -14,10 +14,10 @@
     <string name="settings">Налаштування</string>
     <string name="server_settings">Сервер</string>
     <string name="player_settings">Плеєр</string>
-    <string name="server_address">Ім'я хоста або IP-адреса</string>
+    <string name="server_address">"Ім'я хоста або IP-адреса"</string>
     <string name="discover">Натисніть тут, щоб знайти сервер</string>
     <string name="discover_summary">Спроба автовиявлення сервера Lyrion.</string>
-    <string name="player_name">Ім'я</string>
+    <string name="player_name">"Ім'я"</string>
     <string name="behaviour_settings">Поведінка</string>
     <string name="start_service">Запустити плеєр при запуску</string>
     <string name="start_service_summary">"При запуску з лаунчера просто запустити плеєр і не показувати інтерфейс."</string>
@@ -32,16 +32,16 @@
     <string name="volume_control_synchronized">Гучність плеєра синхронізована з пристроєм. Зміна одного параметра призведе до зміни іншого.</string>
     <string name="max_bitrate">Обмеження бітрейту</string>
     <string name="stream_buffer">Розмір буфера</string>
-    <string name="initial_connection_timeout">Початковий тайм-аут з'єднання</string>
-    <string name="connection_lost_timeout">Тайм-аут зупинки плеєра при втраті з'єднання з сервером</string>
+    <string name="initial_connection_timeout">"Початковий тайм-аут з'єднання"</string>
+    <string name="connection_lost_timeout">"Тайм-аут зупинки плеєра при втраті з'єднання з сервером"</string>
     <string name="start_on_boot">Запустити плеєр під час завантаження</string>
     <string name="start_on_boot_summary">Автоматично запускати плеєр при перезавантаженні пристрою.</string>
     <string name="max_bitrate_when">Обмеження бітрейту</string>
     <string name="bt">Bluetooth</string>
     <string name="autostart_bt">Запустити плеєр при підключенні</string>
-    <string name="autostart_bt_summary">При підключенні одного з налаштованих BT-пристроїв запустити плеєр, використовуючи його ID та ім'я.</string>
+    <string name="autostart_bt_summary">"При підключенні одного з налаштованих BT-пристроїв запустити плеєр, використовуючи його ID та ім'я."</string>
     <string name="bt_mac_addresses">Автозапуск при підключенні пристрою</string>
-    <string name="use_bt_id">Використовувати ім'я та ID</string>
-    <string name="use_bt_id_summary">Використовувати ім'я та ID під'єднаного пристрою як ім'я та ID на сервері Lyrion.</string>
+    <string name="use_bt_id">"Використовувати ім'я та ID"</string>
+    <string name="use_bt_id_summary">"Використовувати ім'я та ID під'єднаного пристрою як ім'я та ID на сервері Lyrion."</string>
     <string name="none">Немає</string>
 </resources>
