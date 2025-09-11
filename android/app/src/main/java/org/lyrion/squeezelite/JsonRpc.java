@@ -47,7 +47,7 @@ public class JsonRpc {
     public JsonRpc(Context context, ServerDiscovery.Server server, String mac) {
         requestQueue = Volley.newRequestQueue(context);
         this.server = server;
-        this.mac = mac;
+        this.mac = Utils.isEmpty(mac) ? mac : mac.toLowerCase();
     }
 
     public void setAddress(String address) {

@@ -36,7 +36,11 @@ import androidx.annotation.Keep;
 import org.json.JSONObject;
 
 public class Library {
-    // Timeout after which Sueezelite will close audio stream
+    private static final String[] PREV_COMMAND = {"button", "jump_rew"};
+    private static final String[] TOGGLE_PLAY_PAUSE_COMMAND = {"pause"};
+    private static final String[] NEXT_COMMAND = {"playlist", "index", "+1"};
+
+    // Timeout after which Squeezelite will close audio stream
     static final int STREAM_IDLE_TIMEOUT = 2000;
     static long MIN_LMS_VOLUME_UPDATE_TIME = 750;
     // received volume values for 0..100
@@ -333,6 +337,24 @@ public class Library {
             }
         }
         isInitialPower = false;
+    }
+
+    public void prev() {
+        sendCommand(PREV_COMMAND);
+    }
+
+    public void playPause() {
+        sendCommand(TOGGLE_PLAY_PAUSE_COMMAND);
+    }
+
+    public void next() {
+        sendCommand(NEXT_COMMAND);
+    }
+
+    public void sendCommand(String[] cmd) {
+        if (null!=jsonRpc) {
+            jsonRpc.sendMessage(cmd);
+        }
     }
 
     private native void start(String lms, String mac, String name, int idleTimeout, int fixedVolume, int logging, int useOpenSLES, int lowData, int streamBuffer);

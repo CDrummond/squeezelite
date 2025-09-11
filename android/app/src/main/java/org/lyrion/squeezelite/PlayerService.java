@@ -28,14 +28,18 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ServiceInfo;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.view.KeyEvent;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -66,6 +70,9 @@ public class PlayerService extends Service {
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> terminateOnConnectionLostHandler;
     private String playerName;
+    private MediaSessionCompat mediaSession;
+    private MediaSessionCompat.Callback mediaSessionCallback;
+
     public PlayerService() {
         handler = new Handler(Looper.getMainLooper());
     }
@@ -208,6 +215,7 @@ public class PlayerService extends Service {
         stopPlayer();
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private void startPlayer() {
         if (null==lib) {
             lib = new Library();
@@ -227,6 +235,79 @@ public class PlayerService extends Service {
         if (!Utils.isEmpty(playerName)) {
             updateNotification();
         }
+
+        mediaSession = new MediaSessionCompat(getApplicationContext(), "Squeezelite");
+        if (mediaSessionCallback==null) {
+            mediaSessionCallback=new MediaSessionCompat.Callback() {
+                @Override
+                public void onPlay() {
+                    Utils.debug("");
+                    if (null!=lib) {
+                        lib.playPause();
+                    }
+                }
+
+                @Override
+                public void onPause() {
+                    Utils.debug("");
+                    if (null!=lib) {
+                        lib.playPause();
+                    }
+                }
+
+                @Override
+                public void onSkipToNext() {
+                    if (null!=lib) {
+                        lib.next();
+                    }                }
+
+                @Override
+                public void onSkipToPrevious() {
+                    if (null!=lib) {
+                        lib.prev();
+                    }
+                }
+
+                @Override
+                public void onSeekTo(long pos) {
+                    //sendCommand(new String[]{"time", Double.toString(pos/1000.0)});
+                }
+
+                public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+                    Utils.debug("");
+                    KeyEvent event = mediaButtonEvent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+                    if (lib!=null && event!=null && 1==event.getAction()) {
+                        Utils.debug("KeyCode:" + event.getKeyCode());
+                        switch (event.getKeyCode()) {
+                            case KeyEvent.KEYCODE_MEDIA_PLAY:
+                                Utils.debug("Play");
+                                lib.playPause();
+                                return true;
+                            case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                                Utils.debug("Pause");
+                                lib.playPause();
+                                return true;
+                            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                                Utils.debug("Play/pause");
+                                lib.playPause();
+                                return true;
+                            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                                Utils.debug("Prev");
+                                lib.prev();
+                                return true;
+                            case KeyEvent.KEYCODE_MEDIA_NEXT:
+                                Utils.debug("Next");
+                                lib.next();
+                                return true;
+                            default:
+                                break;
+                        }
+                    }
+                    return super.onMediaButtonEvent(mediaButtonEvent);
+                }
+            };
+        }
+        mediaSession.setCallback(mediaSessionCallback);
     }
 
     private void stopPlayer() {
@@ -240,6 +321,10 @@ public class PlayerService extends Service {
         sendStatus(false);
         stopTerminateTimer();
         lib.stopPlayer(this);
+        if (mediaSession != null) {
+            mediaSession.setActive(false);
+            mediaSession.release();
+        }
     }
 
     private void sendStatus(boolean running) {

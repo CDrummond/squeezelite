@@ -85,7 +85,7 @@ public class Prefs {
             while (parts.size()<6) {
                 parts.add(String.format("%02x", rand.nextInt(255)));
             }
-            String newMac = String.join(":", parts);
+            String newMac = String.join(":", parts).toLowerCase();
             editor = sharedPreferences.edit();
             editor.putString(PLAYER_MAC_KEY, newMac);
         }
