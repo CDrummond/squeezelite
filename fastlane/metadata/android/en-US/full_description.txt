@@ -1,1 +1,1 @@
-'Headless' audio player for Lyrion Music Server (LMS) - Squeezelite ported to Android.
+<p><i>Squeezelite</i> is a 'headless' audio player for Lyrion Music Server (LMS) - <a href='https://github.com/LMS-Community/slimserver'>Squeezelite</a>, ported to Android. You will need access to an LMS server from your network to make use of this; see <a href='https://lyrion.org/getting-started/'>Getting Started with LMS</a>.</p>
