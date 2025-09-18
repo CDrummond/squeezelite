@@ -1,3 +1,4 @@
 • Intercept media buttons.
 • Fix default 'max bit rate when' setting.
 • Fix setting of max bit rate.
+• Change 'Model' reported to LMS if on cellular or metered network - this can then be used to setup custom transcoding rules.

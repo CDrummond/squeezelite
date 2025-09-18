@@ -115,19 +115,20 @@ public class Library {
         maxBitrate = Integer.parseInt(prefs.getString(Prefs.MAX_BITRATE_KEY, Prefs.DEFAULT_MAX_BITRATE));
         int maxBitrateWhen = Integer.parseInt(prefs.getString(Prefs.MAX_BITRATE_WHEN_KEY, Prefs.DEFAULT_MAX_BITRATE_WHEN));
         Utils.debug("maxBitrate:"+maxBitrate+", maxBitrateWhen:"+maxBitrateWhen);
-        if (maxBitrate>0 && maxBitrateWhen!=Prefs.MAX_BITRATE_ALWAYS) {
-            Utils.debug("Check network type");
-            ConnectivityManager connMgr = (ConnectivityManager) service.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();
-            boolean metered = connMgr.isActiveNetworkMetered();
-            boolean cellular = activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE;
-            Utils.debug("Metered:"+metered+" Cellular:"+cellular);
-            if ( (maxBitrateWhen==Prefs.MAX_BITRATE_WHEN_CELLULAR && !cellular) ||
-                 (maxBitrateWhen==Prefs.MAX_BITRATE_WHEN_METERED && !metered) ||
-                 (maxBitrateWhen==Prefs.MAX_BITRATE_WHEN_EITHER && !metered && !cellular)) {
-                maxBitrate = 0;
-                Utils.debug("Not setting max bit rate");
-            }
+
+        Utils.debug("Check network type");
+        ConnectivityManager connMgr = (ConnectivityManager) service.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();
+        boolean metered = connMgr.isActiveNetworkMetered();
+        boolean cellular = activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE;
+        Utils.debug("Metered:"+metered+" Cellular:"+cellular);
+
+        if (maxBitrate>0 && maxBitrateWhen!=Prefs.MAX_BITRATE_ALWAYS &&
+             (maxBitrateWhen==Prefs.MAX_BITRATE_WHEN_CELLULAR && !cellular) ||
+             (maxBitrateWhen==Prefs.MAX_BITRATE_WHEN_METERED && !metered) ||
+             (maxBitrateWhen==Prefs.MAX_BITRATE_WHEN_EITHER && !metered && !cellular)) {
+            maxBitrate = 0;
+            Utils.debug("Not setting max bit rate");
         }
 
         String mac = prefs.getString(Prefs.PLAYER_MAC_KEY, Prefs.DEFAULT_PLAYER_MAC);
@@ -175,7 +176,7 @@ public class Library {
               VOL_SEP==volumeControl ? 0 : 1,
               LOG_ERROR,
               openSLES ? 1 : 0,
-              maxBitrate > 0 ? 1 : 0,
+              cellular ? 1 : metered ? 2 : 0,
               streamBuffer));
         thread.start();
         return usingBtName ? name : null;
@@ -347,6 +348,6 @@ public class Library {
         }
     }
 
-    private native void start(String lms, String mac, String name, int idleTimeout, int fixedVolume, int logging, int useOpenSLES, int lowData, int streamBuffer);
+    private native void start(String lms, String mac, String name, int idleTimeout, int fixedVolume, int logging, int useOpenSLES, int networkType, int streamBuffer);
     private native void stop();
 }

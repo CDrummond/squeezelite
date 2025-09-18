@@ -550,7 +550,11 @@ void buf_init(struct buffer *buf, size_t size);
 void buf_destroy(struct buffer *buf);
 
 // slimproto.c
-void slimproto(log_level level, char *server, u8_t mac[6], const char *name, const char *namefile, const char *modelname, int maxSampleRate);
+void slimproto(log_level level, char *server, u8_t mac[6], const char *name, const char *namefile, const char *modelname, int maxSampleRate
+#ifdef ANDROID
+               , int network_type
+#endif
+              );
 void slimproto_stop(void);
 void wake_controller(void);
 

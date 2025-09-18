@@ -119,25 +119,26 @@ void send_packet(u8_t *packet, size_t len) {
 	}
 }
 
-static void sendHELO(bool reconnect, const char *fixed_cap, const char *var_cap, u8_t mac[6]) {
-	#define BASE_CAP "Model=squeezelite,AccuratePlayPoints=1,HasDigitalOut=1,HasPolarityInversion=1,Balance=1,Firmware=" VERSION
-	#define SSL_CAP "CanHTTPS=1"
+static void sendHELO(bool reconnect, const char *fixed_cap, const char *var_cap, u8_t mac[6], int network_type) {
+	#define BASE_CAP "AccuratePlayPoints=1,HasDigitalOut=1,HasPolarityInversion=1,Balance=1,Firmware=" VERSION
+	#define SSL_CAP "CanHTTPS=1,"
 	const char *base_cap;
 	struct HELO_packet pkt;
+	const char *model = NETWORK_CELL==network_type ? "Model=squeezelite-c," : NETWORK_METERED==network_type ? "Model=squeezelite-m," : "Model=squeezelite,";
 	
 #if USE_SSL
 #if !LINKALL && !NO_SSLSYM
-	if (ssl_loaded) base_cap = SSL_CAP "," BASE_CAP;
+	if (ssl_loaded) base_cap = SSL_CAP BASE_CAP;
 	else base_cap = BASE_CAP;
 #endif	
-	base_cap = SSL_CAP "," BASE_CAP;
+	base_cap = SSL_CAP BASE_CAP;
 #else
 	base_cap = BASE_CAP;
 #endif	
 
 	memset(&pkt, 0, sizeof(pkt));
 	memcpy(&pkt.opcode, "HELO", 4);
-	pkt.length = htonl(sizeof(struct HELO_packet) - 8 + strlen(base_cap) + strlen(fixed_cap) + strlen(var_cap));
+	pkt.length = htonl(sizeof(struct HELO_packet) - 8 + strlen(model) + strlen(base_cap) + strlen(fixed_cap) + strlen(var_cap));
 	pkt.deviceid = 12; // squeezeplay
 	pkt.revision = 0;
 	packn(&pkt.wlan_channellist, reconnect ? 0x4000 : 0x0000);
@@ -147,9 +148,10 @@ static void sendHELO(bool reconnect, const char *fixed_cap, const char *var_cap,
 
 	LOG_INFO("mac: %02x:%02x:%02x:%02x:%02x:%02x", pkt.mac[0], pkt.mac[1], pkt.mac[2], pkt.mac[3], pkt.mac[4], pkt.mac[5]);
 
-	LOG_INFO("cap: %s%s%s", base_cap, fixed_cap, var_cap);
+	LOG_INFO("cap: %s%s%s%s", model, base_cap, fixed_cap, var_cap);
 
 	send_packet((u8_t *)&pkt, sizeof(pkt));
+	send_packet((u8_t *)model, strlen(model));
 	send_packet((u8_t *)base_cap, strlen(base_cap));
 	send_packet((u8_t *)fixed_cap, strlen(fixed_cap));
 	send_packet((u8_t *)var_cap, strlen(var_cap));
@@ -831,7 +833,11 @@ in_addr_t discover_server(char *default_server) {
 #define FIXED_CAP_LEN 256
 #define VAR_CAP_LEN   128
 
-void slimproto(log_level level, char *server, u8_t mac[6], const char *name, const char *namefile, const char *modelname, int maxSampleRate) {
+void slimproto(log_level level, char *server, u8_t mac[6], const char *name, const char *namefile, const char *modelname, int maxSampleRate
+#ifdef ANDROID
+               , int network_type
+#endif
+               ) {
 	struct sockaddr_in serv_addr;
 	static char fixed_cap[FIXED_CAP_LEN], var_cap[VAR_CAP_LEN] = "";
 	bool reconnect = false;
@@ -967,7 +973,11 @@ void slimproto(log_level level, char *server, u8_t mac[6], const char *name, con
 				new_server_cap = NULL;
 			}
 
-			sendHELO(reconnect, fixed_cap, var_cap, mac);
+#ifdef ANDROID
+			sendHELO(reconnect, fixed_cap, var_cap, mac, network_type);
+#else
+			sendHELO(reconnect, fixed_cap, var_cap, mac, NETWORK_STD);
+#endif
 
 #ifdef ANDROID
 			send_connection_state_to_app(get_ip_str(&serv_addr));
