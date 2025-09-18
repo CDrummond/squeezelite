@@ -114,15 +114,19 @@ public class Library {
 
         maxBitrate = Integer.parseInt(prefs.getString(Prefs.MAX_BITRATE_KEY, Prefs.DEFAULT_MAX_BITRATE));
         int maxBitrateWhen = Integer.parseInt(prefs.getString(Prefs.MAX_BITRATE_WHEN_KEY, Prefs.DEFAULT_MAX_BITRATE_WHEN));
+        Utils.debug("maxBitrate:"+maxBitrate+", maxBitrateWhen:"+maxBitrateWhen);
         if (maxBitrate>0 && maxBitrateWhen!=Prefs.MAX_BITRATE_ALWAYS) {
+            Utils.debug("Check network type");
             ConnectivityManager connMgr = (ConnectivityManager) service.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();
             boolean metered = connMgr.isActiveNetworkMetered();
             boolean cellular = activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE;
+            Utils.debug("Metered:"+metered+" Cellular:"+cellular);
             if ( (maxBitrateWhen==Prefs.MAX_BITRATE_WHEN_CELLULAR && !cellular) ||
                  (maxBitrateWhen==Prefs.MAX_BITRATE_WHEN_METERED && !metered) ||
                  (maxBitrateWhen==Prefs.MAX_BITRATE_WHEN_EITHER && !metered && !cellular)) {
                 maxBitrate = 0;
+                Utils.debug("Not setting max bit rate");
             }
         }
 
@@ -285,7 +289,7 @@ public class Library {
 
     @Keep
     public synchronized void connectionStateChanged(String address) {
-        Utils.debug("address:"+address);
+        Utils.debug("address:"+address+", prev:"+ipAddress);
         if (null!=service) {
             service.connectionStateChanged(address);
         }
@@ -294,30 +298,16 @@ public class Library {
             lmsVolumeReceived = UNKNOWN_VOL;
             lmsVolumeSent = UNKNOWN_VOL;
             lmsVolumeSendTime = 0;
-        } else if (!address.equals(ipAddress)){
+        } else {
             if (null!=jsonRpc) {
                 jsonRpc.setAddress(address);
             }
             ipAddress = address;
 
+            Utils.debug("maxBitrate:"+maxBitrate);
             if (maxBitrate >= 0 && null!=jsonRpc) {
-                // Check to see what max bitrate has been set...
-                jsonRpc.sendMessage(new String[]{"playerpref", "maxBitrate", "?"}, response -> {
-                    int maxBitrateOnServer = 0;
-                    try {
-                        Utils.debug("RESP" + response.toString(4));
-                        JSONObject result = response.getJSONObject("result");
-                        if (result.has("_p2")) {
-                            maxBitrateOnServer = Integer.parseInt(result.getString("_p2"));
-                        }
-                    } catch (Exception e) {
-                        Utils.error("Failed to parse response", e);
-                    }
-                    if (maxBitrateOnServer != maxBitrate) {
-                        Utils.debug("Setting max bit rate to: " + maxBitrate);
-                        jsonRpc.sendMessage(new String[]{"playerpref", "maxBitrate", String.valueOf(maxBitrate)});
-                    }
-                });
+                Utils.debug("Setting max bit rate to: " + maxBitrate);
+                jsonRpc.sendMessage(new String[]{"playerpref", "maxBitrate", String.valueOf(maxBitrate)});
             }
         }
     }

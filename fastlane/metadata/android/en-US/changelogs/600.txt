@@ -1,2 +1,3 @@
 • Intercept media buttons.
 • Fix default 'max bit rate when' setting.
+• Fix setting of max bit rate.
