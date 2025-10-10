@@ -268,10 +268,12 @@ public class Library {
                 return;
             }
             lmsVolumeReceived = vol;
-            Utils.debug("left:"+left+", right:"+right+", initialLmsVolSeen:"+initialLmsVolSeen+", vol:"+vol);
-            if (initialLmsVolSeen) {
+            int aVol = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            Utils.debug("left:"+left+", right:"+right+", initialLmsVolSeen:"+initialLmsVolSeen+", vol:"+vol+", aVol:"+aVol+", initialLmsVolSeen:"+initialLmsVolSeen);
+            // If android media volume<=0 then use LMS's, even for initial...
+            if (initialLmsVolSeen || aVol<=0) {
                 float pc = mapToPercent(vol);
-                int aVol = (int)Math.ceil(pc*androidMaxVolume);
+                aVol = (int)Math.ceil(pc*androidMaxVolume);
                 Utils.debug("aVol:"+aVol+", androidVolume:"+androidVolume);
                 if (aVol!=androidVolume) {
                     androidVolume = aVol;
@@ -280,11 +282,11 @@ public class Library {
             } else {
                 // C code has connected to LMS, LMS indicates initial volume, but override with
                 // device's current volume...
-                Utils.debug("First");
-                initialLmsVolSeen = true;
+                Utils.debug("First, aVol:"+aVol);
                 androidVolume = UNKNOWN_VOL;
                 volumeChanged();
             }
+            initialLmsVolSeen = true;
         }
     }
 

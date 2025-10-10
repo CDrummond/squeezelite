@@ -2,3 +2,4 @@
 • Fix default 'max bit rate when' setting.
 • Fix setting of max bit rate.
 • Change 'Model' reported to LMS if on cellular or metered network - this can then be used to setup custom transcoding rules.
+• When handling LMS's initial volume only set to Android's if that is not 0.
