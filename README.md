@@ -13,6 +13,9 @@ Features:
 
 [<img src="https://shields.rbtlog.dev/simple/org.lyrion.squeezelite" alt="RB Status">](https://shields.rbtlog.dev/org.lyrion.squeezelite)
 
+[<img src="https://f-droid.org/badge/get-it-on.png"
+    alt="Get it on F-Droid"
+    height="80">](https://f-droid.org/packages/org.lyrion.squeezelite)
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" height="80" alt="Get it at IzzyOnDroid">](https://apt.izzysoft.de/packages/org.lyrion.squeezelite)
 
 <br>
