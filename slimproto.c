@@ -119,12 +119,12 @@ void send_packet(u8_t *packet, size_t len) {
 	}
 }
 
-static void sendHELO(bool reconnect, const char *fixed_cap, const char *var_cap, u8_t mac[6], int network_type) {
+static void sendHELO(bool reconnect, const char *fixed_cap, const char *var_cap, u8_t mac[6], int mobile_network) {
 	#define BASE_CAP "AccuratePlayPoints=1,HasDigitalOut=1,HasPolarityInversion=1,Balance=1,Firmware=" VERSION
 	#define SSL_CAP "CanHTTPS=1,"
 	const char *base_cap;
 	struct HELO_packet pkt;
-	const char *model = NETWORK_CELL==network_type ? "Model=squeezelite-c," : NETWORK_METERED==network_type ? "Model=squeezelite-m," : "Model=squeezelite,";
+	const char *model = mobile_network ? "Model=squeezelite-mobile," : "Model=squeezelite,";
 	
 #if USE_SSL
 #if !LINKALL && !NO_SSLSYM
@@ -835,7 +835,7 @@ in_addr_t discover_server(char *default_server) {
 
 void slimproto(log_level level, char *server, u8_t mac[6], const char *name, const char *namefile, const char *modelname, int maxSampleRate
 #ifdef ANDROID
-               , int network_type
+               , int mobile_network
 #endif
                ) {
 	struct sockaddr_in serv_addr;
@@ -974,9 +974,9 @@ void slimproto(log_level level, char *server, u8_t mac[6], const char *name, con
 			}
 
 #ifdef ANDROID
-			sendHELO(reconnect, fixed_cap, var_cap, mac, network_type);
+			sendHELO(reconnect, fixed_cap, var_cap, mac, mobile_network);
 #else
-			sendHELO(reconnect, fixed_cap, var_cap, mac, NETWORK_STD);
+			sendHELO(reconnect, fixed_cap, var_cap, mac, 0);
 #endif
 
 #ifdef ANDROID

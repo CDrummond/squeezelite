@@ -176,7 +176,7 @@ public class Library {
               VOL_SEP==volumeControl ? 0 : 1,
               LOG_ERROR,
               openSLES ? 1 : 0,
-              cellular ? 1 : metered ? 2 : 0,
+              cellular || metered ? 1 : 0,
               streamBuffer));
         thread.start();
         return usingBtName ? name : null;
@@ -350,6 +350,6 @@ public class Library {
         }
     }
 
-    private native void start(String lms, String mac, String name, int idleTimeout, int fixedVolume, int logging, int useOpenSLES, int networkType, int streamBuffer);
+    private native void start(String lms, String mac, String name, int idleTimeout, int fixedVolume, int logging, int useOpenSLES, int mobileNetwork, int streamBuffer);
     private native void stop();
 }

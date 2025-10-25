@@ -27,10 +27,6 @@
 #pragma pack(1)
 #endif
 
-#define NETWORK_STD 0
-#define NETWORK_CELL 1
-#define NETWORK_METERED 2
-
 // from S:N:Slimproto _hello_handler
 struct HELO_packet {
 	char  opcode[4];
