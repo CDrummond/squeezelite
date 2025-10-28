@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="volume">
+        <item>Séparé</item>
+        <item>Appareil uniquement</item>
+        <item>Synchronisé</item>
+    </string-array>
+    <string-array name="duration">
+        <item>Aucun</item>
+        <item>30 secondes</item>
+        <item>1 minute</item>
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>30 minutes</item>
+    </string-array>
+    <string-array name="bitrate">
+        <item>Paramètres du serveur</item>
+        <item>Aucune limite</item>
+        <item>64 kbit/s</item>
+        <item>96 kbit/s</item>
+        <item>128 kbit/s</item>
+        <item>160 kbit/s</item>
+        <item>192 kbit/s</item>
+        <item>224 kbit/s</item>
+        <item>256 kbit/s</item>
+        <item>320 kbit/s</item>
+    </string-array>
+    <string-array name="buffer">
+        <item>Par défaut</item>
+        <item>4 Mo</item>
+        <item>8 Mo</item>
+        <item>16 Mo</item>
+        <item>32 Mo</item>
+    </string-array>
+    <string-array name="rateLimitWhen">
+        <item>Toujours</item>
+        <item>Sur réseau cellulaire</item>
+        <item>Sur réseau limité</item>
+        <item>Sur réseau cellulaire ou limité</item>
+    </string-array>
+</resources>
