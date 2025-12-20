@@ -44,4 +44,6 @@
     <string name="use_bt_id">Use ID and name</string>
     <string name="use_bt_id_summary">Use name and ID of connected device as name and ID on Lyrion server.</string>
     <string name="none">None</string>
+    <string name="stop_on_power_off">Stop on power off</string>
+    <string name="stop_on_power_off_summary">"Stop player application when it's powered off via Lyrion."</string>
 </resources>

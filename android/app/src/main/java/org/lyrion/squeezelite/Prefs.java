@@ -47,6 +47,7 @@ public class Prefs {
     public static final String MAX_BITRATE_WHEN_KEY = "max_bitrate_when";
     public static final String STREAM_BUFFER_KEY = "stream_buffer";
     public static final String START_ON_BOOT_KEY = "start_on_boot";
+    public static final String STOP_ON_POWER_OFF_KEY = "stop_on_power_off";
     public static final String AUTOSTART_BT_KEY = "autostart_bt";
     public static final String BT_MAC_ADDRESSES_KEY = "bt_mac_addresses";
     public static final String USE_BT_ID_KEY = "use_bt_id";
@@ -72,6 +73,7 @@ public class Prefs {
     public static String DEFAULT_MAX_BITRATE_WHEN = String.valueOf(MAX_BITRATE_WHEN_EITHER);
     public static String DEFAULT_STREAM_BUFFER = "0";
     public static boolean DEFAULT_START_ON_BOOT = false;
+    public static boolean DEFAULT_STOP_ON_POWER_OFF = true;
 
     static public SharedPreferences get(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -166,6 +168,12 @@ public class Prefs {
                 editor = sharedPreferences.edit();
             }
             editor.putBoolean(AUTOSTART_BT_KEY, false);
+        }
+        if (!sharedPreferences.contains(STOP_ON_POWER_OFF_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putBoolean(STOP_ON_POWER_OFF_KEY, DEFAULT_STOP_ON_POWER_OFF);
         }
         if (editor!=null) {
             editor.apply();

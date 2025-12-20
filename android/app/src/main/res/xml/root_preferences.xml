@@ -95,6 +95,12 @@
             app:singleLineTitle="false"/>
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
+            app:key="stop_on_power_off"
+            app:summary="@string/stop_on_power_off_summary"
+            app:title="@string/stop_on_power_off"
+            app:singleLineTitle="false"/>
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
             app:key="use_wake_lock"
             app:summary="@string/use_wake_lock_summary"
             app:title="@string/use_wake_lock"

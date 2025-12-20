@@ -28,12 +28,10 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ServiceInfo;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -335,7 +333,9 @@ public class PlayerService extends Service {
 
     public void poweredOff() {
         Utils.debug("");
-        handler.post(this::stopForegroundService);
+        if (Prefs.get(this).getBoolean(Prefs.STOP_ON_POWER_OFF_KEY, Prefs.DEFAULT_STOP_ON_POWER_OFF)) {
+            handler.post(this::stopForegroundService);
+        }
     }
 
     public void connectionStateChanged(String ip) {
