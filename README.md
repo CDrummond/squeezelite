@@ -2,8 +2,10 @@
 
 This is an Android port of [Squeezelite](https://github.com/ralph-irving/squeezelite) - a 'headless' audio player for [Lyrion Music Server (LMS)](https://github.com/LMS-Community/slimserver)
 
+<b>NOTE:</b> As of 0.7.0 the minimum supported Android level is 9.0
+
 Features:
-1. Uses 'AAudio' for backend (therefore requires Android 8.1+)
+1. Uses 'AAudio' for backend
 2. Optionally auto-start on Bluetooth device connect
 3. Optionally use name and MAC of connected Bluetooth device as player name and ID for Lyrion
 4. Support for Bluetooth media controls
