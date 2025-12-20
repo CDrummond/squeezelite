@@ -1,10 +1,11 @@
-.\"                                      Hey, EMACS: -*- nroff -*-
+.\" Hey, EMACS: -*- nroff -*-
 .\" (C) Copyright 2013-4 Chris Boot <bootc@debian.org>
+.\" (C) Copyright 2015-25 Ralph Irving <ralph_irving@hotmail.com>
 .\"
 .\" First parameter, NAME, should be all caps
 .\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
 .\" other parameters are allowed: see man(7), man(1)
-.TH SQUEEZELITE 1 "2024-04-03" "Debian Project"
+.TH SQUEEZELITE 1 "2025-10-10" "Debian Project"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .\" Some roff macros, for reference:
@@ -208,11 +209,10 @@ Enable upsampling of played audio. The argument is optional; see
 .BR -u " and " -R
 are synonymous.
 .TP
-.B \-D [delay]
-Output device supports DSD over PCM (DoP). DSD streams will be converted to DoP
-before output. If this option is not supplied, DSD streams will be converted to
-PCM and resampled, so they can be played on a PCM DAC. Delay is an optional time
-to wait when switching between PCM and DoP between tracks, in milliseconds.
+.B \-D [delay][:format]
+Output device supports DSD over PCM (DoP) or native.
+\fBdelay\fR to add when switching between PCM and DSD in milliseconds (optional).
+\fBformat\fR dop (default), u8, u16le, u16be, u32le or u32be as required by attached DAC.
 .TP
 .B \-v
 Enable visualiser support. This creates a shared memory segment that contains
@@ -368,9 +368,8 @@ linear phase.
 specifies linear phase.
 .SH SEE ALSO
 .TP
-http://wiki.slimdevices.com/index.php/Squeezelite
+https://wiki.lyrion.org/index.php/Squeezelite
+.TP
+https://docs.picoreplayer.org/components/squeezelite
 .TP
 https://lyrion.org/
-.TP
-sox(1)
-for further information about resampling.
