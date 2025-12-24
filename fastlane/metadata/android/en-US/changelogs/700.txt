@@ -1,3 +1,4 @@
 • Use 'squeezelite-mobile' as 'Model' reported to LMS if on cellular or metered network. This is to be consistent with LyrPlay and xPlay.
 • Increase minimum Android version to 9.0
 • Add option to control stopping of player when powered off.
+• Fix handling of media keys.

@@ -43,6 +43,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.ServiceCompat;
+import androidx.media.session.MediaButtonReceiver;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -125,6 +126,9 @@ public class PlayerService extends Service {
 
         connectionLostTimeout = Utils.toInt(Prefs.get(this).getString(Prefs.CONNECTION_LOST_TIMEOUT_KEY, Prefs.DEFAULT_CONNECTION_LOST_TIMEOUT), 60);
         initialConnectionTimeout = Utils.toInt(Prefs.get(this).getString(Prefs.CONNECTION_LOST_TIMEOUT_KEY, Prefs.DEFAULT_CONNECTION_LOST_TIMEOUT), 300);
+        if (null!=mediaSession) {
+            MediaButtonReceiver.handleIntent(mediaSession, intent);
+        }
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
@@ -305,6 +309,7 @@ public class PlayerService extends Service {
                 }
             };
         }
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mediaSession.setCallback(mediaSessionCallback);
     }
 
