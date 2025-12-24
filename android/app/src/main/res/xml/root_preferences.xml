@@ -112,6 +112,14 @@
             app:title="@string/start_on_boot"
             app:singleLineTitle="false"/>
         <ListPreference
+            android:entries="@array/delay"
+            android:entryValues="@array/delayAlias"
+            android:key="start_on_boot_delay"
+            android:title="@string/start_on_boot_delay"
+            app:singleLineTitle="false"
+            android:singleLineTitle="false"
+            app:iconSpaceReserved="false" />
+        <ListPreference
             android:entries="@array/duration"
             android:entryValues="@array/durationAlias"
             android:key="initial_connection_timeout"

@@ -20,10 +20,25 @@
     </string-array>
     <string-array name="durationAlias" translatable="false">
         <item>0</item>
+        <item>5</item>
+        <item>10</item>
+        <item>20</item>
         <item>30</item>
         <item>60</item>
-        <item>300</item>
-        <item>1800</item>
+    </string-array>
+    <string-array name="delay">
+        <item>None</item>
+        <item>5 seconds</item>
+        <item>10 seconds</item>
+        <item>20 seconds</item>
+        <item>30 seconds</item>
+    </string-array>
+    <string-array name="delayAlias" translatable="false">
+        <item>0</item>
+        <item>5</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
     </string-array>
     <string-array name="output" translatable="false">
         <item>AAudio</item>

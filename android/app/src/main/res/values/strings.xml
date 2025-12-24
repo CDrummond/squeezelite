@@ -36,6 +36,7 @@
     <string name="connection_lost_timeout">Player stop timeout when server connection lost</string>
     <string name="start_on_boot">Start on boot</string>
     <string name="start_on_boot_summary">Automatically start player when device is restarted.</string>
+    <string name="start_on_boot_delay">Delay when starting on boot</string>
     <string name="max_bitrate_when">Apply bit rate limit</string>
     <string name="bt">Bluetooth</string>
     <string name="autostart_bt">Start player on connect</string>
