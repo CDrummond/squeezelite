@@ -3,3 +3,4 @@
 • Add option to control stopping of player when powered off.
 • Fix handling of media keys.
 • Add option to delay start on boot by 5, 10, 20, or 30 seconds.
+• New icon.
