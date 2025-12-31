@@ -216,10 +216,8 @@ public class PlayerService extends Service {
             startService(new Intent(this, PlayerService.class));
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            Utils.debug("ServiceCompat.startForeground");
-            ServiceCompat.startForeground(this, MSG_ID, notification, Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK : 0);
-        }
+        Utils.debug("ServiceCompat.startForeground");
+        ServiceCompat.startForeground(this, MSG_ID, notification, Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK : 0);
     }
 
     private void stopForegroundService() {
