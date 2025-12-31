@@ -26,6 +26,7 @@ import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -104,7 +105,7 @@ public class Library {
         SharedPreferences prefs = Prefs.get(service);
         ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
         String vc = prefs.getString(Prefs.VOLUME_CONTROL_KEY, Prefs.DEFAULT_VOLUME_CONTROL);
-        boolean openSLES = Prefs.OUTPUT_LIB_OPENSLES.equals(prefs.getString(Prefs.OUTPUT_LIB_KEY, Prefs.DEFAULT_OUTPUT_LIB));
+        boolean openSLES = Build.VERSION.SDK_INT<Build.VERSION_CODES.O_MR1 || Prefs.OUTPUT_LIB_OPENSLES.equals(prefs.getString(Prefs.OUTPUT_LIB_KEY, Prefs.defaultOutputLib()));
         volumeControl = Prefs.VOLUME_CONTROL_SEPARATE.equals(vc)
                 ? VOL_SEP
                 : Prefs.VOLUME_CONTROL_DEVICE.equals(vc)

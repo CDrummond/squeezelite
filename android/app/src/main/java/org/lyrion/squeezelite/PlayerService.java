@@ -40,6 +40,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.view.KeyEvent;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.ServiceCompat;
@@ -135,11 +136,16 @@ public class PlayerService extends Service {
 
     private void startForegroundService() {
         Utils.debug("");
-        createNotificationChannel();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        } else {
+            notificationBuilder = new NotificationCompat.Builder(this);
+        }
         createNotification();
         startPlayer();
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private void createNotificationChannel() {
         Utils.debug("");
         notificationManager = NotificationManagerCompat.from(this);
@@ -202,7 +208,13 @@ public class PlayerService extends Service {
         }
 
         Utils.debug("startForegroundService");
-        startForegroundService(new Intent(this, PlayerService.class));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Utils.debug("startForegroundService");
+            startForegroundService(new Intent(this, PlayerService.class));
+        } else {
+            Utils.debug("startService");
+            startService(new Intent(this, PlayerService.class));
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             Utils.debug("ServiceCompat.startForeground");

@@ -225,6 +225,12 @@ public class SettingsActivity extends AppCompatActivity {
             updateSummary(Prefs.BT_MAC_ADDRESSES_KEY);
             updateSummary(Prefs.START_ON_BOOT_DELAY_KEY);
             PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(this);
+            if (Build.VERSION.SDK_INT<Build.VERSION_CODES.O_MR1) {
+                Preference outputLib = getPreferenceManager().findPreference(Prefs.OUTPUT_LIB_KEY);
+                if (null!=outputLib) {
+                    outputLib.setVisible(false);
+                }
+            }
         }
 
         @Override

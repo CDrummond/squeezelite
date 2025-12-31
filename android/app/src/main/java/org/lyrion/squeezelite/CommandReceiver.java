@@ -87,8 +87,7 @@ public class CommandReceiver extends BroadcastReceiver {
             }
 
             if (act.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
-                context.startForegroundService(new Intent(context, PlayerService.class));
-
+                startService(context);
             }
         }
     }
@@ -102,6 +101,14 @@ public class CommandReceiver extends BroadcastReceiver {
             } catch (InterruptedException ignored) {
             }
         }
-        context.startForegroundService(new Intent(context, PlayerService.class));
+        startService(context);
+    }
+
+    private void startService(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(new Intent(context, PlayerService.class));
+        } else {
+            context.startService(new Intent(context, PlayerService.class));
+        }
     }
 }

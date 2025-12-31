@@ -32,6 +32,7 @@ static jobject obj = 0;
 
 extern int PaOpenSLES_ENABLED;
 extern int PaAAudio_ENABLED;
+extern int LibAAudio_init();
 
 static void sighandler(int signum) {
 	slimproto_stop();
@@ -147,6 +148,11 @@ JNIEXPORT void JNICALL Java_org_lyrion_squeezelite_Library_start(JNIEnv *env, jo
 	log_level log_stream = logging;
 	log_level log_decode = logging;
 	log_level log_slimproto = logging;
+
+	if (!use_opensles && !LibAAudio_init()) {
+		LOG_ERROR("Failed to init AAudio, reverting to OpenSL ES");
+		use_opensles = 1;
+	}
 
 	PaOpenSLES_ENABLED = use_opensles;
 	PaAAudio_ENABLED = !use_opensles;

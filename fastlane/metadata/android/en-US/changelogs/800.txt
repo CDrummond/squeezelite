@@ -1,0 +1,1 @@
+• Dynamically resolve AAudio symbols, thefore reduce minimum to Android 6.0

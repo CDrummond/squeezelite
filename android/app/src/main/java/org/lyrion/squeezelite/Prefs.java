@@ -22,6 +22,7 @@ package org.lyrion.squeezelite;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.provider.Settings;
 
 import androidx.preference.PreferenceManager;
@@ -65,7 +66,6 @@ public class Prefs {
     public static final String DEFAULT_PLAYER_MAC = "01:02:03:04:05:06";
     public static final String DEFAULT_CONNECTION_LOST_TIMEOUT = "60";
     public static final String DEFAULT_INITIAL_CONNECTION_TIMEOUT = "0";
-    public static final String DEFAULT_OUTPUT_LIB = OUTPUT_LIB_AAUDIO;
     public static boolean DEFAULT_START_SERVICE = false;
     public static boolean DEFAULT_USE_WAKE_LOCK = false;
     public static String DEFAULT_VOLUME_CONTROL = VOLUME_CONTROL_SYNCHRONIZED;
@@ -129,11 +129,16 @@ public class Prefs {
             }
             editor.putString(INITIAL_CONNECTION_TIMEOUT_KEY, DEFAULT_INITIAL_CONNECTION_TIMEOUT);
         }
-        if (!sharedPreferences.contains(OUTPUT_LIB_KEY)) {
+        if (Build.VERSION.SDK_INT< Build.VERSION_CODES.O_MR1 && OUTPUT_LIB_AAUDIO.equals(sharedPreferences.getString(OUTPUT_LIB_KEY, null))) {
             if (null==editor) {
                 editor = sharedPreferences.edit();
             }
-            editor.putString(OUTPUT_LIB_KEY, DEFAULT_OUTPUT_LIB);
+            editor.putString(OUTPUT_LIB_KEY, OUTPUT_LIB_OPENSLES);
+        } else if (!sharedPreferences.contains(OUTPUT_LIB_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putString(OUTPUT_LIB_KEY, defaultOutputLib());
         }
         if (!sharedPreferences.contains(RESTORE_VOLUME_KEY)) {
             if (null==editor) {
@@ -187,6 +192,10 @@ public class Prefs {
             editor.apply();
         }
         return sharedPreferences;
+    }
+
+    public static String defaultOutputLib() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 ? OUTPUT_LIB_AAUDIO : OUTPUT_LIB_OPENSLES;
     }
 
     public static boolean hasBeenConfigured(SharedPreferences prefs) {
