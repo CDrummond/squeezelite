@@ -1,0 +1,2 @@
+• New icon.
+• Provide a copy of 'pthread_mutexattr_setprotocol' so that Android 8.1 can again be supported.

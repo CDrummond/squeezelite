@@ -114,6 +114,7 @@ sources = [
     '../dop.c',
     '../dsd2pcm/dsd2pcm.c',
     'src/android.c',
+    'src/thread.c',
     'src/pa/os/unix/pa_unix_hostapis.c',
     'src/pa/os/unix/pa_pthread_util.c',
     'src/pa/os/unix/pa_unix_util.c',

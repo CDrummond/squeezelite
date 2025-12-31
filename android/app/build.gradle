@@ -4,11 +4,11 @@ android {
     defaultConfig {
         applicationId "org.lyrion.squeezelite"
         compileSdk 34
-        minSdkVersion 28
+        minSdkVersion 27
         targetSdkVersion 34
         buildToolsVersion = "34.0.0"
-        versionCode  700
-        versionName "0.7.0"
+        versionCode  701
+        versionName "0.7.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndkVersion "27.2.12479018"
         ndk {
