@@ -135,14 +135,6 @@
             app:singleLineTitle="false"
             android:singleLineTitle="false"
             app:iconSpaceReserved="false" />
-        <ListPreference
-            android:entries="@array/output"
-            android:entryValues="@array/outputAlias"
-            android:key="output_lib"
-            android:title="@string/output_lib"
-            app:iconSpaceReserved="false"
-            app:singleLineTitle="false"
-            android:singleLineTitle="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory

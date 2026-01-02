@@ -1,1 +1,2 @@
 • Dynamically resolve AAudio symbols, thefore reduce minimum to Android 6.0
+• Remove output option, only use openSL ES if fail to initialise AAudio.

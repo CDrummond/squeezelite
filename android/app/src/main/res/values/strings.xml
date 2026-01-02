@@ -25,7 +25,6 @@
     <string name="use_wake_lock_summary">Keep device awake whilst player is active. NOTE: This will increase battery usage.</string>
     <string name="restore_volume">Restore volume</string>
     <string name="restore_volume_summary">"Restore device's 'Music' volume when starting."</string>
-    <string name="output_lib">Output method</string>
     <string name="volume_control">Volume control</string>
     <string name="volume_control_separate">Lyrion player and Android device can have separate volume settings.</string>
     <string name="volume_control_device">"Lyrion player's volume is locked to 100%% and volume changes need to be made on Android device."</string>

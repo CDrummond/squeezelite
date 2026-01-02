@@ -105,7 +105,6 @@ public class Library {
         SharedPreferences prefs = Prefs.get(service);
         ServerDiscovery.Server server = new ServerDiscovery.Server(prefs.getString(Prefs.SERVER_KEY, ""));
         String vc = prefs.getString(Prefs.VOLUME_CONTROL_KEY, Prefs.DEFAULT_VOLUME_CONTROL);
-        boolean openSLES = Build.VERSION.SDK_INT<Build.VERSION_CODES.O_MR1 || Prefs.OUTPUT_LIB_OPENSLES.equals(prefs.getString(Prefs.OUTPUT_LIB_KEY, Prefs.defaultOutputLib()));
         volumeControl = Prefs.VOLUME_CONTROL_SEPARATE.equals(vc)
                 ? VOL_SEP
                 : Prefs.VOLUME_CONTROL_DEVICE.equals(vc)
@@ -176,7 +175,6 @@ public class Library {
               STREAM_IDLE_TIMEOUT,
               VOL_SEP==volumeControl ? 0 : 1,
               LOG_ERROR,
-              openSLES ? 1 : 0,
               cellular || metered ? 1 : 0,
               streamBuffer));
         thread.start();
@@ -351,6 +349,6 @@ public class Library {
         }
     }
 
-    private native void start(String lms, String mac, String name, int idleTimeout, int fixedVolume, int logging, int useOpenSLES, int mobileNetwork, int streamBuffer);
+    private native void start(String lms, String mac, String name, int idleTimeout, int fixedVolume, int logging, int mobileNetwork, int streamBuffer);
     private native void stop();
 }
