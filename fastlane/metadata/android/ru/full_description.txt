@@ -1,0 +1,1 @@
+<p><i>Squeezelite</i> - это аудиоплеер без графического интерфейса для Lyrion Music Server (LMS) - <a href='https://github.com/LMS-Community/slimserver'>Squeezelite</a>, портированный на Android. Для его использования вам потребуется доступ к серверу LMS в вашей сети; см. раздел <a href='https://lyrion.org/getting-started/'>Начало работы с LMS</a>.</p>
