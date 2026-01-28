@@ -25,7 +25,6 @@
     <string name="use_wake_lock_summary">Не вимикати пристрій, поки плеєр активний. ПРИМІТКА: Це збільшить витрату заряду батареї.</string>
     <string name="restore_volume">Відновити гучність</string>
     <string name="restore_volume_summary">"Відновлювати гучність «Медіа» пристрою під час запуску."</string>
-    <string name="output_lib">Метод виведення</string>
     <string name="volume_control">Регулятор гучності</string>
     <string name="volume_control_separate">Плеєр і пристрій можуть мати окремі налаштування гучності.</string>
     <string name="volume_control_device">"Гучність плеєра зафіксована на рівні 100%%, зміну гучності необхідно виконувати на пристрої."</string>
@@ -36,6 +35,7 @@
     <string name="connection_lost_timeout">"Тайм-аут зупинки плеєра при втраті з'єднання з сервером"</string>
     <string name="start_on_boot">Запустити плеєр під час завантаження</string>
     <string name="start_on_boot_summary">Автоматично запускати плеєр при перезавантаженні пристрою.</string>
+    <string name="start_on_boot_delay">Затримка запуску під час завантаження</string>
     <string name="max_bitrate_when">Обмеження бітрейту</string>
     <string name="bt">Bluetooth</string>
     <string name="autostart_bt">Запустити плеєр при підключенні</string>
@@ -44,4 +44,6 @@
     <string name="use_bt_id">"Використовувати ім'я та ID"</string>
     <string name="use_bt_id_summary">"Використовувати ім'я та ID під'єднаного пристрою як ім'я та ID на сервері Lyrion."</string>
     <string name="none">Немає</string>
+    <string name="stop_on_power_off">Зупинка при вимкненні</string>
+    <string name="stop_on_power_off_summary">"Зупинити роботу програми програвача при вимкненні живлення через Lyrion."</string>
 </resources>
