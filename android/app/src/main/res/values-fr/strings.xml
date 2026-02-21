@@ -25,7 +25,6 @@
     <string name="use_wake_lock_summary">Garde l\'appareil éveillé pendant que la platine est active. REMARQUE : cela augmente la consommation de la batterie.</string>
     <string name="restore_volume">Rétablir le volume</string>
     <string name="restore_volume_summary">Restaure le volume \"Musique\" de l\'appareil au démarrage.</string>
-    <string name="output_lib">Méthode de sortie</string>
     <string name="volume_control">Contrôle du volume</string>
     <string name="volume_control_separate">La platine Lyrion et l\'appareil Android peuvent avoir des valeurs de volume distinctes.</string>
     <string name="volume_control_device">Le volume de la platine Lyrion est figé à 100%% et les changements de volume doivent être effectués sur l\'appareil Android.</string>
@@ -36,6 +35,7 @@
     <string name="connection_lost_timeout">Délai d\'arrêt platine si perte de connexion serveur</string>
     <string name="start_on_boot">Démarrer au boot</string>
     <string name="start_on_boot_summary">Démarre automatiquement la platine lorsque l\'appareil est redémarré.</string>
+    <string name="start_on_boot_delay">Délai au démarrage</string>
     <string name="max_bitrate_when">Poser une limite de débit binaire</string>
     <string name="bt">Bluetooth</string>
     <string name="autostart_bt">Démarrer la platine à la connexion</string>
@@ -44,4 +44,6 @@
     <string name="use_bt_id">Utiliser l\'ID et le nom</string>
     <string name="use_bt_id_summary">Utilise le nom et l\'ID de l\'appareil connecté comme nom et ID sur le serveur Lyrion.</string>
     <string name="none">Aucun</string>
+    <string name="stop_on_power_off">Arrêt à l'extinction</string>
+    <string name="stop_on_power_off_summary">"Arrêter l'application lorsque la platine est éteinte via Lyrion."</string>
 </resources>
