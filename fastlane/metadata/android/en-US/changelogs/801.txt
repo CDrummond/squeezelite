@@ -1,0 +1,1 @@
+• If fail to find any AAudio symbol then fall back to OpenSL ES.

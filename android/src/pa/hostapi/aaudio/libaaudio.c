@@ -84,22 +84,73 @@ int LibAAudio_init() {
     }
 
     AAudio_createStreamBuilder_ptr = load_signature_I_PPB(aalib, "AAudio_createStreamBuilder");
+    if (!AAudio_createStreamBuilder_ptr) {
+        return 0;
+    }
     AAudioStream_close_ptr = load_signature_I_PS(aalib, "AAudioStream_close");
+    if (!AAudioStream_close_ptr) {
+        return 0;
+    }
     AAudioStream_requestStart_ptr = load_signature_I_PS(aalib, "AAudioStream_requestStart");
+    if (!AAudioStream_requestStart_ptr) {
+        return 0;
+    }
     AAudioStream_requestStop_ptr = load_signature_I_PS(aalib, "AAudioStream_requestStop");
+    if (!AAudioStream_requestStop_ptr) {
+        return 0;
+    }
     AAudioStream_read_ptr = load_signature_I_PSPVIL(aalib, "AAudioStream_read");
+    if (!AAudioStream_read_ptr) {
+        return 0;
+    }
     AAudioStream_write_ptr = load_signature_I_PSCPVIL(aalib, "AAudioStream_write");
+    if (!AAudioStream_write_ptr) {
+        return 0;
+    }
     AAudioStreamBuilder_setDirection_ptr = load_signature_V_PBI(aalib, "AAudioStreamBuilder_setDirection");
+    if (!AAudioStreamBuilder_setDirection_ptr) {
+        return 0;
+    }
     AAudioStreamBuilder_setSampleRate_ptr = load_signature_V_PBI(aalib, "AAudioStreamBuilder_setSampleRate");
+    if (!AAudioStreamBuilder_setSampleRate_ptr) {
+        return 0;
+    }
     AAudioStreamBuilder_setChannelCount_ptr = load_signature_V_PBI(aalib, "AAudioStreamBuilder_setChannelCount");
+    if (!AAudioStreamBuilder_setChannelCount_ptr) {
+        return 0;
+    }
     AAudioStreamBuilder_setSharingMode_ptr = load_signature_V_PBI(aalib, "AAudioStreamBuilder_setSharingMode");
+    if (!AAudioStreamBuilder_setSharingMode_ptr) {
+        return 0;
+    }
     AAudioStreamBuilder_setContentType_ptr = load_signature_V_PBI(aalib, "AAudioStreamBuilder_setContentType");
+    if (!AAudioStreamBuilder_setContentType_ptr) {
+        return 0;
+    }
     AAudioStreamBuilder_setUsage_ptr = load_signature_V_PBI(aalib, "AAudioStreamBuilder_setUsage");
+    if (!AAudioStreamBuilder_setUsage_ptr) {
+        return 0;
+    }
     AAudioStreamBuilder_setDataCallback_ptr = load_signature_V_PBPDPV(aalib, "AAudioStreamBuilder_setDataCallback");
+    if (!AAudioStreamBuilder_setDataCallback_ptr) {
+        return 0;
+    }
     AAudioStreamBuilder_setErrorCallback_ptr = load_signature_V_PBPEPV(aalib, "AAudioStreamBuilder_setErrorCallback");
+    if (!AAudioStreamBuilder_setErrorCallback_ptr) {
+        return 0;
+    }
     AAudioStreamBuilder_setFormat_ptr = load_signature_V_PBI(aalib, "AAudioStreamBuilder_setFormat");
+    if (!AAudioStreamBuilder_setFormat_ptr) {
+        return 0;
+    }
     AAudioStreamBuilder_openStream_ptr = load_signature_I_PBPPS(aalib, "AAudioStreamBuilder_openStream");
+    if (!AAudioStreamBuilder_openStream_ptr) {
+        return 0;
+    }
     AAudioStreamBuilder_delete_ptr = load_signature_I_PB(aalib, "AAudioStreamBuilder_delete");
+    if (!AAudioStreamBuilder_delete_ptr) {
+        return 0;
+    }
     return 1;
 }
 
