@@ -44,6 +44,6 @@
     <string name="use_bt_id">Utiliser l\'ID et le nom</string>
     <string name="use_bt_id_summary">Utilise le nom et l\'ID de l\'appareil connecté comme nom et ID sur le serveur Lyrion.</string>
     <string name="none">Aucun</string>
-    <string name="stop_on_power_off">Arrêt à l'extinction</string>
+    <string name="stop_on_power_off">"Arrêt à l'extinction"</string>
     <string name="stop_on_power_off_summary">"Arrêter l'application lorsque la platine est éteinte via Lyrion."</string>
 </resources>
