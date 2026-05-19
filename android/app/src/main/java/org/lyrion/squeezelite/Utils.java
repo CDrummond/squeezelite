@@ -98,6 +98,12 @@ public class Utils {
 
         @Override
         public int compareTo(Object o) {
+            if (null==name) { // Should never happen, but...
+                if (null==mac) {
+                    return -1;
+                }
+                return mac.compareTo(((BtDevice)o).mac);
+            }
             return name.compareTo(((BtDevice)o).name);
         }
     }
@@ -110,7 +116,17 @@ public class Utils {
                 return alias;
             }
         }
-        return dev.getName();
+
+        String name = dev.getName();
+        if (!isEmpty(name)) {
+            return name;
+        }
+
+        String mac = dev.getAddress();
+        if (!isEmpty(mac)) {
+            return mac;
+        }
+        return "?";
     }
 
     public static BtDevice getConnectedDevice(Context context) {

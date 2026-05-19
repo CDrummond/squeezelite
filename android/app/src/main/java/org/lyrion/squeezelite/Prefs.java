@@ -22,7 +22,6 @@ package org.lyrion.squeezelite;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.provider.Settings;
 
 import androidx.preference.PreferenceManager;

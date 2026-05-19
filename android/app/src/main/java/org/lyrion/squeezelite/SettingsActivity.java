@@ -24,22 +24,18 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,7 +49,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -373,7 +368,7 @@ public class SettingsActivity extends AppCompatActivity {
             if (!pairedDevices.isEmpty()) {
                 names = new CharSequence[pairedDevices.size()];
                 macs = new CharSequence[pairedDevices.size()];
-                List<Utils.BtDevice> devs = new LinkedList<Utils.BtDevice>();
+                List<Utils.BtDevice> devs = new LinkedList<>();
                 for (BluetoothDevice bt : pairedDevices) {
                     devs.add(new Utils.BtDevice(Utils.getName(bt), bt.getAddress()));
                 }
@@ -422,7 +417,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
         if (requestCode == PERMISSION_BLUETOOTH_CONNECT_COMPLETED) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                fillBtMacAddressList((MultiSelectListPreference)fragment.getPreferenceManager().findPreference(Prefs.BT_MAC_ADDRESSES_KEY), this);
+                fillBtMacAddressList(fragment.getPreferenceManager().findPreference(Prefs.BT_MAC_ADDRESSES_KEY), this);
             } else {
                 fragment.disableBt();
             }

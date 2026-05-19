@@ -20,19 +20,13 @@
 
 package org.lyrion.squeezelite;
 
-import android.Manifest;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
 
-import androidx.core.content.ContextCompat;
-
-import java.util.Arrays;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Start/stop service via:

@@ -26,7 +26,6 @@ import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -34,7 +33,6 @@ import android.provider.Settings;
 
 import androidx.annotation.Keep;
 
-import org.json.JSONObject;
 
 public class Library {
     private static final String[] PREV_COMMAND = {"button", "jump_rew"};
