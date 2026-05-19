@@ -22,7 +22,7 @@ Features:
 Original README of Squeezelite:
 <br>
 <hr/>
-Squeezelite v2.0.x, Copyright 2012-2015 Adrian Smith, 2015-2025 Ralph Irving.<br>
+Squeezelite v2.0.x, Copyright 2012-2015 Adrian Smith, 2015-2026 Ralph Irving.<br>
 <br>
 See the squeezelite manpage for usage details.<br>
 https://ralph-irving.github.io/squeezelite.html<br>

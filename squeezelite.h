@@ -2,7 +2,7 @@
  *  Squeezelite - lightweight headless squeezebox emulator
  *
  *  (c) Adrian Smith 2012-2015, triode1@btinternet.com
- *      Ralph Irving 2015-2025, ralph_irving@hotmail.com
+ *      Ralph Irving 2015-2026, ralph_irving@hotmail.com
  *  
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Additions (c) Paul Hermann, 2015-2025 under the same license terms
+ * Additions (c) Paul Hermann, 2015-2026 under the same license terms
  *   -Control of Raspberry pi GPIO for amplifier power
  *   -Launch script on power status change from LMS
  */
@@ -26,7 +26,7 @@
 
 #define MAJOR_VERSION "2.0"
 #define MINOR_VERSION "0"
-#define MICRO_VERSION "1556"
+#define MICRO_VERSION "1563"
 
 #if defined(CUSTOM_VERSION)
 #define VERSION MAJOR_VERSION "." MINOR_VERSION "-" MICRO_VERSION STR(CUSTOM_VERSION)
@@ -666,7 +666,7 @@ typedef enum { FADE_NONE = 0, FADE_CROSSFADE, FADE_IN, FADE_OUT, FADE_INOUT } fa
 #define MONO_RIGHT	0x02
 #define MONO_LEFT	0x01
 #define MAX_SUPPORTED_SAMPLERATES 20
-#define TEST_RATES = { 1536000, 1411200, 768000, 705600, 384000, 352800, 192000, 176400, 96000, 88200, 48000, 44100, 32000, 24000, 22500, 16000, 12000, 11025, 8000, 0 }
+#define TEST_RATES = { 1536000, 1411200, 768000, 705600, 384000, 352800, 192000, 176400, 96000, 88200, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 0 }
 
 struct outputstate {
 	output_state state;
