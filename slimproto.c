@@ -105,13 +105,13 @@ void send_packet(u8_t *packet, size_t len) {
 #if WIN
 			if (n < 0 && (error == ERROR_WOULDBLOCK || error == WSAENOTCONN) && try < 10) {
 #else
-			if (n < 0 && error == ERROR_WOULDBLOCK && try < 10) {
+			if (n < 0 && (error == ERROR_WOULDBLOCK || error == EINTR) && try < 10) {
 #endif
 				LOG_DEBUG("retrying (%d) writing to socket", ++try);
 				usleep(1000);
 				continue;
 			}
-			LOG_WARN("failed writing to socket: %s", strerror(last_error()));
+			LOG_ERROR("failed writing to socket: %s", strerror(last_error()));
 			return;
 		}
 		ptr += n;
@@ -571,10 +571,10 @@ static void slimproto_run() {
 				if (expect > 0) {
 					int n = recv(sock, buffer + got, expect, 0);
 					if (n <= 0) {
-						if (n < 0 && last_error() == ERROR_WOULDBLOCK) {
+						if (n < 0 && (last_error() == ERROR_WOULDBLOCK || last_error() == EINTR)) {
 							continue;
 						}
-						LOG_INFO("error reading from socket: %s", n ? strerror(last_error()) : "closed");
+						LOG_ERROR("error reading from socket: %s", n ? strerror(last_error()) : "closed");
 						return;
 					}
 					expect -= n;
@@ -586,10 +586,10 @@ static void slimproto_run() {
 				} else if (expect == 0) {
 					int n = recv(sock, buffer + got, 2 - got, 0);
 					if (n <= 0) {
-						if (n < 0 && last_error() == ERROR_WOULDBLOCK) {
+						if (n < 0 && (last_error() == ERROR_WOULDBLOCK || last_error() == EINTR)) {
 							continue;
 						}
-						LOG_INFO("error reading from socket: %s", n ? strerror(last_error()) : "closed");
+						LOG_ERROR("error reading from socket: %s", n ? strerror(last_error()) : "closed");
 						return;
 					}
 					got += n;
@@ -930,6 +930,25 @@ void slimproto(log_level level, char *server, u8_t mac[6], const char *name, con
 
 		set_nonblock(sock);
 		set_nosigpipe(sock);
+
+#ifdef ANDROID
+		{
+			int ka = 1;
+			setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &ka, sizeof(ka));
+#ifdef TCP_KEEPIDLE
+			int idle = 5;
+			setsockopt(sock, IPPROTO_TCP, TCP_KEEPIDLE, &idle, sizeof(idle));
+#endif
+#ifdef TCP_KEEPINTVL
+			int intvl = 1;
+			setsockopt(sock, IPPROTO_TCP, TCP_KEEPINTVL, &intvl, sizeof(intvl));
+#endif
+#ifdef TCP_KEEPCNT
+			int cnt = 3;
+			setsockopt(sock, IPPROTO_TCP, TCP_KEEPCNT, &cnt, sizeof(cnt));
+#endif
+		}
+#endif
 
 		if (connect_timeout(sock, (struct sockaddr *) &serv_addr, sizeof(serv_addr), 5) != 0) {
 
