@@ -712,15 +712,15 @@ static void slimproto_run() {
 				output.track_started = false;
 				status.stream_start = output.track_start_time;
 			}
+			if (_start_output && (output.state == OUTPUT_STOPPED || output.state == OUTPUT_OFF)) {
+				output.state = OUTPUT_BUFFER;
+			}
 #if PORTAUDIO
 			if (output.pa_reopen) {
 				_pa_open();
 				output.pa_reopen = false;
 			}
 #endif
-			if (_start_output && (output.state == OUTPUT_STOPPED || output.state == OUTPUT_OFF)) {
-				output.state = OUTPUT_BUFFER;
-			}
 			if (output.state == OUTPUT_RUNNING && !sentSTMu && status.output_full == 0 && status.stream_state <= DISCONNECT &&
 				_decode_state == DECODE_STOPPED) {
 
