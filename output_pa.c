@@ -298,10 +298,12 @@ static void *pa_monitor() {
 		} else {
 			// this is a hack to partially support hot plugging of devices
 			// we rely on terminating and reinitalising PA to get an updated list of devices and use name for output.device
+#ifndef ANDROID
 			LOG_INFO("probing device %s", output.device);
 			Pa_Terminate();
 			Pa_Initialize();
 			pa.stream = NULL;
+#endif
 			if (pa_device_id(output.device) != -1) {
 				LOG_INFO("device reopen");
 				break;
