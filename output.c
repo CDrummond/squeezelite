@@ -247,6 +247,11 @@ frames_t _output_frames(frames_t avail) {
 							gainR = output.gainR;
 							if (output.invert) { gainL = -gainL; gainR = -gainR; }
 							cross_ptr = (s32_t *)(output.fade_end + cur_f * BYTES_PER_FRAME);
+#ifdef ANDROID
+							if (cross_ptr >= (s32_t *)outputbuf->wrap) {
+								cross_ptr -= outputbuf->size / BYTES_PER_FRAME * 2;
+							}
+#endif
 						} else {
 							LOG_INFO("unable to continue crossfade - too few samples");
 							output.fade = FADE_INACTIVE;
