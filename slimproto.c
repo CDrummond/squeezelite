@@ -104,14 +104,20 @@ void send_packet(u8_t *packet, size_t len) {
 			error = last_error();
 #if WIN
 			if (n < 0 && (error == ERROR_WOULDBLOCK || error == WSAENOTCONN) && try < 10) {
-#else
+#elif defined(ANDROID)
 			if (n < 0 && (error == ERROR_WOULDBLOCK || error == EINTR) && try < 10) {
+#else
+			if (n < 0 && error == ERROR_WOULDBLOCK && try < 10) {
 #endif
 				LOG_DEBUG("retrying (%d) writing to socket", ++try);
 				usleep(1000);
 				continue;
 			}
+#ifdef ANDROID
 			LOG_ERROR("failed writing to socket: %s", strerror(last_error()));
+#else
+			LOG_WARN("failed writing to socket: %s", strerror(last_error()));
+#endif
 			return;
 		}
 		ptr += n;
@@ -432,7 +438,11 @@ static void process_aude(u8_t *pkt, int len) {
 	if (!aude->enable_spdif && output.state != OUTPUT_OFF) {
 		output.state = OUTPUT_OFF;
 	}
-	if (aude->enable_spdif && output.state == OUTPUT_OFF) {
+	if (aude->enable_spdif && output.state == OUTPUT_OFF
+#ifndef ANDROID
+		&& !output.idle_to
+#endif
+		) {
 		output.state = OUTPUT_STOPPED;
 		output.stop_time = gettime_ms();
 	}
@@ -571,10 +581,18 @@ static void slimproto_run() {
 				if (expect > 0) {
 					int n = recv(sock, buffer + got, expect, 0);
 					if (n <= 0) {
+#ifdef ANDROID
 						if (n < 0 && (last_error() == ERROR_WOULDBLOCK || last_error() == EINTR)) {
+#else
+						if (n < 0 && last_error() == ERROR_WOULDBLOCK) {
+#endif
 							continue;
 						}
+#ifdef ANDROID
 						LOG_ERROR("error reading from socket: %s", n ? strerror(last_error()) : "closed");
+#else
+						LOG_INFO("error reading from socket: %s", n ? strerror(last_error()) : "closed");
+#endif
 						return;
 					}
 					expect -= n;
@@ -586,10 +604,18 @@ static void slimproto_run() {
 				} else if (expect == 0) {
 					int n = recv(sock, buffer + got, 2 - got, 0);
 					if (n <= 0) {
+#ifdef ANDROID
 						if (n < 0 && (last_error() == ERROR_WOULDBLOCK || last_error() == EINTR)) {
+#else
+						if (n < 0 && last_error() == ERROR_WOULDBLOCK) {
+#endif
 							continue;
 						}
+#ifdef ANDROID
 						LOG_ERROR("error reading from socket: %s", n ? strerror(last_error()) : "closed");
+#else
+						LOG_INFO("error reading from socket: %s", n ? strerror(last_error()) : "closed");
+#endif
 						return;
 					}
 					got += n;
@@ -712,15 +738,22 @@ static void slimproto_run() {
 				output.track_started = false;
 				status.stream_start = output.track_start_time;
 			}
-			if (_start_output && (output.state == OUTPUT_STOPPED || output.state == OUTPUT_OFF)) {
-				output.state = OUTPUT_BUFFER;
-			}
 #if PORTAUDIO
 			if (output.pa_reopen) {
+#ifdef ANDROID
+				/* Pre-set state so _pa_open() opens device directly instead of
+				   creating a monitor thread when both pa_reopen and _start_output are set */
+				if (_start_output && (output.state == OUTPUT_STOPPED || output.state == OUTPUT_OFF)) {
+					output.state = OUTPUT_BUFFER;
+				}
+#endif
 				_pa_open();
 				output.pa_reopen = false;
 			}
 #endif
+			if (_start_output && (output.state == OUTPUT_STOPPED || output.state == OUTPUT_OFF)) {
+				output.state = OUTPUT_BUFFER;
+			}
 			if (output.state == OUTPUT_RUNNING && !sentSTMu && status.output_full == 0 && status.stream_state <= DISCONNECT &&
 				_decode_state == DECODE_STOPPED) {
 
