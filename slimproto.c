@@ -432,7 +432,7 @@ static void process_aude(u8_t *pkt, int len) {
 	if (!aude->enable_spdif && output.state != OUTPUT_OFF) {
 		output.state = OUTPUT_OFF;
 	}
-	if (aude->enable_spdif && output.state == OUTPUT_OFF && !output.idle_to) {
+	if (aude->enable_spdif && output.state == OUTPUT_OFF) {
 		output.state = OUTPUT_STOPPED;
 		output.stop_time = gettime_ms();
 	}
