@@ -392,14 +392,6 @@ public class Library {
         jsonRpc.sendMessage(new String[]{"status", "-", "1", tags}, listener);
     }
 
-    public void getPref(String key, Response.Listener<JSONObject> listener) {
-        if (null==jsonRpc) {
-            listener.onResponse(null);
-            return;
-        }
-        jsonRpc.sendMessage(new String[]{"pref", key, "?"}, listener);
-    }
-
     public void fetchImage(String url, int maxSize, Response.Listener<Bitmap> listener) {
         if (null!=jsonRpc) {
             jsonRpc.fetchImage(url, maxSize, listener);

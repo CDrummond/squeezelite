@@ -45,7 +45,6 @@
     <string name="bt_mac_addresses">Auto start when device connects</string>
     <string name="send_track_details">Send track details</string>
     <string name="send_track_details_summary">Send details of the track being played (title, artist, album, artwork) to the connected device, so that it can display these. Also used for the lock screen and Android Auto.</string>
-    <string name="album_year">Append year to album</string>
     <string name="use_bt_id">Use ID and name</string>
     <string name="use_bt_id_summary">Use name and ID of connected device as name and ID on Lyrion server.</string>
     <string name="none">None</string>

@@ -152,13 +152,6 @@
             app:summary="@string/send_track_details_summary"
             app:title="@string/send_track_details"
             app:singleLineTitle="false"/>
-        <ListPreference
-            android:entries="@array/albumYear"
-            android:entryValues="@array/albumYearAlias"
-            android:key="album_year"
-            android:title="@string/album_year"
-            app:iconSpaceReserved="false"
-            app:singleLineTitle="false"/>
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
             app:key="autostart_bt"

@@ -395,10 +395,6 @@ public class PlayerService extends Service {
         boolean changed = (null==currentServerAddress && null!=ip) || (null!=currentServerAddress && null==ip) || (null!=currentServerAddress && !currentServerAddress.equals(ip));
         currentServerAddress = ip;
         if (changed) {
-            NowPlaying np = nowPlaying;
-            if (null!=np) {
-                handler.post(np::serverChanged);
-            }
             handler.post(this::updateNotification);
         }
         if (Utils.isEmpty(ip)) {

@@ -53,14 +53,10 @@ public class Prefs {
     public static final String BT_MAC_ADDRESSES_KEY = "bt_mac_addresses";
     public static final String USE_BT_ID_KEY = "use_bt_id";
     public static final String SEND_TRACK_DETAILS_KEY = "send_track_details";
-    public static final String ALBUM_YEAR_KEY = "album_year";
     public static int MAX_BITRATE_ALWAYS = 0;
     public static int MAX_BITRATE_WHEN_CELLULAR = 1;
     public static int MAX_BITRATE_WHEN_METERED = 2;
     public static int MAX_BITRATE_WHEN_EITHER = 3;
-    public static final String ALBUM_YEAR_NONE = "none";
-    public static final String ALBUM_YEAR_YES = "yes";
-    public static final String ALBUM_YEAR_SERVER = "server";
     public static final String VOLUME_CONTROL_SEPARATE = "separate";
     public static final String VOLUME_CONTROL_DEVICE = "device";
     public static final String VOLUME_CONTROL_SYNCHRONIZED = "synchronized";
@@ -79,7 +75,6 @@ public class Prefs {
     public static String DEFAULT_START_ON_BOOT_DELAY = "0";
     public static boolean DEFAULT_STOP_ON_POWER_OFF = true;
     public static boolean DEFAULT_SEND_TRACK_DETAILS = true;
-    public static String DEFAULT_ALBUM_YEAR = ALBUM_YEAR_NONE;
 
     static public SharedPreferences get(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -192,12 +187,6 @@ public class Prefs {
                 editor = sharedPreferences.edit();
             }
             editor.putBoolean(SEND_TRACK_DETAILS_KEY, DEFAULT_SEND_TRACK_DETAILS);
-        }
-        if (!sharedPreferences.contains(ALBUM_YEAR_KEY)) {
-            if (null==editor) {
-                editor = sharedPreferences.edit();
-            }
-            editor.putString(ALBUM_YEAR_KEY, DEFAULT_ALBUM_YEAR);
         }
         if (editor!=null) {
             editor.apply();

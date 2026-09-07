@@ -90,14 +90,4 @@
         <item>2</item>
         <item>3</item>
     </string-array>
-    <string-array name="albumYear">
-        <item>No</item>
-        <item>Yes</item>
-        <item>Use server setting</item>
-    </string-array>
-    <string-array name="albumYearAlias" translatable="false">
-        <item>none</item>
-        <item>yes</item>
-        <item>server</item>
-    </string-array>
 </resources>

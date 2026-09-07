@@ -20,7 +20,6 @@
 
 package org.lyrion.squeezelite;
 
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
@@ -65,9 +64,6 @@ public class NowPlaying {
     private Bitmap cover = null;
     private MediaMetadataCompat.Builder metadata = null;
     private String description = null;
-    private Boolean serverShowYear = null;
-    private boolean fetchingServerShowYear = false;
-    private int serverGeneration = 0;
 
     public NowPlaying(PlayerService service, Library lib, MediaSessionCompat session) {
         this.service = service;
@@ -95,48 +91,14 @@ public class NowPlaying {
         return description;
     }
 
-    public void serverChanged() {
-        serverShowYear = null;
-        fetchingServerShowYear = false;
-        serverGeneration++;
-    }
-
     private void query() {
         if (released) {
             return;
         }
-        if (Prefs.ALBUM_YEAR_SERVER.equals(albumYear())) {
-            queryServerShowYear();
-            return;
-        }
-        queryStatus();
-    }
-
-    private void queryStatus() {
         lib.getStatus(TAGS, response -> {
             if (!released) {
                 handleStatus(response);
             }
-        });
-    }
-
-    private void queryServerShowYear() {
-        if (fetchingServerShowYear) {
-            return;
-        }
-        fetchingServerShowYear = true;
-        int generation = serverGeneration;
-        lib.getPref("showYear", response -> {
-            if (released || generation!=serverGeneration) {
-                return;
-            }
-            fetchingServerShowYear = false;
-            JSONObject result = null==response ? null : response.optJSONObject("result");
-            String showYear = null==result ? "" : result.optString("_p2", "");
-            if ("0".equals(showYear) || "1".equals(showYear)) {
-                serverShowYear = "1".equals(showYear);
-            }
-            queryStatus();
         });
     }
 
@@ -164,9 +126,7 @@ public class NowPlaying {
         String artist = firstOf(track, "artist", "trackartist", "albumartist", "artist_name");
         // For a remote stream 'album' is not set, but remote_title names the station
         String album = remote ? firstOf(track, "remote_title") : firstOf(track, "album");
-        String albumYear = albumYear();
-        if (!remote && (Prefs.ALBUM_YEAR_YES.equals(albumYear) ||
-                        (Prefs.ALBUM_YEAR_SERVER.equals(albumYear) && Boolean.TRUE.equals(serverShowYear)))) {
+        if (!remote) {
             album = appendYear(album, track.optInt("year", 0));
         }
         if (remote && (Utils.isEmpty(title) || title.equals(artist))) {
@@ -265,11 +225,6 @@ public class NowPlaying {
         session.setMetadata(metadata.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, cover)
                                     .putBitmap(MediaMetadataCompat.METADATA_KEY_ART, cover)
                                     .build());
-    }
-
-    private String albumYear() {
-        SharedPreferences prefs = Prefs.get(service);
-        return prefs.getString(Prefs.ALBUM_YEAR_KEY, Prefs.DEFAULT_ALBUM_YEAR);
     }
 
     private static String appendYear(String album, int year) {
