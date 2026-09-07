@@ -1,0 +1,2 @@
+• Enable server discovery on Android hotspot networks - thanks to chrober.
+• Add year, in brackets, after album name - thanks to chrober.
