@@ -38,8 +38,8 @@ import org.json.JSONObject;
  */
 public class NowPlaying {
     private static final String SEPARATOR = " • ";
-    // artist, album, duration, coverid, artwork url, remote stream title, is-remote
-    private static final String TAGS = "tags:aldcKNx";
+    // artist, album, duration, coverid, artwork url, remote stream title, is-remote, year
+    private static final String TAGS = "tags:aldcKNxy";
     // Let LMS settle on the new track, and coalesce a burst of events into a single query
     private static final long QUERY_DELAY = 250;
     // If LMS still reports the previous track then try again after this long
@@ -126,6 +126,9 @@ public class NowPlaying {
         String artist = firstOf(track, "artist", "trackartist", "albumartist", "artist_name");
         // For a remote stream 'album' is not set, but remote_title names the station
         String album = remote ? firstOf(track, "remote_title") : firstOf(track, "album");
+        if (!remote) {
+            album = appendYear(album, track.optInt("year", 0));
+        }
         if (remote && (Utils.isEmpty(title) || title.equals(artist))) {
             // Not every station sends usable metadata - one was seen putting the same changing
             // number in both title and artist. The station name is all LMS always knows.
@@ -222,6 +225,10 @@ public class NowPlaying {
         session.setMetadata(metadata.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, cover)
                                     .putBitmap(MediaMetadataCompat.METADATA_KEY_ART, cover)
                                     .build());
+    }
+
+    private static String appendYear(String album, int year) {
+        return year>0 && !Utils.isEmpty(album) ? album + " (" + year + ")" : album;
     }
 
     private void fetchCover(String url) {
