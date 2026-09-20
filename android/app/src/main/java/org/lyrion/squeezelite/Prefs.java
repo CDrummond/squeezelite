@@ -45,6 +45,7 @@ public class Prefs {
     public static final String MAX_BITRATE_KEY = "max_bitrate";
     public static final String MAX_BITRATE_WHEN_KEY = "max_bitrate_when";
     public static final String STREAM_BUFFER_KEY = "stream_buffer";
+    public static final String USE_OPENSLES_KEY = "use_opensles";
     public static final String START_ON_BOOT_KEY = "start_on_boot";
     public static final String START_ON_BOOT_DELAY_KEY = "start_on_boot_delay";
     public static final String STOP_ON_POWER_OFF_KEY = "stop_on_power_off";
@@ -71,6 +72,7 @@ public class Prefs {
     public static String DEFAULT_MAX_BITRATE = "-1";
     public static String DEFAULT_MAX_BITRATE_WHEN = String.valueOf(MAX_BITRATE_WHEN_EITHER);
     public static String DEFAULT_STREAM_BUFFER = "0";
+    public static boolean DEFAULT_USE_OPENSLES = false;
     public static boolean DEFAULT_START_ON_BOOT = false;
     public static String DEFAULT_START_ON_BOOT_DELAY = "0";
     public static boolean DEFAULT_STOP_ON_POWER_OFF = true;
@@ -151,6 +153,12 @@ public class Prefs {
                 editor = sharedPreferences.edit();
             }
             editor.putString(STREAM_BUFFER_KEY, DEFAULT_STREAM_BUFFER);
+        }
+        if (!sharedPreferences.contains(USE_OPENSLES_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putBoolean(USE_OPENSLES_KEY, DEFAULT_USE_OPENSLES);
         }
         if (!sharedPreferences.contains(START_ON_BOOT_KEY)) {
             if (null==editor) {

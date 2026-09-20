@@ -50,4 +50,6 @@
     <string name="none">None</string>
     <string name="stop_on_power_off">Stop on power off</string>
     <string name="stop_on_power_off_summary">"Stop player application when it's powered off via Lyrion."</string>
+    <string name="use_opensles">Force older output method</string>
+    <string name="use_opensles_summary">Always use OpenSL ES for audio output.</string>
 </resources>

@@ -184,7 +184,8 @@ public class Library {
               VOL_SEP==volumeControl ? 0 : 1,
               LOG_ERROR,
               cellular || metered ? 1 : 0,
-              streamBuffer));
+              streamBuffer,
+              prefs.getBoolean(Prefs.USE_OPENSLES_KEY, Prefs.DEFAULT_USE_OPENSLES) ? 1 : 0));
         thread.start();
         return usingBtName ? name : null;
     }
@@ -406,6 +407,6 @@ public class Library {
         return null==jsonRpc ? null : jsonRpc.getMac();
     }
 
-    private native void start(String lms, String mac, String name, int idleTimeout, int fixedVolume, int logging, int mobileNetwork, int streamBuffer);
+    private native void start(String lms, String mac, String name, int idleTimeout, int fixedVolume, int logging, int mobileNetwork, int streamBuffer, int openSlEs);
     private native void stop();
 }
