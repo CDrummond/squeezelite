@@ -26,6 +26,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 
 /**
  * Watches whether Android Auto is projecting, via its content provider. The end of a session is
@@ -47,6 +48,8 @@ public class CarConnection {
     private final Runnable pollTask = this::poll;
     private ContentObserver observer = null;
     private boolean seenConnected = false;
+    // 0 if no session is running
+    private long connectedSince = 0;
 
     // Not for the main thread
     public static int state(Context context) {
@@ -61,6 +64,10 @@ public class CarConnection {
             Utils.debug("Car connection state unavailable");
             return NOT_CONNECTED;
         }
+    }
+
+    public long connectedSince() {
+        return connectedSince;
     }
 
     public CarConnection(Context context, Runnable onSessionEnded) {
@@ -115,7 +122,10 @@ public class CarConnection {
         }
         Utils.debug("state:"+state+", seenConnected:"+seenConnected+", confirming:"+confirming);
         if (NOT_CONNECTED!=state) {
-            seenConnected = true;
+            if (!seenConnected) {
+                seenConnected = true;
+                connectedSince = SystemClock.elapsedRealtime();
+            }
             handler.removeCallbacks(confirmTask);
             schedulePoll();
             return;
@@ -127,6 +137,7 @@ public class CarConnection {
         if (confirming) {
             Utils.info("Android Auto session ended");
             seenConnected = false;
+            connectedSince = 0;
             handler.removeCallbacks(pollTask);
             onSessionEnded.run();
             return;
