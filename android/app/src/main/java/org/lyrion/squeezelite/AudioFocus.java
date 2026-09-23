@@ -27,24 +27,35 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 
 /**
  * Holds audio focus whilst playing, as Android Auto only routes the media of the focus holder to
- * the car.
+ * the car. Android Auto also takes focus for itself as a session starts, which is reclaimed.
  */
 public class AudioFocus {
+    private static final long RECLAIM_DELAY = 1500;
+    // A loss later than this into a car session is another app
+    private static final long STARTUP_WINDOW = 60000;
+
+    private final Context context;
     private final AudioManager audioManager;
     private final Library lib;
+    private final CarConnection carConnection;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private AudioFocusRequest request = null;
     private boolean haveFocus = false;
     private boolean pausedByLoss = false;
+    private boolean reclaimed = false;
 
     private final AudioManager.OnAudioFocusChangeListener listener = this::onFocusChange;
+    private final Runnable reclaimTask = this::reclaim;
 
-    public AudioFocus(Context context, Library lib) {
+    public AudioFocus(Context context, Library lib, CarConnection carConnection) {
+        this.context = context.getApplicationContext();
         this.audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         this.lib = lib;
+        this.carConnection = carConnection;
     }
 
     private void onFocusChange(int focusChange) {
@@ -52,15 +63,22 @@ public class AudioFocus {
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_GAIN:
                 haveFocus = true;
+                handler.removeCallbacks(reclaimTask);
                 if (pausedByLoss) {
                     pausedByLoss = false;
                     lib.play();
                 }
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
-                pausedByLoss = false;
+                haveFocus = false;
                 lib.pause();
-                release();
+                handler.removeCallbacks(reclaimTask);
+                pausedByLoss = mayBeCarStarting();
+                if (pausedByLoss) {
+                    handler.postDelayed(reclaimTask, RECLAIM_DELAY);
+                } else {
+                    Utils.debug("Another player has taken over");
+                }
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 // e.g. phone call, or navigation prompt
@@ -75,8 +93,52 @@ public class AudioFocus {
         }
     }
 
+    private boolean mayBeCarStarting() {
+        if (reclaimed) {
+            return false;
+        }
+        if (null==carConnection) {
+            return true;
+        }
+        long since = carConnection.connectedSince();
+        // 0 is a session not seen yet, i.e. only now starting
+        return 0==since || (SystemClock.elapsedRealtime()-since)<STARTUP_WINDOW;
+    }
+
+    private void reclaim() {
+        if (!pausedByLoss) {
+            return;
+        }
+        new Thread(() -> {
+            int state = CarConnection.state(context);
+            handler.post(() -> onCarConnectionState(state));
+        }).start();
+    }
+
+    private void onCarConnectionState(int state) {
+        if (!pausedByLoss) {
+            return;
+        }
+        pausedByLoss = false;
+        if (CarConnection.NOT_CONNECTED == state) {
+            Utils.debug("Focus lost to another app");
+            return;
+        }
+        Utils.debug("Focus lost as car connected (" + state + ") - reclaim");
+        reclaimed = true;
+        acquire();
+        if (haveFocus) {
+            lib.play();
+        }
+    }
+
     public void request() {
         pausedByLoss = false;
+        handler.removeCallbacks(reclaimTask);
+        acquire();
+    }
+
+    private void acquire() {
         if (haveFocus || null==audioManager) {
             return;
         }
@@ -110,11 +172,16 @@ public class AudioFocus {
             // Our own pause, on losing focus - keep the request so focus can be regained
             return;
         }
-        release();
+        releaseFocus();
     }
 
     public void release() {
         pausedByLoss = false;
+        handler.removeCallbacks(reclaimTask);
+        releaseFocus();
+    }
+
+    private void releaseFocus() {
         if (!haveFocus || null==audioManager) {
             return;
         }

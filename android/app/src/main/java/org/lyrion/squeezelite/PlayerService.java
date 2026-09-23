@@ -257,7 +257,7 @@ public class PlayerService extends Service {
             carConnection.start();
         }
         if (Prefs.get(this).getBoolean(Prefs.AUDIO_FOCUS_KEY, Prefs.DEFAULT_AUDIO_FOCUS)) {
-            audioFocus = new AudioFocus(this, lib);
+            audioFocus = new AudioFocus(this, lib, carConnection);
         }
 
         mediaSession = new MediaSessionCompat(getApplicationContext(), "Squeezelite");
