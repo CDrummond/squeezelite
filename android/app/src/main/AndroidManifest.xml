@@ -2,6 +2,11 @@
 <manifest xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Android Auto publishes whether it is projecting via this provider -->
+    <queries>
+        <provider android:authorities="androidx.car.app.connection" />
+    </queries>
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -55,6 +60,7 @@
                 <action android:name="org.lyrion.squeezelite.START"/>
                 <action android:name="org.lyrion.squeezelite.STOP"/>
                 <action android:name="android.bluetooth.a2dp.profile.action.CONNECTION_STATE_CHANGED" />
+                <action android:name="android.bluetooth.headset.profile.action.CONNECTION_STATE_CHANGED" />
             </intent-filter>
         </receiver>
 

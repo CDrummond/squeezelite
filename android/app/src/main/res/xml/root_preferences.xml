@@ -179,6 +179,12 @@
             android:singleLineTitle="false"/>
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
+            app:key="autostart_android_auto"
+            app:summary="@string/autostart_android_auto_summary"
+            app:title="@string/autostart_android_auto"
+            app:singleLineTitle="false"/>
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
             app:key="autostop_bt"
             app:summary="@string/autostop_bt_summary"
             app:title="@string/autostop_bt"
