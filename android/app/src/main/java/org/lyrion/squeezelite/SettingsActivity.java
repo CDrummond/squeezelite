@@ -268,6 +268,10 @@ public class SettingsActivity extends AppCompatActivity {
                 if (sharedPreferences.getBoolean(Prefs.AUTOSTOP_BT_KEY, false)) {
                     activity.checkBtPermission();
                 }
+            } else if (Prefs.AUTOSTART_ANDROID_AUTO_KEY.equals(key)) {
+                if (sharedPreferences.getBoolean(Prefs.AUTOSTART_ANDROID_AUTO_KEY, false)) {
+                    activity.checkBtPermission();
+                }
             } else {
                 updateSummary(key);
             }
@@ -343,13 +347,15 @@ public class SettingsActivity extends AppCompatActivity {
             SwitchPreferenceCompat useIdPref = getPreferenceManager().findPreference(Prefs.USE_BT_ID_KEY);
             SwitchPreferenceCompat autoStartPref = getPreferenceManager().findPreference(Prefs.AUTOSTART_BT_KEY);
             SwitchPreferenceCompat autoStopPref = getPreferenceManager().findPreference(Prefs.AUTOSTOP_BT_KEY);
+            SwitchPreferenceCompat androidAutoPref = getPreferenceManager().findPreference(Prefs.AUTOSTART_ANDROID_AUTO_KEY);
 
-            if (useIdPref==null || useIdPref.isChecked() || autoStartPref==null || autoStartPref.isChecked() || autoStopPref==null || autoStopPref.isChecked()) {
+            if (useIdPref==null || useIdPref.isChecked() || autoStartPref==null || autoStartPref.isChecked() || autoStopPref==null || autoStopPref.isChecked() || androidAutoPref==null || androidAutoPref.isChecked()) {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean(Prefs.USE_BT_ID_KEY, false);
                 editor.putBoolean(Prefs.AUTOSTART_BT_KEY, false);
                 editor.putBoolean(Prefs.AUTOSTOP_BT_KEY, false);
+                editor.putBoolean(Prefs.AUTOSTART_ANDROID_AUTO_KEY, false);
                 editor.apply();
                 if (useIdPref != null && useIdPref.isChecked()) {
                     useIdPref.setChecked(false);
@@ -359,6 +365,9 @@ public class SettingsActivity extends AppCompatActivity {
                 }
                 if (autoStopPref != null && autoStopPref.isChecked()) {
                     autoStopPref.setChecked(false);
+                }
+                if (androidAutoPref != null && androidAutoPref.isChecked()) {
+                    androidAutoPref.setChecked(false);
                 }
             }
         }

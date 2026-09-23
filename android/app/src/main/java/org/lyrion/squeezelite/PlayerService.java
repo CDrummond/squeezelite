@@ -74,6 +74,7 @@ public class PlayerService extends Service {
     private MediaSessionCompat.Callback mediaSessionCallback;
     private volatile NowPlaying nowPlaying;
     private volatile AudioFocus audioFocus;
+    private volatile CarConnection carConnection;
 
     public PlayerService() {
         handler = new Handler(Looper.getMainLooper());
@@ -251,6 +252,10 @@ public class PlayerService extends Service {
         if (!Utils.isEmpty(playerName)) {
             updateNotification();
         }
+        if (Prefs.get(this).getBoolean(Prefs.AUTOSTART_ANDROID_AUTO_KEY, false)) {
+            carConnection = new CarConnection(this, this::stopForegroundService);
+            carConnection.start();
+        }
         if (Prefs.get(this).getBoolean(Prefs.AUDIO_FOCUS_KEY, Prefs.DEFAULT_AUDIO_FOCUS)) {
             audioFocus = new AudioFocus(this, lib);
         }
@@ -366,6 +371,10 @@ public class PlayerService extends Service {
         if (null!=audioFocus) {
             audioFocus.release();
             audioFocus = null;
+        }
+        if (null!=carConnection) {
+            carConnection.release();
+            carConnection = null;
         }
         lib.stopPlayer(this);
         if (mediaSession != null) {
