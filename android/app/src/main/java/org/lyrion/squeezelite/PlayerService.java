@@ -388,10 +388,15 @@ public class PlayerService extends Service {
         handler.post(() -> {
             AudioFocus focus = audioFocus;
             if (null!=focus) {
-                if (playing) {
-                    focus.request();
-                } else {
-                    focus.abandon();
+                // An exception here would kill the main thread, and every later update with it
+                try {
+                    if (playing) {
+                        focus.request();
+                    } else {
+                        focus.abandon();
+                    }
+                } catch (Exception e) {
+                    Utils.error("Failed to handle audio focus", e);
                 }
             }
             NowPlaying np = nowPlaying;

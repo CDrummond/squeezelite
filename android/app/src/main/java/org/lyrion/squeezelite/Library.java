@@ -323,7 +323,12 @@ public class Library {
         Utils.debug("aVol:"+aVol+", androidVolume:"+androidVolume);
         if (aVol!=androidVolume) {
             androidVolume = aVol;
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, aVol, 0);
+            try {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, aVol, 0);
+            } catch (Exception e) {
+                // e.g. refused under do not disturb
+                Utils.error("Failed to set device volume", e);
+            }
         }
     }
 

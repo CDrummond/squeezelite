@@ -139,7 +139,11 @@ public class CarConnection {
             seenConnected = false;
             connectedSince = 0;
             handler.removeCallbacks(pollTask);
-            onSessionEnded.run();
+            try {
+                onSessionEnded.run();
+            } catch (Exception e) {
+                Utils.error("Failed to stop player", e);
+            }
             return;
         }
         handler.removeCallbacks(confirmTask);
