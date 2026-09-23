@@ -340,13 +340,14 @@ public class Library {
         isInitialPower = false;
     }
 
-    // Called from C code when a track starts, or playback is paused, resumed, or stopped
+    // Called from C code when a track starts, or playback is paused, resumed, or stopped.
+    // 'playing' is whether the player is (about to be) outputting audio.
     @Keep
-    public void playbackStateChanged() {
-        Utils.debug("");
+    public void playbackStateChanged(boolean playing) {
+        Utils.debug("playing:"+playing);
         PlayerService svc = service;
         if (null!=svc) {
-            svc.playbackStateChanged();
+            svc.playbackStateChanged(playing);
         }
     }
 

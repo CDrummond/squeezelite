@@ -26,6 +26,9 @@
 #include <jni.h>
 #include <signal.h>
 
+extern struct outputstate output;
+extern struct buffer *outputbuf;
+
 static JavaVM *jvm = NULL;
 static jclass clazz = 0;
 static jobject obj = 0;
@@ -105,6 +108,11 @@ void send_playback_state_to_app(void) {
 	if (!jvm || !obj || !clazz) {
 		return;
 	}
+	// Callers do not hold the output lock
+	mutex_lock(outputbuf->mutex);
+	bool playing = output.state != OUTPUT_OFF && output.state != OUTPUT_STOPPED;
+	mutex_unlock(outputbuf->mutex);
+
 	JNIEnv *env;
 	bool detached = JNI_EDETACHED == (*jvm)->GetEnv(jvm, &env, JNI_VERSION_1_6);
 	if (detached) {
@@ -113,9 +121,9 @@ void send_playback_state_to_app(void) {
 			return;
 		}
 	}
-	jmethodID method = (*env)->GetMethodID(env, clazz, "playbackStateChanged", "()V");
+	jmethodID method = (*env)->GetMethodID(env, clazz, "playbackStateChanged", "(Z)V");
 	if (method) {
-		(*env)->CallVoidMethod(env, obj, method);
+		(*env)->CallVoidMethod(env, obj, method, (jboolean)(playing ? JNI_TRUE : JNI_FALSE));
 	} else {
 		// A failed GetMethodID leaves an exception pending, and the next JNI call from this
 		// thread would then abort the VM. Happens if the native library is newer than the java.
