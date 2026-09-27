@@ -52,7 +52,7 @@ public class CommandReceiver extends BroadcastReceiver {
                 (act.equals(Intent.ACTION_BOOT_COMPLETED) && Prefs.get(context).getBoolean(Prefs.START_ON_BOOT_KEY, Prefs.DEFAULT_START_ON_BOOT))) {
             startOnBoot(context);
         } else if (act.equals(STOP)) {
-            context.stopService(new Intent(context, PlayerService.class));
+            PlayerService.stop(context);
         } else if (act.equals(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED)) {
             handleBtIntent(context, intent);
         } else if (act.equals(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED)) {
@@ -106,9 +106,7 @@ public class CommandReceiver extends BroadcastReceiver {
         }
 
         if (!connected && Prefs.get(context).getBoolean(Prefs.AUTOSTOP_BT_KEY, false)) {
-            if (Utils.isPlayerRunning(context)) {
-                context.stopService(new Intent(context, PlayerService.class));
-            }
+            PlayerService.stop(context);
             return;
         }
         if (!Prefs.get(context).getBoolean(Prefs.AUTOSTART_BT_KEY, false)) {
@@ -138,8 +136,8 @@ public class CommandReceiver extends BroadcastReceiver {
             if (!Utils.isPlayerRunning(context)) {
                 startService(context);
             }
-        } else if (Utils.isPlayerRunning(context)) {
-            context.stopService(new Intent(context, PlayerService.class));
+        } else {
+            PlayerService.stop(context);
         }
     }
 
