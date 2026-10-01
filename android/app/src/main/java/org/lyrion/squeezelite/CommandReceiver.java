@@ -98,12 +98,13 @@ public class CommandReceiver extends BroadcastReceiver {
             return;
         }
 
-        if (Utils.isPlayerRunning(context)) {
-            context.stopService(new Intent(context, PlayerService.class));
-        }
-
         if (connected) {
-            startService(context);
+            // Left alone if already running, as restarting in the same process is what crashes
+            if (!Utils.isPlayerRunning(context)) {
+                startService(context);
+            }
+        } else if (Utils.isPlayerRunning(context)) {
+            context.stopService(new Intent(context, PlayerService.class));
         }
     }
 
