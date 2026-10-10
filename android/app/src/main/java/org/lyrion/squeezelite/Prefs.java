@@ -51,9 +51,11 @@ public class Prefs {
     public static final String STOP_ON_POWER_OFF_KEY = "stop_on_power_off";
     public static final String AUTOSTART_BT_KEY = "autostart_bt";
     public static final String AUTOSTOP_BT_KEY = "autostop_bt";
+    public static final String AUTOSTART_ANDROID_AUTO_KEY = "autostart_android_auto";
     public static final String BT_MAC_ADDRESSES_KEY = "bt_mac_addresses";
     public static final String USE_BT_ID_KEY = "use_bt_id";
     public static final String SEND_TRACK_DETAILS_KEY = "send_track_details";
+    public static final String AUDIO_FOCUS_KEY = "audio_focus";
     public static int MAX_BITRATE_ALWAYS = 0;
     public static int MAX_BITRATE_WHEN_CELLULAR = 1;
     public static int MAX_BITRATE_WHEN_METERED = 2;
@@ -77,6 +79,7 @@ public class Prefs {
     public static String DEFAULT_START_ON_BOOT_DELAY = "0";
     public static boolean DEFAULT_STOP_ON_POWER_OFF = true;
     public static boolean DEFAULT_SEND_TRACK_DETAILS = true;
+    public static boolean DEFAULT_AUDIO_FOCUS = true;
 
     static public SharedPreferences get(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -178,6 +181,12 @@ public class Prefs {
             }
             editor.putBoolean(AUTOSTART_BT_KEY, false);
         }
+        if (!sharedPreferences.contains(AUTOSTART_ANDROID_AUTO_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putBoolean(AUTOSTART_ANDROID_AUTO_KEY, false);
+        }
         if (!sharedPreferences.contains(AUTOSTOP_BT_KEY)) {
             if (null==editor) {
                 editor = sharedPreferences.edit();
@@ -195,6 +204,12 @@ public class Prefs {
                 editor = sharedPreferences.edit();
             }
             editor.putBoolean(SEND_TRACK_DETAILS_KEY, DEFAULT_SEND_TRACK_DETAILS);
+        }
+        if (!sharedPreferences.contains(AUDIO_FOCUS_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putBoolean(AUDIO_FOCUS_KEY, DEFAULT_AUDIO_FOCUS);
         }
         if (editor!=null) {
             editor.apply();

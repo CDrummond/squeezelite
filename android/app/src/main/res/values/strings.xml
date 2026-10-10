@@ -43,6 +43,8 @@
     <string name="autostop_bt">Stop player on disconnect</string>
     <string name="autostop_bt_summary">When any BT audio device disconnects then stop player. This is independent of the auto start above</string>
     <string name="bt_mac_addresses">Auto start when device connects</string>
+    <string name="autostart_android_auto">Start player when Android Auto connects</string>
+    <string name="autostart_android_auto_summary">Android Auto does not use Bluetooth for audio, but the car still connects as a hands-free (calls) device when Android Auto starts. Start player when one of the devices configured above connects in this way, and stop it when the Android Auto session ends. Add the car to the list above</string>
     <string name="send_track_details">Send track details</string>
     <string name="send_track_details_summary">Send details of the track being played (title, artist, album, artwork) to the connected device, so that it can display these. Also used for the lock screen and Android Auto</string>
     <string name="use_bt_id">Use ID and name</string>
@@ -52,4 +54,6 @@
     <string name="stop_on_power_off_summary">"Stop player application when it's powered off via Lyrion"</string>
     <string name="use_opensles">Force older output method</string>
     <string name="use_opensles_summary">Always use OpenSL ES for audio output</string>
+    <string name="audio_focus">Use audio focus</string>
+    <string name="audio_focus_summary">Take Android audio focus whilst playing, and pause when another app (e.g. a phone call) takes it. Required for sound to be sent to Android Auto</string>
 </resources>

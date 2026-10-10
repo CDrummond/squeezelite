@@ -25,17 +25,18 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ServiceInfo;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.view.KeyEvent;
 
@@ -44,14 +45,17 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.ServiceCompat;
+import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class PlayerService extends Service {
+public class PlayerService extends MediaBrowserServiceCompat {
     // How long after losing connection to server should we stop player?
     public static final String STATUS_INTENT = PlayerService.class.getCanonicalName()+".STATUS";
     private static final String QUIT_INTENT = PlayerService.class.getCanonicalName() + ".QUIT";
@@ -73,6 +77,16 @@ public class PlayerService extends Service {
     private MediaSessionCompat mediaSession;
     private MediaSessionCompat.Callback mediaSessionCallback;
     private volatile NowPlaying nowPlaying;
+    private volatile AudioFocus audioFocus;
+    private volatile CarConnection carConnection;
+    private boolean started = false;
+
+    // stopService() is not enough, as Android Auto can keep the service bound and so alive
+    public static void stop(Context context) {
+        if (Utils.isPlayerRunning(context)) {
+            context.startService(new Intent(context, PlayerService.class).setAction(QUIT_INTENT));
+        }
+    }
 
     public PlayerService() {
         handler = new Handler(Looper.getMainLooper());
@@ -88,7 +102,7 @@ public class PlayerService extends Service {
     public void onCreate() {
         super.onCreate();
         Utils.debug("");
-        startForegroundService();
+        // The player starts in onStartCommand, so that Android Auto binding to browse does not start it
     }
 
     @Override
@@ -101,7 +115,18 @@ public class PlayerService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return super.onBind(intent);
+    }
+
+    // Android Auto only shows media apps it can browse, so offer it an empty library
+    @Override
+    public BrowserRoot onGetRoot(String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
+        return new BrowserRoot("root", null);
+    }
+
+    @Override
+    public void onLoadChildren(String parentId, Result<List<MediaBrowserCompat.MediaItem>> result) {
+        result.sendResult(new ArrayList<>());
     }
 
     @Override
@@ -113,6 +138,11 @@ public class PlayerService extends Service {
                 stopForegroundService();
                 return START_NOT_STICKY;
             }
+        }
+
+        if (!started) {
+            started = true;
+            startForegroundService();
         }
 
         SharedPreferences prefs = Prefs.get(this);
@@ -250,8 +280,16 @@ public class PlayerService extends Service {
         if (!Utils.isEmpty(playerName)) {
             updateNotification();
         }
+        if (Prefs.get(this).getBoolean(Prefs.AUTOSTART_ANDROID_AUTO_KEY, false)) {
+            carConnection = new CarConnection(this, this::stopForegroundService);
+            carConnection.start();
+        }
+        if (Prefs.get(this).getBoolean(Prefs.AUDIO_FOCUS_KEY, Prefs.DEFAULT_AUDIO_FOCUS)) {
+            audioFocus = new AudioFocus(this, lib, carConnection);
+        }
 
         mediaSession = new MediaSessionCompat(getApplicationContext(), "Squeezelite");
+        setSessionToken(mediaSession.getSessionToken());
         if (mediaSessionCallback==null) {
             mediaSessionCallback=new MediaSessionCompat.Callback() {
                 @Override
@@ -359,6 +397,14 @@ public class PlayerService extends Service {
             nowPlaying.release();
             nowPlaying = null;
         }
+        if (null!=audioFocus) {
+            audioFocus.release();
+            audioFocus = null;
+        }
+        if (null!=carConnection) {
+            carConnection.release();
+            carConnection = null;
+        }
         lib.stopPlayer(this);
         if (mediaSession != null) {
             mediaSession.setActive(false);
@@ -366,12 +412,27 @@ public class PlayerService extends Service {
         }
     }
 
-    public void playbackStateChanged() {
-        Utils.debug("");
-        NowPlaying np = nowPlaying;
-        if (null!=np) {
-            handler.post(np::update);
-        }
+    public void playbackStateChanged(boolean playing) {
+        Utils.debug("playing:"+playing);
+        handler.post(() -> {
+            AudioFocus focus = audioFocus;
+            if (null!=focus) {
+                // An exception here would kill the main thread, and every later update with it
+                try {
+                    if (playing) {
+                        focus.request();
+                    } else {
+                        focus.abandon();
+                    }
+                } catch (Exception e) {
+                    Utils.error("Failed to handle audio focus", e);
+                }
+            }
+            NowPlaying np = nowPlaying;
+            if (null!=np) {
+                np.update();
+            }
+        });
     }
 
     public void trackChanged() {
@@ -402,7 +463,10 @@ public class PlayerService extends Service {
         } else {
             stopTerminateTimer();
             // Now that we know where the server is, read what it is playing
-            playbackStateChanged();
+            NowPlaying np = nowPlaying;
+            if (null!=np) {
+                handler.post(np::update);
+            }
         }
     }
 

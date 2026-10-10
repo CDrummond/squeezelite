@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void stopPlayer() {
         Utils.debug("Stop player service");
-        stopService(new Intent(MainActivity.this, PlayerService.class));
+        PlayerService.stop(MainActivity.this);
     }
 
     private void controlWidgets() {

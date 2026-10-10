@@ -108,6 +108,12 @@
             app:singleLineTitle="false"/>
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
+            app:key="audio_focus"
+            app:summary="@string/audio_focus_summary"
+            app:title="@string/audio_focus"
+            app:singleLineTitle="false"/>
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
             app:key="use_wake_lock"
             app:summary="@string/use_wake_lock_summary"
             app:title="@string/use_wake_lock"
@@ -171,6 +177,12 @@
             app:iconSpaceReserved="false"
             app:singleLineTitle="false"
             android:singleLineTitle="false"/>
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="autostart_android_auto"
+            app:summary="@string/autostart_android_auto_summary"
+            app:title="@string/autostart_android_auto"
+            app:singleLineTitle="false"/>
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
             app:key="autostop_bt"
