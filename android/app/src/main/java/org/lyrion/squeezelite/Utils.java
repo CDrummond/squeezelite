@@ -130,6 +130,11 @@ public class Utils {
     }
 
     public static BtDevice getConnectedDevice(Context context) {
+        return getConnectedDevice(context, null, null);
+    }
+
+    // First connected device whose MAC is in macs (any, if null), other than exceptMac
+    public static BtDevice getConnectedDevice(Context context, Set<String> macs, String exceptMac) {
         BluetoothManager btManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
             Method isConnectedMethod;
@@ -142,6 +147,10 @@ public class Utils {
             }
             Set<BluetoothDevice> bonded = btManager.getAdapter().getBondedDevices();
             for (BluetoothDevice dev: bonded) {
+                String mac = dev.getAddress();
+                if ((null!=macs && !macs.contains(mac)) || (null!=exceptMac && exceptMac.equals(mac))) {
+                    continue;
+                }
                 try {
                     if ((boolean) isConnectedMethod.invoke(dev, (Object[]) null)) {
                         return new BtDevice(getName(dev), dev.getAddress());

@@ -71,6 +71,11 @@ public class CommandReceiver extends BroadcastReceiver {
         }
         boolean connected = BluetoothProfile.STATE_CONNECTED == state;
 
+        if (!connected && isOtherConfiguredDeviceConnected(context, macAddress)) {
+            Utils.debug("Another configured BT device is still connected");
+            return;
+        }
+
         if (!connected && Prefs.get(context).getBoolean(Prefs.AUTOSTOP_BT_KEY, false)) {
             if (Utils.isPlayerRunning(context)) {
                 context.stopService(new Intent(context, PlayerService.class));
@@ -93,13 +98,19 @@ public class CommandReceiver extends BroadcastReceiver {
             return;
         }
 
-        if (Utils.isPlayerRunning(context)) {
+        if (connected) {
+            // Left alone if already running, as restarting in the same process is what crashes
+            if (!Utils.isPlayerRunning(context)) {
+                startService(context);
+            }
+        } else if (Utils.isPlayerRunning(context)) {
             context.stopService(new Intent(context, PlayerService.class));
         }
+    }
 
-        if (connected) {
-            startService(context);
-        }
+    private boolean isOtherConfiguredDeviceConnected(Context context, String macAddress) {
+        Set<String> macs = Prefs.get(context).getStringSet(Prefs.BT_MAC_ADDRESSES_KEY, null);
+        return null!=macs && !macs.isEmpty() && null!=Utils.getConnectedDevice(context, macs, macAddress);
     }
 
     private void startOnBoot(Context context) {
