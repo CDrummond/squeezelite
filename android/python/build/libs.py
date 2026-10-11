@@ -55,7 +55,7 @@ libflac = AutotoolsProject(
 )
 
 libfaad = AutotoolsProject(
-    'https://sourceforge.net/projects/faac/files/faad2-src/faad2-2.8.0/faad2-2.8.8.tar.gz',
+    'https://sources.openwrt.org/faad2-2.8.8.tar.gz',
     '28f6116efdbe9378269f8a6221767d1f',
     'lib/libfaad.a',
     [
