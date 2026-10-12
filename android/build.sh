@@ -13,3 +13,7 @@ fi
 ../build.py "$ANDROID_SDK_ROOT" "$ANDROID_NDK_HOME" arm64-v8a \
   --buildtype=release -Db_ndebug=true \
   -Dwrap_mode=forcefallback
+
+../build.py "$ANDROID_SDK_ROOT" "$ANDROID_NDK_HOME" armeabi-v7a \
+  --buildtype=release -Db_ndebug=true \
+  -Dwrap_mode=forcefallback
