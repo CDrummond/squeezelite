@@ -1,0 +1,1 @@
+• Android Auto support: output sound (audio focus), start/stop the player with the session - thanks to Vincent Verdeil.

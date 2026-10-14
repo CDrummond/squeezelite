@@ -69,7 +69,8 @@ public class Utils {
     public static boolean isPlayerRunning(Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (service.service.getClassName().equals(PlayerService.class.getCanonicalName())) {
+            // Android Auto may hold the service bound without a player, so only a started one counts
+            if (service.started && service.service.getClassName().equals(PlayerService.class.getCanonicalName())) {
                 return true;
             }
         }

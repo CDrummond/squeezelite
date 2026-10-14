@@ -43,6 +43,8 @@
     <string name="autostop_bt">Arrêter la platine à la déconnexion</string>
     <string name="autostop_bt_summary">Arrête la platine lorsqu\'un appareil Bluetooth se déconnecte. (Option indépendante de celle qui démarre automatiquement la platine.)</string>
     <string name="bt_mac_addresses">Démarrage auto à la connexion de l\'appareil</string>
+    <string name="autostart_android_auto">Démarrer la platine à la connexion d\'Android Auto</string>
+    <string name="autostart_android_auto_summary">Android Auto n\'utilise pas le Bluetooth pour l\'audio, mais la voiture se connecte tout de même en mains libres (appels) lorsqu\'Android Auto démarre. Démarre la platine lorsqu\'un des appareils configurés ci-dessus se connecte ainsi, et l\'arrête à la fin de la session Android Auto. Ajoutez la voiture à la liste ci-dessus</string>
     <string name="send_track_details">Envoyer les infos du morceau</string>
     <string name="send_track_details_summary">Envoie les informations du morceau en cours (titre, artiste, album, pochette) à l\'appareil connecté, afin qu\'il puisse les afficher. Également utilisé pour l\'écran de verrouillage et Android Auto</string>
     <string name="use_bt_id">Utiliser l\'ID et le nom</string>
@@ -52,4 +54,6 @@
     <string name="stop_on_power_off_summary">"Arrête l'application lorsque la platine est éteinte via Lyrion"</string>
     <string name="use_opensles">Forcer l\'ancien mode de sortie</string>
     <string name="use_opensles_summary">Utilise toujours OpenSL ES pour la sortie audio</string>
+    <string name="audio_focus">Utiliser le focus audio</string>
+    <string name="audio_focus_summary">Prend le focus audio Android pendant la lecture, et met en pause lorsqu\'une autre application (par ex. un appel téléphonique) le prend. Nécessaire pour que le son soit envoyé à Android Auto</string>
 </resources>

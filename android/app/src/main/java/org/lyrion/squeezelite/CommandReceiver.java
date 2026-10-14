@@ -22,6 +22,7 @@ package org.lyrion.squeezelite;
 
 import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothHeadset;
 import android.bluetooth.BluetoothProfile;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -51,9 +52,37 @@ public class CommandReceiver extends BroadcastReceiver {
                 (act.equals(Intent.ACTION_BOOT_COMPLETED) && Prefs.get(context).getBoolean(Prefs.START_ON_BOOT_KEY, Prefs.DEFAULT_START_ON_BOOT))) {
             startOnBoot(context);
         } else if (act.equals(STOP)) {
-            context.stopService(new Intent(context, PlayerService.class));
+            PlayerService.stop(context);
         } else if (act.equals(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED)) {
             handleBtIntent(context, intent);
+        } else if (act.equals(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED)) {
+            handleHandsFreeIntent(context, intent);
+        }
+    }
+
+    // Android Auto does not use A2DP, but the car connects as hands-free when a session starts.
+    // That link comes and goes during a session, so disconnects are left to CarConnection.
+    private void handleHandsFreeIntent(Context context, Intent intent) {
+        if (!Prefs.get(context).getBoolean(Prefs.AUTOSTART_ANDROID_AUTO_KEY, false)) {
+            return;
+        }
+        BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+        if (device == null) {
+            return;
+        }
+        int state = intent.getIntExtra(BluetoothProfile.EXTRA_STATE, -1);
+        if (BluetoothProfile.STATE_CONNECTED != state) {
+            Utils.debug("Ignoring hands-free state " + state);
+            return;
+        }
+        Set<String> macs = Prefs.get(context).getStringSet(Prefs.BT_MAC_ADDRESSES_KEY, null);
+        if (null==macs || !macs.contains(device.getAddress())) {
+            Utils.debug("Not a configured BT MAC");
+            return;
+        }
+        // Whichever of this and the A2DP connection comes first starts the player
+        if (!Utils.isPlayerRunning(context)) {
+            startService(context);
         }
     }
 
@@ -77,9 +106,7 @@ public class CommandReceiver extends BroadcastReceiver {
         }
 
         if (!connected && Prefs.get(context).getBoolean(Prefs.AUTOSTOP_BT_KEY, false)) {
-            if (Utils.isPlayerRunning(context)) {
-                context.stopService(new Intent(context, PlayerService.class));
-            }
+            PlayerService.stop(context);
             return;
         }
         if (!Prefs.get(context).getBoolean(Prefs.AUTOSTART_BT_KEY, false)) {
@@ -98,13 +125,19 @@ public class CommandReceiver extends BroadcastReceiver {
             return;
         }
 
+        if (!connected && Prefs.get(context).getBoolean(Prefs.AUTOSTART_ANDROID_AUTO_KEY, false)) {
+            // Android Auto drops A2DP as it takes the audio over. CarConnection stops the player.
+            Utils.debug("Android Auto enabled, so ignore A2DP disconnection");
+            return;
+        }
+
         if (connected) {
             // Left alone if already running, as restarting in the same process is what crashes
             if (!Utils.isPlayerRunning(context)) {
                 startService(context);
             }
-        } else if (Utils.isPlayerRunning(context)) {
-            context.stopService(new Intent(context, PlayerService.class));
+        } else {
+            PlayerService.stop(context);
         }
     }
 
