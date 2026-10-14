@@ -59,7 +59,11 @@ public class JsonRpc {
     }
 
     public void setAddress(String address) {
-        this.server = new ServerDiscovery.Server(address, ServerDiscovery.Server.DEFAULT_PORT, "");
+        // The player reports the server it connected to; keep the configured JSON-RPC port
+        // instead of falling back to the default one.
+        int port = null == server ? ServerDiscovery.Server.DEFAULT_PORT : server.port;
+        String ip = null == address ? "" : address.split(":")[0];
+        this.server = new ServerDiscovery.Server(ip, port, "");
     }
 
     public String getMac() {

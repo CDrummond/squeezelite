@@ -160,7 +160,8 @@ public class Library {
         }
 
         initialLmsVolSeen = false;
-        ipAddress = server.address();
+        // The port of the server setting is the JSON-RPC one, so the player gets the bare address
+        ipAddress = server.ip;
         if (null==audioManager) {
             audioManager = (AudioManager) service.getSystemService(Context.AUDIO_SERVICE);
             androidMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
