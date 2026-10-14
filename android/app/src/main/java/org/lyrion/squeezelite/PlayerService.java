@@ -171,6 +171,7 @@ public class PlayerService extends MediaBrowserServiceCompat {
             createNotificationChannel();
         } else {
             notificationBuilder = new NotificationCompat.Builder(this);
+            notificationManager = NotificationManagerCompat.from(this);
         }
         createNotification();
         startPlayer();
