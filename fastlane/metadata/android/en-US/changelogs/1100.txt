@@ -1,1 +1,4 @@
+• Android Auto support: output sound (audio focus), start/stop the player with the session - thanks to Vincent Verdeil.
+• Keep the configured server port for JSON-RPC - thanks to smellybellyy
+• Create the notification manager below Android 8 too - thanks to smellybellyy
 • Add AndroidTV launcher icon.
