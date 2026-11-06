@@ -33,6 +33,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -79,6 +80,12 @@ public class PlayerService extends MediaBrowserServiceCompat {
     private volatile NowPlaying nowPlaying;
     private volatile AudioFocus audioFocus;
     private volatile CarConnection carConnection;
+    // A Bluetooth headset's play/pause button sends pause or play depending on whether the phone says audio plays,
+    // and after a pause it says so for several seconds more. So a second pause press soon after one, while paused,
+    // means play. Only button presses count: a car sending pause after our own pause (Android Auto disconnect)
+    // must not start playback.
+    private static final long PAUSE_AGAIN_MEANS_PLAY_MS = 10000;
+    private long lastPauseKeyTime = 0;
     private boolean started = false;
 
     // stopService() is not enough, as Android Auto can keep the service bound and so alive
@@ -346,11 +353,21 @@ public class PlayerService extends MediaBrowserServiceCompat {
                         Utils.debug("KeyCode:" + event.getKeyCode());
                         switch (event.getKeyCode()) {
                             case KeyEvent.KEYCODE_MEDIA_PLAY:
+                                lastPauseKeyTime = 0;
                                 lib.play();
                                 return true;
-                            case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                                lib.pause();
+                            case KeyEvent.KEYCODE_MEDIA_PAUSE: {
+                                long now = SystemClock.elapsedRealtime();
+                                if (!lib.isPlaying() && lastPauseKeyTime>0 && now-lastPauseKeyTime<PAUSE_AGAIN_MEANS_PLAY_MS) {
+                                    Utils.debug("Pause again while paused, so play");
+                                    lastPauseKeyTime = 0;
+                                    lib.play();
+                                } else {
+                                    lastPauseKeyTime = now;
+                                    lib.pause();
+                                }
                                 return true;
+                            }
                             case KeyEvent.KEYCODE_MEDIA_STOP:
                                 lib.stopPlayback();
                                 return true;

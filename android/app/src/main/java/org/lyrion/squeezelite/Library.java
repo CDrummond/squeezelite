@@ -47,8 +47,10 @@ public class Library {
     private static final String[] NEXT_COMMAND = {"playlist", "index", "+1"};
     private static final String[] STOP_COMMAND = {"stop"};
 
-    // Timeout after which Squeezelite will close audio stream
-    static final int STREAM_IDLE_TIMEOUT = 30000;
+    // Timeout after which Squeezelite will close audio stream once paused or stopped. Short: while the stream is
+    // open (playing silence) Android tells Bluetooth headsets that audio still plays, so their play/pause button
+    // sends pause again instead of play.
+    static final int STREAM_IDLE_TIMEOUT = 1000;
     static long MIN_LMS_VOLUME_UPDATE_TIME = 750;
     // LMS fades its volume in steps when pausing and resuming, so let it settle before acting
     static final long LMS_VOLUME_SETTLE_TIME = 200;
@@ -395,6 +397,10 @@ public class Library {
 
     public void play() {
         sendCommand(PLAY_COMMAND);
+    }
+
+    public boolean isPlaying() {
+        return playing;
     }
 
     public void pause() {
