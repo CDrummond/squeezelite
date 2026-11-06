@@ -143,6 +143,9 @@ public class PlayerService extends MediaBrowserServiceCompat {
         if (!started) {
             started = true;
             startForegroundService();
+        } else {
+            // Every startForegroundService() needs a startForeground(), or Android kills the service
+            goForeground();
         }
 
         SharedPreferences prefs = Prefs.get(this);
@@ -192,12 +195,13 @@ public class PlayerService extends MediaBrowserServiceCompat {
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
     }
 
+    // Built even without the notification permission: startForeground() must still be called (Android kills a
+    // service started with startForegroundService() otherwise, 2026-11-05), and then only the notification isn't
+    // shown.
     @SuppressLint("MissingPermission")
     private synchronized Notification updateNotification() {
         Utils.debug("");
-        if (!Utils.notificationAllowed(this, NOTIFICATION_CHANNEL_ID)) {
-            return null;
-        }
+        boolean allowed = Utils.notificationAllowed(this, NOTIFICATION_CHANNEL_ID);
         try {
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra(MainActivity.FROM_PLAYER_SERVICE_EXTRA, true);
@@ -226,7 +230,9 @@ public class PlayerService extends MediaBrowserServiceCompat {
             notificationBuilder.addAction(new NotificationCompat.Action(R.drawable.ic_action_quit, getString(R.string.stop_player), PendingIntent.getService(this, 0, quitIntent, PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE)));
             Notification notification = notificationBuilder.build();
             Utils.debug("Build notification.");
-            notificationManager.notify(MSG_ID, notification);
+            if (allowed) {
+                notificationManager.notify(MSG_ID, notification);
+            }
             return notification;
         } catch (Exception e) {
             Utils.error("Failed to create control notification", e);
@@ -250,8 +256,26 @@ public class PlayerService extends MediaBrowserServiceCompat {
             startService(new Intent(this, PlayerService.class));
         }
 
+        goForeground(notification);
+    }
+
+    private void goForeground() {
+        if (null==notificationBuilder) {
+            return;
+        }
+        Notification notification = updateNotification();
+        if (null!=notification) {
+            goForeground(notification);
+        }
+    }
+
+    private void goForeground(Notification notification) {
         Utils.debug("ServiceCompat.startForeground");
-        ServiceCompat.startForeground(this, MSG_ID, notification, Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK : 0);
+        try {
+            ServiceCompat.startForeground(this, MSG_ID, notification, Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK : 0);
+        } catch (Exception e) {
+            Utils.error("Failed to start in the foreground", e);
+        }
     }
 
     private void stopForegroundService() {
