@@ -50,6 +50,8 @@ public class CarConnection {
     private boolean seenConnected = false;
     // 0 if no session is running
     private long connectedSince = 0;
+    // When the last session ended, 0 if none has
+    private long endedAt = 0;
 
     // Not for the main thread
     public static int state(Context context) {
@@ -68,6 +70,11 @@ public class CarConnection {
 
     public long connectedSince() {
         return connectedSince;
+    }
+
+    /** Whether a session is running, or ended less than withinMs ago. */
+    public boolean activeOrEndedWithin(long withinMs) {
+        return seenConnected || (endedAt > 0 && SystemClock.elapsedRealtime() - endedAt < withinMs);
     }
 
     public CarConnection(Context context, Runnable onSessionEnded) {
@@ -138,6 +145,7 @@ public class CarConnection {
             Utils.info("Android Auto session ended");
             seenConnected = false;
             connectedSince = 0;
+            endedAt = SystemClock.elapsedRealtime();
             handler.removeCallbacks(pollTask);
             try {
                 onSessionEnded.run();

@@ -51,6 +51,8 @@ public class Prefs {
     public static final String STOP_ON_POWER_OFF_KEY = "stop_on_power_off";
     public static final String AUTOSTART_BT_KEY = "autostart_bt";
     public static final String AUTOSTOP_BT_KEY = "autostop_bt";
+    public static final String PAUSE_ON_OUTPUT_DISCONNECT_KEY = "pause_on_output_disconnect";
+    public static final boolean DEFAULT_PAUSE_ON_OUTPUT_DISCONNECT = true;
     public static final String AUTOSTART_ANDROID_AUTO_KEY = "autostart_android_auto";
     public static final String BT_MAC_ADDRESSES_KEY = "bt_mac_addresses";
     public static final String USE_BT_ID_KEY = "use_bt_id";
@@ -192,6 +194,12 @@ public class Prefs {
                 editor = sharedPreferences.edit();
             }
             editor.putBoolean(AUTOSTOP_BT_KEY, false);
+        }
+        if (!sharedPreferences.contains(PAUSE_ON_OUTPUT_DISCONNECT_KEY)) {
+            if (null==editor) {
+                editor = sharedPreferences.edit();
+            }
+            editor.putBoolean(PAUSE_ON_OUTPUT_DISCONNECT_KEY, DEFAULT_PAUSE_ON_OUTPUT_DISCONNECT);
         }
         if (!sharedPreferences.contains(STOP_ON_POWER_OFF_KEY)) {
             if (null==editor) {

@@ -397,6 +397,10 @@ public class Library {
         sendCommand(PLAY_COMMAND);
     }
 
+    public boolean isPlaying() {
+        return playing;
+    }
+
     public void pause() {
         sendCommand(PAUSE_COMMAND);
     }

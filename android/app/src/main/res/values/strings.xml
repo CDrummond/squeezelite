@@ -43,6 +43,8 @@
     <string name="autostop_bt">Stop player on disconnect</string>
     <string name="autostop_bt_summary">When any BT audio device disconnects then stop player. This is independent of the auto start above</string>
     <string name="bt_mac_addresses">Auto start when device connects</string>
+    <string name="pause_on_output_disconnect">Pause when the audio output disconnects</string>
+    <string name="pause_on_output_disconnect_summary">Pause the player when Bluetooth audio or headphones disconnect, instead of playing on through the phone\'s speaker. Not while an Android Auto session runs</string>
     <string name="autostart_android_auto">Start player when Android Auto connects</string>
     <string name="autostart_android_auto_summary">Android Auto does not use Bluetooth for audio, but the car still connects as a hands-free (calls) device when Android Auto starts. Start player when one of the devices configured above connects in this way, and stop it when the Android Auto session ends. Add the car to the list above</string>
     <string name="send_track_details">Send track details</string>
