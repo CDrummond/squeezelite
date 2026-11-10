@@ -189,6 +189,13 @@
             app:summary="@string/autostop_bt_summary"
             app:title="@string/autostop_bt"
             app:singleLineTitle="false"/>
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:defaultValue="true"
+            app:key="pause_on_output_disconnect"
+            app:summary="@string/pause_on_output_disconnect_summary"
+            app:title="@string/pause_on_output_disconnect"
+            app:singleLineTitle="false"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

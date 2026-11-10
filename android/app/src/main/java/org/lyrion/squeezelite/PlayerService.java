@@ -25,11 +25,14 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ServiceInfo;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,6 +48,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.ServiceCompat;
+import androidx.core.content.ContextCompat;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 
@@ -79,6 +83,9 @@ public class PlayerService extends MediaBrowserServiceCompat {
     private volatile NowPlaying nowPlaying;
     private volatile AudioFocus audioFocus;
     private volatile CarConnection carConnection;
+    // An output disconnect this close to an Android Auto session end is left to the Android Auto handling
+    private static final long CAR_SESSION_END_MARGIN_MS = 10000;
+    private BroadcastReceiver noisyReceiver = null;
     private boolean started = false;
 
     // stopService() is not enough, as Android Auto can keep the service bound and so alive
@@ -288,6 +295,9 @@ public class PlayerService extends MediaBrowserServiceCompat {
         if (Prefs.get(this).getBoolean(Prefs.AUDIO_FOCUS_KEY, Prefs.DEFAULT_AUDIO_FOCUS)) {
             audioFocus = new AudioFocus(this, lib, carConnection);
         }
+        if (Prefs.get(this).getBoolean(Prefs.PAUSE_ON_OUTPUT_DISCONNECT_KEY, Prefs.DEFAULT_PAUSE_ON_OUTPUT_DISCONNECT)) {
+            registerNoisyReceiver();
+        }
 
         mediaSession = new MediaSessionCompat(getApplicationContext(), "Squeezelite");
         setSessionToken(mediaSession.getSessionToken());
@@ -384,6 +394,47 @@ public class PlayerService extends MediaBrowserServiceCompat {
         }
     }
 
+    // Bluetooth audio or headphones disconnected: Android is about to play through the speaker
+    private void registerNoisyReceiver() {
+        if (null!=noisyReceiver) {
+            return;
+        }
+        noisyReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (!AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction()) || null==lib || !lib.isPlaying()) {
+                    return;
+                }
+                CarConnection connection = carConnection;
+                if ((null!=connection && connection.activeOrEndedWithin(CAR_SESSION_END_MARGIN_MS)) ||
+                        CarConnection.state(context) > CarConnection.NOT_CONNECTED) {
+                    Utils.debug("Audio output disconnected, left to the Android Auto handling");
+                    return;
+                }
+                Utils.info("Audio output disconnected, pausing");
+                lib.pause();
+            }
+        };
+        try {
+            ContextCompat.registerReceiver(this, noisyReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY),
+                    ContextCompat.RECEIVER_NOT_EXPORTED);
+        } catch (Exception e) {
+            Utils.error("Failed to watch for audio output disconnects", e);
+            noisyReceiver = null;
+        }
+    }
+
+    private void unregisterNoisyReceiver() {
+        if (null!=noisyReceiver) {
+            try {
+                unregisterReceiver(noisyReceiver);
+            } catch (Exception e) {
+                Utils.error("Failed to stop watching for audio output disconnects", e);
+            }
+            noisyReceiver = null;
+        }
+    }
+
     private void stopPlayer() {
         if (null==lib) {
             return;
@@ -406,6 +457,7 @@ public class PlayerService extends MediaBrowserServiceCompat {
             carConnection.release();
             carConnection = null;
         }
+        unregisterNoisyReceiver();
         lib.stopPlayer(this);
         if (mediaSession != null) {
             mediaSession.setActive(false);
